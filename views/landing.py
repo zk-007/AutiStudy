@@ -164,15 +164,17 @@ def _inject_css():
             justify-content: center !important;
             margin: 0 !important;
             padding: 0 !important;
+            width: 100% !important;
         }
         
         .stButton > button,
         .stButton > button[kind="primary"],
         .stButton > button[kind="secondary"] {
-            min-width: 100px !important;
+            min-width: 120px !important;
             width: 100% !important;
+            max-width: 100% !important;
             height: 46px !important;
-            padding: 0.5rem 1rem !important;
+            padding: 0.5rem 1.5rem !important;
             margin: 0 !important;
             border-radius: 999px !important;
             font-weight: 800 !important;
@@ -187,6 +189,7 @@ def _inject_css():
             text-align: center !important;
             white-space: nowrap !important;
             line-height: 1 !important;
+            flex: 1 !important;
         }
         
         .stButton > button > div,
@@ -431,7 +434,8 @@ def render_landing():
         """, unsafe_allow_html=True)
 
     # Header with Streamlit buttons (no HTML links) - equal width for all nav buttons
-    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2.5, 0.3, 1, 1, 1, 1])
+    # Using gap="small" to ensure consistent spacing
+    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2.2, 0.2, 1, 1, 1, 1], gap="small")
     
     with col_brand:
         st.markdown(f'<div class="brand">{t("brand")}</div>', unsafe_allow_html=True)
