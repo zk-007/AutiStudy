@@ -28,7 +28,6 @@ def render_chat():
         st.session_state.generated_audio = {}
 
     # ===== CRITICAL CSS FIXES =====
-    # This CSS is carefully designed to work on both localhost AND Streamlit Cloud
     st.markdown("""
     <style>
     /* ===== PREVENT HORIZONTAL SCROLL ===== */
@@ -39,20 +38,28 @@ def render_chat():
     
     .block-container {
         max-width: 100% !important;
-        padding: 1rem 1rem 2rem 1rem !important;
+        padding: 1rem !important;
         overflow-x: hidden !important;
     }
     
-    /* Ensure columns don't overflow */
-    [data-testid="stHorizontalBlock"] {
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-        flex-wrap: wrap !important;
+    /* ===== FORCE SIDEBAR TO SHOW ===== */
+    [data-testid="stSidebar"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        min-width: 250px !important;
+        width: 280px !important;
     }
     
-    [data-testid="column"] {
-        max-width: 100% !important;
-        overflow: hidden !important;
+    [data-testid="stSidebar"] > div:first-child {
+        width: 280px !important;
+        min-width: 250px !important;
+    }
+    
+    /* Sidebar content */
+    [data-testid="stSidebarContent"] {
+        display: block !important;
+        visibility: visible !important;
     }
     
     /* ===== FORM STYLING - Remove white box ===== */
@@ -71,32 +78,13 @@ def render_chat():
         gap: 0.5rem !important;
     }
     
-    .stForm [data-testid="stFormSubmitButton"] {
-        margin-top: 0 !important;
-    }
-    
-    /* Hide form instructions completely */
-    [data-testid="InputInstructions"],
-    .stForm [data-testid="InputInstructions"] {
+    /* Hide form instructions */
+    [data-testid="InputInstructions"] {
         display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
     }
     
-    /* ===== TEXT INPUT - Clean pill style only ===== */
-    .stTextInput {
-        background: transparent !important;
-    }
-    
-    .stTextInput > div {
-        background: transparent !important;
-        border: none !important;
-        padding: 0 !important;
-    }
-    
-    .stTextInput > div > div {
+    /* ===== TEXT INPUT - Clean pill style ===== */
+    .stTextInput, .stTextInput > div, .stTextInput > div > div {
         background: transparent !important;
         border: none !important;
     }
@@ -108,84 +96,42 @@ def render_chat():
         font-size: 1rem !important;
         background: white !important;
         min-height: 48px !important;
-        width: 100% !important;
     }
     
     .stTextInput input:focus {
         border-color: #2563EB !important;
         box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
-        outline: none !important;
     }
     
     .stTextInput input::placeholder {
         color: #94A3B8 !important;
-        font-size: 0.9rem !important;
     }
     
-    /* ===== QUICK QUESTION BUTTONS ===== */
-    .quick-btn-container {
-        display: flex !important;
-        flex-wrap: wrap !important;
+    /* ===== QUICK QUESTION BUTTONS - Single row ===== */
+    .quick-questions-row [data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important;
         gap: 0.5rem !important;
-        margin-top: 0.5rem !important;
     }
     
-    .quick-btn-container .stButton {
-        flex: 1 1 auto !important;
-        min-width: 120px !important;
-        max-width: 200px !important;
-    }
-    
-    .quick-btn-container .stButton > button {
-        font-size: 0.85rem !important;
+    .quick-questions-row .stButton > button {
+        font-size: 0.8rem !important;
         padding: 0.5rem 0.75rem !important;
-        min-height: 42px !important;
-        white-space: normal !important;
-        word-wrap: break-word !important;
-        line-height: 1.3 !important;
+        min-height: 40px !important;
+        white-space: nowrap !important;
     }
     
-    /* ===== PREVIOUS CHATS SIDEBAR ===== */
-    .previous-chats-col {
-        background: linear-gradient(180deg, #E9D5FF 0%, #DDD6FE 100%) !important;
-        border-radius: 16px !important;
-        padding: 1rem !important;
-        min-height: 200px !important;
-    }
-    
+    /* ===== PREVIOUS CHATS - No purple box ===== */
     .previous-chats-title {
         color: #1E3A8A !important;
         font-weight: 700 !important;
         font-size: 1rem !important;
-        text-align: center !important;
-        margin-bottom: 0.75rem !important;
-        white-space: nowrap !important;
+        margin-bottom: 0.5rem !important;
     }
     
     .previous-chats-empty {
-        background: rgba(255, 255, 255, 0.5) !important;
-        border: 1px dashed rgba(99, 102, 241, 0.4) !important;
-        border-radius: 12px !important;
-        padding: 0.75rem !important;
-        text-align: center !important;
-        color: #475569 !important;
+        color: #64748B !important;
         font-size: 0.85rem !important;
-    }
-    
-    /* Previous chat buttons */
-    .prev-chat-btn .stButton > button {
-        background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%) !important;
-        font-size: 0.8rem !important;
-        padding: 0.6rem 0.5rem !important;
-        min-height: 56px !important;
-        border-radius: 12px !important;
-        white-space: normal !important;
-        line-height: 1.25 !important;
-        margin-bottom: 0.4rem !important;
-    }
-    
-    .prev-chat-btn .stButton > button:hover {
-        background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%) !important;
+        padding: 0.5rem !important;
     }
     
     /* ===== RTL SUPPORT ===== */
@@ -317,10 +263,9 @@ def render_chat():
             display_conversation_with_inputs(grade, subject, user_email)
 
     with right_col:
-        # Previous chats column with styling
-        st.markdown('<div class="previous-chats-col">', unsafe_allow_html=True)
+        # Previous chats column - simple, no purple box
         st.markdown(
-            f'<div class="previous-chats-title">📂 {t("previous_chats")}</div>',
+            f'<p class="previous-chats-title">📂 {t("previous_chats")}</p>',
             unsafe_allow_html=True,
         )
 
@@ -328,13 +273,12 @@ def render_chat():
         previous_chats = get_user_chats(user_email, current_language)
 
         if previous_chats:
-            st.markdown('<div class="prev-chat-btn">', unsafe_allow_html=True)
             for idx, chat in enumerate(previous_chats[:8]):  # Show last 8 chats
                 chat_title = chat.get("title", "Untitled")
                 chat_id = chat.get("id", "")
 
-                if len(chat_title) > 22:
-                    chat_title = chat_title[:22] + "..."
+                if len(chat_title) > 20:
+                    chat_title = chat_title[:20] + "..."
 
                 is_current = chat_id == st.session_state.current_chat_id
                 button_label = f"{'⭐ ' if is_current else '💬 '}{chat_title}"
@@ -366,14 +310,11 @@ def render_chat():
                                 pair_idx += 1
                         
                         st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
         else:
             st.markdown(
-                f'<div class="previous-chats-empty">{t("no_previous_chats")}</div>',
+                f'<p class="previous-chats-empty">{t("no_previous_chats")}</p>',
                 unsafe_allow_html=True,
             )
-        
-        st.markdown('</div>', unsafe_allow_html=True)
     
     # Close RTL div if needed
     if is_urdu():
@@ -406,7 +347,7 @@ def render_input_area(grade, subject, user_email, key_suffix):
 
 
 def render_quick_questions(grade, subject, user_email):
-    """Render quick question buttons with responsive flex layout"""
+    """Render quick question buttons in a single horizontal row"""
     st.markdown(
         f'<p style="color: #64748B; font-size: 0.9rem; margin: 0.5rem 0 0.25rem 0;">{t("quick_question")}</p>',
         unsafe_allow_html=True,
@@ -435,11 +376,11 @@ def render_quick_questions(grade, subject, user_email):
 
     questions = quick_questions.get(subject, quick_questions["Maths"])
 
-    # Use 2 columns for better responsiveness (2 buttons per row)
-    col1, col2 = st.columns(2, gap="small")
+    # Single row with 4 columns for all buttons
+    cols = st.columns(4, gap="small")
     
     for idx, question in enumerate(questions):
-        with col1 if idx % 2 == 0 else col2:
+        with cols[idx]:
             if st.button(question, key=f"quick_{idx}_{question}", use_container_width=True):
                 process_user_input(question, grade, subject, user_email)
 
