@@ -394,19 +394,8 @@ def render_landing():
         </style>
         """, unsafe_allow_html=True)
 
-    # Add CSS for equal button sizing
-    st.markdown("""
-    <style>
-    /* Equal sized nav buttons */
-    [data-testid="stHorizontalBlock"] .stButton > button {
-        min-width: 100px !important;
-        width: 100% !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Header with Streamlit buttons (no HTML links) - equal spacing
-    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2.5, 0.5, 1, 1, 1, 1])
+    # Header with Streamlit buttons (no HTML links)
+    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2, 0.5, 1.2, 1.2, 1.2, 1.2])
     
     with col_brand:
         st.markdown(f'<div class="brand">{t("brand")}</div>', unsafe_allow_html=True)

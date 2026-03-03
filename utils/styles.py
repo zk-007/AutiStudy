@@ -23,21 +23,38 @@ def apply_custom_styles():
             line-height: 1.3;
         }
         
-        /* ===== App background ===== */
+        /* ===== CRITICAL: Prevent horizontal overflow globally ===== */
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+        }
+        
         .stApp {
             background: linear-gradient(135deg, #E8F0FE 0%, #F5F8FF 100%);
+            overflow-x: hidden !important;
+            max-width: 100% !important;
         }
         
-        /* ===== Main container ===== */
+        /* Main container - responsive padding */
         .block-container {
-            padding-top: 1.5rem;
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
-            padding-bottom: 2rem;
-            max-width: 100%;
+            padding-top: 1.5rem !important;
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+            padding-bottom: 2rem !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
         }
         
-        /* ===== Sidebar styling (DO NOT force visibility) ===== */
+        /* Ensure all horizontal blocks don't overflow */
+        [data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap !important;
+            gap: 0.5rem !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+        
+        /* ===== Sidebar - DO NOT override Streamlit's native behavior ===== */
+        /* Just style it, don't force dimensions or transforms */
         [data-testid="stSidebar"] > div:first-child {
             background: linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%);
         }
@@ -46,7 +63,7 @@ def apply_custom_styles():
             display: none;
         }
         
-        /* ===== Form styling ===== */
+        /* ===== Form styling - Remove all backgrounds ===== */
         .stForm {
             background: transparent !important;
             border: none !important;
@@ -60,11 +77,12 @@ def apply_custom_styles():
             padding: 0 !important;
         }
         
+        /* Hide form instructions */
         [data-testid="InputInstructions"] {
             display: none !important;
         }
         
-        /* ===== Text Input ===== */
+        /* ===== Text Input - Clean pill style ===== */
         .stTextInput > div {
             background: transparent !important;
         }
@@ -104,6 +122,8 @@ def apply_custom_styles():
             font-size: 0.95rem !important;
             min-height: 48px !important;
             transition: all 0.2s ease !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -129,7 +149,13 @@ def apply_custom_styles():
             color: white !important;
         }
         
-        /* ===== Cards and containers ===== */
+        /* Primary button (larger) */
+        [data-testid="stButton"] button[kind="primary"] {
+            min-width: 140px !important;
+            padding: 0.875rem 1.5rem !important;
+        }
+        
+        /* ===== Other UI elements ===== */
         .main-header {
             background: white;
             padding: 1rem 1.5rem;
@@ -142,6 +168,27 @@ def apply_custom_styles():
             color: #2563EB;
             font-size: 2.4rem;
             font-weight: 800;
+        }
+        
+        .hero-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin: 1.5rem 0;
+        }
+        
+        .hero-title {
+            color: #1E3A5F;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .hero-subtitle {
+            color: #64748B;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
         }
         
         .card {
@@ -276,7 +323,7 @@ def apply_custom_styles():
             margin-right: 15%;
         }
         
-        /* ===== Hide Streamlit branding ===== */
+        /* Hide Streamlit branding */
         header[data-testid="stHeader"] {
             background: transparent;
             height: 0;
@@ -302,7 +349,7 @@ def apply_custom_styles():
             display: none;
         }
         
-        /* ===== Login/Signup forms ===== */
+        /* Login form styling */
         .login-card {
             background: white;
             border-radius: 20px;
