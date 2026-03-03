@@ -99,7 +99,10 @@ TRANSLATIONS = {
         # Auth
         "email": "Email",
         "password": "Password",
+        "enter_email": "Enter email",
+        "enter_password": "Enter password",
         "name": "Full Name",
+        "enter_name": "Enter name",
         "confirm_password": "Confirm Password",
         "select_role": "Select Role",
         "student": "Student",
@@ -258,7 +261,10 @@ TRANSLATIONS = {
         # Auth
         "email": "ای میل",
         "password": "پاس ورڈ",
+        "enter_email": "ای میل درج کریں",
+        "enter_password": "پاس ورڈ درج کریں",
         "name": "پورا نام",
+        "enter_name": "نام درج کریں",
         "confirm_password": "پاس ورڈ کی تصدیق",
         "select_role": "کردار منتخب کریں",
         "student": "طالب علم",

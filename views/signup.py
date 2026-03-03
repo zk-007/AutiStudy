@@ -3,13 +3,33 @@ from utils.auth import register_user
 from utils.language import t, is_urdu
 
 def render_signup():
-    # RTL support for Urdu
-    if is_urdu():
-        st.markdown("""
-        <style>
-        .stApp { direction: rtl; }
-        </style>
-        """, unsafe_allow_html=True)
+    # If already authenticated, redirect to dashboard
+    if st.session_state.get("authenticated", False):
+        st.session_state.navigate("dashboard")
+        return
+    
+    # RTL support for Urdu + placeholder styling
+    direction = "rtl" if is_urdu() else "ltr"
+    text_align = "right" if is_urdu() else "left"
+    
+    st.markdown(f"""
+    <style>
+    .stApp {{ direction: {direction}; }}
+    
+    /* Light, small placeholders */
+    input::placeholder {{
+        color: #B0BEC5 !important;
+        font-size: 0.9rem !important;
+        font-weight: 400 !important;
+        text-align: {text_align} !important;
+    }}
+    
+    /* Input text alignment */
+    .stTextInput input {{
+        text-align: {text_align} !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
     
     # Header with back button
     col1, col2, col3 = st.columns([1, 6, 1])
@@ -46,13 +66,13 @@ def render_signup():
         
         with st.form("signup_form"):
             st.markdown(f'<p style="color: #1E3A5F; font-weight: 600; margin-bottom: 0.3rem; font-size: 1.2rem;">{t("name")}:</p>', unsafe_allow_html=True)
-            name = st.text_input("Name", label_visibility="collapsed", placeholder=t("name"))
+            name = st.text_input("Name", label_visibility="collapsed", placeholder=t("enter_name"))
             
             st.markdown(f'<p style="color: #1E3A5F; font-weight: 600; margin-bottom: 0.3rem; font-size: 1.2rem;">{t("email")}:</p>', unsafe_allow_html=True)
-            email = st.text_input("Email", label_visibility="collapsed", placeholder=t("email"))
+            email = st.text_input("Email", label_visibility="collapsed", placeholder=t("enter_email"))
             
             st.markdown(f'<p style="color: #1E3A5F; font-weight: 600; margin-bottom: 0.3rem; font-size: 1.2rem;">{t("password")}:</p>', unsafe_allow_html=True)
-            password = st.text_input("Password", type="password", label_visibility="collapsed", placeholder=t("password"))
+            password = st.text_input("Password", type="password", label_visibility="collapsed", placeholder=t("enter_password"))
             
             role_col, grade_col = st.columns(2)
             
