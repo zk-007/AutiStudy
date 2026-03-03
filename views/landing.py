@@ -142,17 +142,20 @@ def _inject_css():
             transform: translateY(-1px);
         }
         
-        /* Style Streamlit buttons to match nav-btn */
-        .stButton > button {
-            min-width: 120px !important;
-            height: 52px !important;
-            padding: 0 1.5rem !important;
+        /* Style ALL Streamlit buttons consistently - both primary and secondary */
+        .stButton > button,
+        .stButton > button[kind="primary"],
+        .stButton > button[kind="secondary"] {
+            min-width: 100px !important;
+            width: 100% !important;
+            height: 48px !important;
+            padding: 0 1rem !important;
             border-radius: 999px !important;
-            font-weight: 900 !important;
-            font-size: 1.08rem !important;
+            font-weight: 800 !important;
+            font-size: 1rem !important;
             color: #ffffff !important;
             background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 70%, #1E40AF 100%) !important;
-            box-shadow: 0 10px 25px rgba(37,99,235,0.18) !important;
+            box-shadow: 0 8px 20px rgba(37,99,235,0.18) !important;
             border: 1px solid rgba(37,99,235,0.22) !important;
             display: flex !important;
             align-items: center !important;
@@ -161,27 +164,35 @@ def _inject_css():
             white-space: nowrap !important;
         }
         
-        .stButton > button > div {
+        .stButton > button > div,
+        .stButton > button[kind="primary"] > div,
+        .stButton > button[kind="secondary"] > div {
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             width: 100% !important;
             text-align: center !important;
         }
-        .stButton > button:hover {
+        .stButton > button:hover,
+        .stButton > button[kind="primary"]:hover,
+        .stButton > button[kind="secondary"]:hover {
             background: linear-gradient(135deg, #10B981 0%, #059669 70%, #047857 100%) !important;
             color: #ffffff !important;
             transform: translateY(-1px);
             box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25) !important;
         }
         .stButton > button:focus,
-        .stButton > button:active {
+        .stButton > button:active,
+        .stButton > button[kind="primary"]:focus,
+        .stButton > button[kind="secondary"]:focus {
             color: #ffffff !important;
             background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 70%, #1E3A8A 100%) !important;
         }
         .stButton > button p,
         .stButton > button span,
-        .stButton > button div {
+        .stButton > button div,
+        .stButton > button[kind="secondary"] p,
+        .stButton > button[kind="secondary"] span {
             color: #ffffff !important;
         }
         .stButton > button:hover p,
@@ -394,8 +405,8 @@ def render_landing():
         </style>
         """, unsafe_allow_html=True)
 
-    # Header with Streamlit buttons (no HTML links)
-    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2, 0.5, 1.2, 1.2, 1.2, 1.2])
+    # Header with Streamlit buttons (no HTML links) - equal width for all nav buttons
+    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2.5, 0.3, 1, 1, 1, 1])
     
     with col_brand:
         st.markdown(f'<div class="brand">{t("brand")}</div>', unsafe_allow_html=True)
