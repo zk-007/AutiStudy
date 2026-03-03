@@ -39,6 +39,18 @@ def render_chat():
         </style>
         """, unsafe_allow_html=True)
     
+    # Hide "Press Enter to submit form" helper text
+    st.markdown("""
+    <style>
+    .stForm [data-testid="InputInstructions"],
+    .stForm .st-emotion-cache-1gulkj5,
+    div[data-testid="InputInstructions"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # GLOBAL PAGE CSS
     st.markdown(
         """
@@ -288,21 +300,22 @@ def render_input_area(grade, subject, user_email, key_suffix):
         unsafe_allow_html=True,
     )
 
-    col1, col2 = st.columns([5, 1])
+    with st.form(key=f"chat_form_{key_suffix}", clear_on_submit=True):
+        col1, col2 = st.columns([5, 1])
 
-    with col1:
-        user_input = st.text_input(
-            t('type_question'),
-            key=f"user_input_{key_suffix}",
-            placeholder=t('type_question'),
-            label_visibility="collapsed",
-        )
+        with col1:
+            user_input = st.text_input(
+                t('type_question'),
+                key=f"user_input_{key_suffix}",
+                placeholder=t('type_question'),
+                label_visibility="collapsed",
+            )
 
-    with col2:
-        send_button = st.button(f"{t('send')} 📤", key=f"send_{key_suffix}", use_container_width=True, type="primary")
+        with col2:
+            send_button = st.form_submit_button(f"{t('send')} 📤", use_container_width=True, type="primary")
 
-    if send_button and user_input:
-        process_user_input(user_input, grade, subject, user_email)
+        if send_button and user_input:
+            process_user_input(user_input, grade, subject, user_email)
 
 
 def render_quick_questions(grade, subject, user_email):
