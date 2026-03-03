@@ -23,85 +23,30 @@ def apply_custom_styles():
             line-height: 1.3;
         }
         
-        /* ===== CRITICAL: Prevent horizontal overflow globally ===== */
-        html, body {
-            overflow-x: hidden !important;
-            max-width: 100vw !important;
-        }
-        
+        /* ===== App background ===== */
         .stApp {
             background: linear-gradient(135deg, #E8F0FE 0%, #F5F8FF 100%);
-            overflow-x: hidden !important;
-            max-width: 100% !important;
         }
         
-        /* Main container - responsive padding */
+        /* ===== Main container ===== */
         .block-container {
-            padding-top: 1.5rem !important;
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
-            padding-bottom: 2rem !important;
-            max-width: 100% !important;
-            overflow-x: hidden !important;
+            padding-top: 1.5rem;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            padding-bottom: 2rem;
+            max-width: 100%;
         }
         
-        /* Ensure all horizontal blocks don't overflow */
-        [data-testid="stHorizontalBlock"] {
-            flex-wrap: wrap !important;
-            gap: 0.75rem !important;
-            max-width: 100% !important;
-            overflow-x: hidden !important;
-        }
-        
-        /* Ensure columns fit properly */
-        [data-testid="column"] {
-            min-width: 0 !important;
-            overflow: hidden !important;
-        }
-        
-        /* Dashboard cards - ensure text doesn't overflow */
-        [data-testid="column"] > div {
-            overflow: hidden !important;
-        }
-        
-        /* ===== FORCE SIDEBAR TO ALWAYS SHOW ===== */
-        /* Critical for Streamlit Cloud deployment */
-        [data-testid="stSidebar"] {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            min-width: 280px !important;
-            width: 300px !important;
-            transform: none !important;
-            position: relative !important;
-        }
-        
+        /* ===== Sidebar styling (DO NOT force visibility) ===== */
         [data-testid="stSidebar"] > div:first-child {
             background: linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%);
-            width: 100% !important;
-            min-width: 280px !important;
-        }
-        
-        [data-testid="stSidebarContent"] {
-            display: block !important;
-            visibility: visible !important;
-        }
-        
-        /* Hide the collapse button since we force it open */
-        [data-testid="stSidebar"] button[kind="header"] {
-            display: none !important;
         }
         
         div[data-testid="stSidebarNav"] {
             display: none;
         }
         
-        /* Adjust main content to account for sidebar */
-        [data-testid="stAppViewContainer"] > section:first-child {
-            margin-left: 0 !important;
-        }
-        
-        /* ===== Form styling - Remove all backgrounds ===== */
+        /* ===== Form styling ===== */
         .stForm {
             background: transparent !important;
             border: none !important;
@@ -115,12 +60,11 @@ def apply_custom_styles():
             padding: 0 !important;
         }
         
-        /* Hide form instructions */
         [data-testid="InputInstructions"] {
             display: none !important;
         }
         
-        /* ===== Text Input - Clean pill style ===== */
+        /* ===== Text Input ===== */
         .stTextInput > div {
             background: transparent !important;
         }
@@ -160,8 +104,6 @@ def apply_custom_styles():
             font-size: 0.95rem !important;
             min-height: 48px !important;
             transition: all 0.2s ease !important;
-            white-space: normal !important;
-            word-wrap: break-word !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -187,13 +129,7 @@ def apply_custom_styles():
             color: white !important;
         }
         
-        /* Primary button (larger) */
-        [data-testid="stButton"] button[kind="primary"] {
-            min-width: 140px !important;
-            padding: 0.875rem 1.5rem !important;
-        }
-        
-        /* ===== Other UI elements ===== */
+        /* ===== Cards and containers ===== */
         .main-header {
             background: white;
             padding: 1rem 1.5rem;
@@ -206,27 +142,6 @@ def apply_custom_styles():
             color: #2563EB;
             font-size: 2.4rem;
             font-weight: 800;
-        }
-        
-        .hero-section {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            margin: 1.5rem 0;
-        }
-        
-        .hero-title {
-            color: #1E3A5F;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-        }
-        
-        .hero-subtitle {
-            color: #64748B;
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
         }
         
         .card {
@@ -361,7 +276,7 @@ def apply_custom_styles():
             margin-right: 15%;
         }
         
-        /* Hide Streamlit branding */
+        /* ===== Hide Streamlit branding ===== */
         header[data-testid="stHeader"] {
             background: transparent;
             height: 0;
@@ -387,7 +302,7 @@ def apply_custom_styles():
             display: none;
         }
         
-        /* Login form styling */
+        /* ===== Login/Signup forms ===== */
         .login-card {
             background: white;
             border-radius: 20px;

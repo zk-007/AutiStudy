@@ -27,100 +27,33 @@ def render_chat():
     if "generated_audio" not in st.session_state:
         st.session_state.generated_audio = {}
 
-    # ===== CRITICAL CSS FIXES =====
+    # ===== Minimal CSS for chat page =====
     st.markdown("""
     <style>
-    /* ===== PREVENT HORIZONTAL SCROLL ===== */
-    html, body, .stApp, .main, section.main, [data-testid="stAppViewContainer"] {
-        overflow-x: hidden !important;
-        max-width: 100% !important;
-    }
-    
-    .block-container {
-        max-width: 100% !important;
-        padding: 1rem !important;
-        overflow-x: hidden !important;
-    }
-    
-    /* ===== FORCE SIDEBAR TO SHOW ===== */
-    [data-testid="stSidebar"] {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        min-width: 250px !important;
-        width: 280px !important;
-    }
-    
-    [data-testid="stSidebar"] > div:first-child {
-        width: 280px !important;
-        min-width: 250px !important;
-    }
-    
-    /* Sidebar content */
-    [data-testid="stSidebarContent"] {
-        display: block !important;
-        visibility: visible !important;
-    }
-    
-    /* ===== FORM STYLING - Remove white box ===== */
-    .stForm {
-        background: transparent !important;
-        border: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-    }
-    
-    .stForm > div {
-        background: transparent !important;
-        border: none !important;
-        padding: 0 !important;
-        gap: 0.5rem !important;
-    }
-    
     /* Hide form instructions */
     [data-testid="InputInstructions"] {
         display: none !important;
     }
     
-    /* ===== TEXT INPUT - Clean pill style ===== */
-    .stTextInput, .stTextInput > div, .stTextInput > div > div {
+    /* Form styling */
+    .stForm {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    
+    .stForm > div {
         background: transparent !important;
         border: none !important;
     }
     
-    .stTextInput input {
-        border-radius: 25px !important;
-        border: 2px solid #CBD5E1 !important;
-        padding: 0.75rem 1.25rem !important;
-        font-size: 1rem !important;
-        background: white !important;
-        min-height: 48px !important;
+    /* Text input styling */
+    .stTextInput > div, .stTextInput > div > div {
+        background: transparent !important;
+        border: none !important;
     }
     
-    .stTextInput input:focus {
-        border-color: #2563EB !important;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
-    }
-    
-    .stTextInput input::placeholder {
-        color: #94A3B8 !important;
-    }
-    
-    /* ===== QUICK QUESTION BUTTONS - Single row ===== */
-    .quick-questions-row [data-testid="stHorizontalBlock"] {
-        flex-wrap: nowrap !important;
-        gap: 0.5rem !important;
-    }
-    
-    .quick-questions-row .stButton > button {
-        font-size: 0.8rem !important;
-        padding: 0.5rem 0.75rem !important;
-        min-height: 40px !important;
-        white-space: nowrap !important;
-    }
-    
-    /* ===== PREVIOUS CHATS - No purple box ===== */
+    /* Previous chats title */
     .previous-chats-title {
         color: #1E3A8A !important;
         font-weight: 700 !important;
@@ -131,17 +64,6 @@ def render_chat():
     .previous-chats-empty {
         color: #64748B !important;
         font-size: 0.85rem !important;
-        padding: 0.5rem !important;
-    }
-    
-    /* ===== RTL SUPPORT ===== */
-    .rtl-mode {
-        direction: rtl !important;
-    }
-    
-    .rtl-mode [data-testid="stChatMessage"] {
-        direction: rtl !important;
-        text-align: right !important;
     }
     </style>
     """, unsafe_allow_html=True)
