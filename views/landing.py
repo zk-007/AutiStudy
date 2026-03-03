@@ -384,32 +384,29 @@ def _inject_css():
 def render_landing():
     _inject_css()
     
-    # Check if Urdu (RTL mode)
-    is_rtl = is_urdu()
-    
     # Add RTL support for Urdu
-    if is_rtl:
+    if is_urdu():
         st.markdown("""
         <style>
-        /* RTL for page direction */
         .stApp { direction: rtl; }
-        
-        /* Text alignment for RTL content */
-        .hero-title, .hero-sub { direction: rtl; text-align: right; }
-        .feat-title, .feat-desc, .how-title, .how-text { direction: rtl; text-align: right; }
+        .hero-title, .hero-sub, .feat-title, .feat-desc, .how-title, .how-text { direction: rtl; text-align: right; }
         .brand { direction: ltr; }
-        
-        /* IMPORTANT: Reverse the hero row so text is on LEFT, image on RIGHT */
-        /* The RTL flips columns, so we flip them back */
-        section.main [data-testid="stHorizontalBlock"]:first-of-type {
-            flex-direction: row !important;
-        }
         </style>
         """, unsafe_allow_html=True)
 
-    # Header with Streamlit buttons (no HTML links)
-    # Same column order for both - RTL CSS handles the visual flip
-    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2, 0.5, 1.2, 1.2, 1.2, 1.2])
+    # Add CSS for equal button sizing
+    st.markdown("""
+    <style>
+    /* Equal sized nav buttons */
+    [data-testid="stHorizontalBlock"] .stButton > button {
+        min-width: 100px !important;
+        width: 100% !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Header with Streamlit buttons (no HTML links) - equal spacing
+    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2.5, 0.5, 1, 1, 1, 1])
     
     with col_brand:
         st.markdown(f'<div class="brand">{t("brand")}</div>', unsafe_allow_html=True)
@@ -438,17 +435,10 @@ def render_landing():
 
     st.markdown('<hr style="border:none;border-top:1px solid rgba(148,163,184,0.25);margin:0.6rem 0 1.3rem 0;">', unsafe_allow_html=True)
 
-    # HERO section
-    # For RTL (Urdu): Text on LEFT, Image on RIGHT
-    # Since RTL CSS flips columns, we need to swap them in code to get correct visual
-    if is_rtl:
-        # RTL: Put image first in code, it will appear on RIGHT visually
-        img_col, text_col = st.columns([1.2, 1.2], gap="large")
-    else:
-        # LTR: Text first, Image second
-        text_col, img_col = st.columns([1.2, 1.2], gap="large")
+    # HERO (keep nice balance)
+    left, right = st.columns([1.2, 1.2], gap="large")
 
-    with text_col:
+    with left:
         st.markdown(
             f"""
             <div class="hero-left" style="padding: 0.6rem 0;">
@@ -459,13 +449,13 @@ def render_landing():
             unsafe_allow_html=True,
         )
         
-        # Get Started button - on the left for RTL
+        # Get Started button using Streamlit (not HTML link)
         cta_col, spacer = st.columns([1, 2])
         with cta_col:
             if st.button(f"🚀 {t('get_started')}", key="hero_start", type="primary", use_container_width=True):
                 _safe_navigate("signup")
 
-    with img_col:
+    with right:
         assets = _get_asset_path()
         hero_candidates = [
             assets / "hero.png",
@@ -478,19 +468,21 @@ def render_landing():
         hero_path = _first_existing(hero_candidates)
 
         if hero_path:
+            # ✅ Slightly bigger + slight overlap toward the Get Started button
             uri = _img_to_data_uri(hero_path)
             st.markdown(
                 f"""
-                <div class="hero-right" style="display:flex; justify-content:center; align-items:flex-start;">
+                <div class="hero-right" style="display:flex; justify-content:flex-end; align-items:flex-start;">
                     <img class="hero-img" src="{uri}" alt="AutiStudy Hero" />
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
         else:
+            # Fallback
             st.markdown(
                 """
-                <div style="text-align:center; padding: 1.0rem 0;">
+                <div style="text-align:right; padding: 1.0rem 0;">
                     <div style="font-size: 7.2rem; line-height: 1;">👩‍🎓🤖</div>
                     <div style="margin-top: 0.6rem; color:#64748B; font-size:1.15rem; font-weight:800;">
                         AI-Powered Learning for Every Student
