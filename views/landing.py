@@ -391,9 +391,19 @@ def render_landing():
     if is_rtl:
         st.markdown("""
         <style>
+        /* RTL for page direction */
         .stApp { direction: rtl; }
-        .hero-title, .hero-sub, .feat-title, .feat-desc, .how-title, .how-text { direction: rtl; text-align: right; }
+        
+        /* Text alignment for RTL content */
+        .hero-title, .hero-sub { direction: rtl; text-align: right; }
+        .feat-title, .feat-desc, .how-title, .how-text { direction: rtl; text-align: right; }
         .brand { direction: ltr; }
+        
+        /* IMPORTANT: Reverse the hero row so text is on LEFT, image on RIGHT */
+        /* The RTL flips columns, so we flip them back */
+        section.main [data-testid="stHorizontalBlock"]:first-of-type {
+            flex-direction: row !important;
+        }
         </style>
         """, unsafe_allow_html=True)
 
@@ -428,10 +438,17 @@ def render_landing():
 
     st.markdown('<hr style="border:none;border-top:1px solid rgba(148,163,184,0.25);margin:0.6rem 0 1.3rem 0;">', unsafe_allow_html=True)
 
-    # HERO section - same column order, RTL CSS handles visual flip
-    left, right = st.columns([1.2, 1.2], gap="large")
+    # HERO section
+    # For RTL (Urdu): Text on LEFT, Image on RIGHT
+    # Since RTL CSS flips columns, we need to swap them in code to get correct visual
+    if is_rtl:
+        # RTL: Put image first in code, it will appear on RIGHT visually
+        img_col, text_col = st.columns([1.2, 1.2], gap="large")
+    else:
+        # LTR: Text first, Image second
+        text_col, img_col = st.columns([1.2, 1.2], gap="large")
 
-    with left:
+    with text_col:
         st.markdown(
             f"""
             <div class="hero-left" style="padding: 0.6rem 0;">
@@ -442,13 +459,13 @@ def render_landing():
             unsafe_allow_html=True,
         )
         
-        # Get Started button
+        # Get Started button - on the left for RTL
         cta_col, spacer = st.columns([1, 2])
         with cta_col:
             if st.button(f"🚀 {t('get_started')}", key="hero_start", type="primary", use_container_width=True):
                 _safe_navigate("signup")
 
-    with right:
+    with img_col:
         assets = _get_asset_path()
         hero_candidates = [
             assets / "hero.png",
