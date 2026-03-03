@@ -27,6 +27,14 @@ def render_login():
     .stTextInput input {{
         text-align: {text_align} !important;
     }}
+    
+    /* Hide "Press Enter to submit form" helper text */
+    .stForm [data-testid="InputInstructions"],
+    .stForm .st-emotion-cache-1gulkj5,
+    div[data-testid="InputInstructions"] {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
     </style>
     """, unsafe_allow_html=True)
     
