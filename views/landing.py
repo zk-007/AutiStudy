@@ -142,14 +142,15 @@ def _inject_css():
             transform: translateY(-1px);
         }
         
-        /* Style ALL Streamlit buttons consistently - both primary and secondary */
+        /* Style ALL Streamlit buttons consistently - EXACT same size */
         .stButton > button,
         .stButton > button[kind="primary"],
         .stButton > button[kind="secondary"] {
-            min-width: 100px !important;
-            width: 100% !important;
+            width: 130px !important;
+            min-width: 130px !important;
+            max-width: 130px !important;
             height: 48px !important;
-            padding: 0 1rem !important;
+            padding: 0 0.5rem !important;
             border-radius: 999px !important;
             font-weight: 800 !important;
             font-size: 1rem !important;
@@ -162,6 +163,7 @@ def _inject_css():
             justify-content: center !important;
             text-align: center !important;
             white-space: nowrap !important;
+            margin: 0 auto !important;
         }
         
         .stButton > button > div,
