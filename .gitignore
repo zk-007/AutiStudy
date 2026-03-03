@@ -18,10 +18,11 @@ env/
 .streamlit/secrets.toml
 .streamlit/*.txt
 
-# Data files (user data, sessions, chats)
-data/users.json
+# Data files (sessions, chats - these are temporary)
 data/sessions.json
 data/chats.json
+
+# Keep users.json - contains registered accounts
 
 # ChromaDB (too large for GitHub, will need separate hosting)
 shared_chroma_db/

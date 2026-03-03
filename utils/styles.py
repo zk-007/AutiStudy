@@ -79,6 +79,20 @@ def apply_custom_styles():
             background: linear-gradient(135deg, #10B981 0%, #059669 100%);
         }
         
+        /* Prevent button text wrapping */
+        .stButton > button {
+            white-space: nowrap !important;
+            min-width: fit-content !important;
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+        }
+        
+        /* Hero Get Started button specific */
+        [data-testid="stButton"] button[kind="primary"] {
+            white-space: nowrap !important;
+            min-width: 160px !important;
+        }
+        
         .secondary-btn {
             background: white;
             color: #2563EB;
