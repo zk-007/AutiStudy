@@ -39,16 +39,56 @@ def render_chat():
         </style>
         """, unsafe_allow_html=True)
     
-    # Hide "Press Enter to submit form" helper text
+    # Hide "Press Enter to submit form" helper text + Fix layout issues
     st.markdown("""
     <style>
+    /* Hide form helper text */
     .stForm [data-testid="InputInstructions"],
     .stForm .st-emotion-cache-1gulkj5,
     div[data-testid="InputInstructions"] {
         display: none !important;
         visibility: hidden !important;
     }
+    
+    /* Prevent horizontal scrolling */
+    .stApp, .main, section.main {
+        overflow-x: hidden !important;
+    }
+    
+    /* Remove white background from form */
+    .stForm {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    
+    /* Fix Previous Chats title - keep on one line */
+    .previous-chats-title {
+        white-space: nowrap !important;
+    }
+    
+    /* Force sidebar to show on chat page */
+    [data-testid="stSidebar"] {
+        display: block !important;
+        width: 300px !important;
+    }
+    
+    [data-testid="stSidebar"][aria-expanded="false"] {
+        display: block !important;
+        margin-left: 0 !important;
+        transform: none !important;
+    }
     </style>
+    """, unsafe_allow_html=True)
+    
+    # Force sidebar to expand
+    st.markdown("""
+    <script>
+        const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) {
+            sidebar.setAttribute('aria-expanded', 'true');
+        }
+    </script>
     """, unsafe_allow_html=True)
     
     # GLOBAL PAGE CSS
@@ -67,10 +107,11 @@ def render_chat():
         div[data-testid="column"]:has(#previous-chats-anchor) .previous-chats-title {
             color: #1E3A8A;
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             text-align: center;
             margin-bottom: 1rem;
             letter-spacing: 0.2px;
+            white-space: nowrap !important;
         }
 
         div[data-testid="column"]:has(#previous-chats-anchor) .previous-chats-empty {
@@ -326,6 +367,22 @@ def render_quick_questions(grade, subject, user_email):
         """,
         unsafe_allow_html=True,
     )
+    
+    # Add CSS for proper button spacing
+    st.markdown("""
+    <style>
+    /* Quick question buttons with proper spacing */
+    .quick-questions-row [data-testid="column"] {
+        padding: 0 0.5rem !important;
+    }
+    .quick-questions-row .stButton > button {
+        white-space: nowrap !important;
+        font-size: 0.9rem !important;
+        padding: 0.6rem 1rem !important;
+        min-height: 50px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     quick_questions = {
         "Maths": [
@@ -350,7 +407,8 @@ def render_quick_questions(grade, subject, user_email):
 
     questions = quick_questions.get(subject, quick_questions["Maths"])
 
-    q_cols = st.columns(len(questions))
+    # Use gap parameter for proper spacing between columns
+    q_cols = st.columns(len(questions), gap="medium")
     for idx, (col, question) in enumerate(zip(q_cols, questions)):
         with col:
             if st.button(question, key=f"quick_{idx}_{question}", use_container_width=True):
