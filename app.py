@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="AutiStudy - AI Tutor for Grades 4-7",
     page_icon="📚",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 apply_custom_styles()

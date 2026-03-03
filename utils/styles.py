@@ -474,15 +474,5 @@ def apply_custom_styles():
         [data-testid="stToolbar"] {
             display: none;
         }
-        
-        /* Force sidebar visible on authenticated pages */
-        [data-testid="stSidebar"] {
-            transform: translateX(0) !important;
-        }
-        
-        [data-testid="stSidebar"][aria-expanded="false"] {
-            transform: translateX(0) !important;
-            margin-left: 0 !important;
-        }
     </style>
     """, unsafe_allow_html=True)
