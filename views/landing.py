@@ -384,8 +384,11 @@ def _inject_css():
 def render_landing():
     _inject_css()
     
+    # Check if Urdu (RTL mode)
+    is_rtl = is_urdu()
+    
     # Add RTL support for Urdu
-    if is_urdu():
+    if is_rtl:
         st.markdown("""
         <style>
         .stApp { direction: rtl; }
@@ -395,7 +398,11 @@ def render_landing():
         """, unsafe_allow_html=True)
 
     # Header with Streamlit buttons (no HTML links)
-    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2, 0.5, 1.2, 1.2, 1.2, 1.2])
+    # For RTL, reverse the column order
+    if is_rtl:
+        col_faq, col_about, col_lang_ur, col_lang_en, col_space, col_brand = st.columns([1.2, 1.2, 1.2, 1.2, 0.5, 2])
+    else:
+        col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2, 0.5, 1.2, 1.2, 1.2, 1.2])
     
     with col_brand:
         st.markdown(f'<div class="brand">{t("brand")}</div>', unsafe_allow_html=True)
@@ -424,9 +431,15 @@ def render_landing():
 
     st.markdown('<hr style="border:none;border-top:1px solid rgba(148,163,184,0.25);margin:0.6rem 0 1.3rem 0;">', unsafe_allow_html=True)
 
-    # HERO section - swap columns for RTL (Urdu)
-    def render_hero_text():
-        """Render the hero text content"""
+    # HERO section - swap columns for RTL
+    if is_rtl:
+        # RTL: Image on left, Text on right
+        img_col, text_col = st.columns([1.2, 1.2], gap="large")
+    else:
+        # LTR: Text on left, Image on right
+        text_col, img_col = st.columns([1.2, 1.2], gap="large")
+
+    with text_col:
         st.markdown(
             f"""
             <div class="hero-left" style="padding: 0.6rem 0;">
@@ -437,14 +450,16 @@ def render_landing():
             unsafe_allow_html=True,
         )
         
-        # Get Started button
-        cta_col, spacer = st.columns([1, 2])
+        # Get Started button using Streamlit (not HTML link)
+        if is_rtl:
+            spacer, cta_col = st.columns([2, 1])
+        else:
+            cta_col, spacer = st.columns([1, 2])
         with cta_col:
             if st.button(f"🚀 {t('get_started')}", key="hero_start", type="primary", use_container_width=True):
                 _safe_navigate("signup")
-    
-    def render_hero_image():
-        """Render the hero image"""
+
+    with img_col:
         assets = _get_asset_path()
         hero_candidates = [
             assets / "hero.png",
@@ -458,19 +473,22 @@ def render_landing():
 
         if hero_path:
             uri = _img_to_data_uri(hero_path)
+            # For RTL, align image to the left; for LTR, align to the right
+            justify = "flex-start" if is_rtl else "flex-end"
             st.markdown(
                 f"""
-                <div class="hero-right" style="display:flex; justify-content:center; align-items:flex-start;">
+                <div class="hero-right" style="display:flex; justify-content:{justify}; align-items:flex-start;">
                     <img class="hero-img" src="{uri}" alt="AutiStudy Hero" />
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
         else:
-            # Fallback emoji
+            # Fallback
+            text_align = "left" if is_rtl else "right"
             st.markdown(
-                """
-                <div style="text-align:center; padding: 1.0rem 0;">
+                f"""
+                <div style="text-align:{text_align}; padding: 1.0rem 0;">
                     <div style="font-size: 7.2rem; line-height: 1;">👩‍🎓🤖</div>
                     <div style="margin-top: 0.6rem; color:#64748B; font-size:1.15rem; font-weight:800;">
                         AI-Powered Learning for Every Student
@@ -479,22 +497,6 @@ def render_landing():
                 """,
                 unsafe_allow_html=True,
             )
-    
-    # Create columns - swap order for Urdu (RTL)
-    if is_urdu():
-        # Urdu: Image on LEFT, Text on RIGHT
-        col_image, col_text = st.columns([1.2, 1.2], gap="large")
-        with col_image:
-            render_hero_image()
-        with col_text:
-            render_hero_text()
-    else:
-        # English: Text on LEFT, Image on RIGHT
-        col_text, col_image = st.columns([1.2, 1.2], gap="large")
-        with col_text:
-            render_hero_text()
-        with col_image:
-            render_hero_image()
 
     # Features
     st.markdown(
