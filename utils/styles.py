@@ -79,18 +79,30 @@ def apply_custom_styles():
             background: linear-gradient(135deg, #10B981 0%, #059669 100%);
         }
         
-        /* Prevent button text wrapping */
+        /* Prevent button text wrapping and ensure proper centering */
         .stButton > button {
             white-space: nowrap !important;
             min-width: fit-content !important;
-            padding-left: 1.5rem !important;
-            padding-right: 1.5rem !important;
+            padding: 0.75rem 1.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+        
+        /* Ensure button content is centered */
+        .stButton > button > div {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
         }
         
         /* Hero Get Started button specific */
         [data-testid="stButton"] button[kind="primary"] {
             white-space: nowrap !important;
-            min-width: 160px !important;
+            min-width: 180px !important;
+            padding: 1rem 2rem !important;
         }
         
         .secondary-btn {

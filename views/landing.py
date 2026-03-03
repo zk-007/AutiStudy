@@ -144,9 +144,9 @@ def _inject_css():
         
         /* Style Streamlit buttons to match nav-btn */
         .stButton > button {
-            min-width: 140px !important;
+            min-width: 120px !important;
             height: 52px !important;
-            padding: 0 1.25rem !important;
+            padding: 0 1.5rem !important;
             border-radius: 999px !important;
             font-weight: 900 !important;
             font-size: 1.08rem !important;
@@ -154,6 +154,19 @@ def _inject_css():
             background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 70%, #1E40AF 100%) !important;
             box-shadow: 0 10px 25px rgba(37,99,235,0.18) !important;
             border: 1px solid rgba(37,99,235,0.22) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+        }
+        
+        .stButton > button > div {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            text-align: center !important;
         }
         .stButton > button:hover {
             background: linear-gradient(135deg, #10B981 0%, #059669 70%, #047857 100%) !important;
@@ -359,7 +372,7 @@ def render_landing():
         """, unsafe_allow_html=True)
 
     # Header with Streamlit buttons (no HTML links)
-    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2, 1.5, 0.7, 0.7, 1, 1])
+    col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2, 0.5, 1.2, 1.2, 1.2, 1.2])
     
     with col_brand:
         st.markdown(f'<div class="brand">{t("brand")}</div>', unsafe_allow_html=True)
