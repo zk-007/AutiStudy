@@ -424,10 +424,9 @@ def render_landing():
 
     st.markdown('<hr style="border:none;border-top:1px solid rgba(148,163,184,0.25);margin:0.6rem 0 1.3rem 0;">', unsafe_allow_html=True)
 
-    # HERO (keep nice balance)
-    left, right = st.columns([1.2, 1.2], gap="large")
-
-    with left:
+    # HERO section - swap columns for RTL (Urdu)
+    def render_hero_text():
+        """Render the hero text content"""
         st.markdown(
             f"""
             <div class="hero-left" style="padding: 0.6rem 0;">
@@ -438,13 +437,14 @@ def render_landing():
             unsafe_allow_html=True,
         )
         
-        # Get Started button using Streamlit (not HTML link)
+        # Get Started button
         cta_col, spacer = st.columns([1, 2])
         with cta_col:
             if st.button(f"🚀 {t('get_started')}", key="hero_start", type="primary", use_container_width=True):
                 _safe_navigate("signup")
-
-    with right:
+    
+    def render_hero_image():
+        """Render the hero image"""
         assets = _get_asset_path()
         hero_candidates = [
             assets / "hero.png",
@@ -457,21 +457,20 @@ def render_landing():
         hero_path = _first_existing(hero_candidates)
 
         if hero_path:
-            # ✅ Slightly bigger + slight overlap toward the Get Started button
             uri = _img_to_data_uri(hero_path)
             st.markdown(
                 f"""
-                <div class="hero-right" style="display:flex; justify-content:flex-end; align-items:flex-start;">
+                <div class="hero-right" style="display:flex; justify-content:center; align-items:flex-start;">
                     <img class="hero-img" src="{uri}" alt="AutiStudy Hero" />
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
         else:
-            # Fallback
+            # Fallback emoji
             st.markdown(
                 """
-                <div style="text-align:right; padding: 1.0rem 0;">
+                <div style="text-align:center; padding: 1.0rem 0;">
                     <div style="font-size: 7.2rem; line-height: 1;">👩‍🎓🤖</div>
                     <div style="margin-top: 0.6rem; color:#64748B; font-size:1.15rem; font-weight:800;">
                         AI-Powered Learning for Every Student
@@ -480,6 +479,22 @@ def render_landing():
                 """,
                 unsafe_allow_html=True,
             )
+    
+    # Create columns - swap order for Urdu (RTL)
+    if is_urdu():
+        # Urdu: Image on LEFT, Text on RIGHT
+        col_image, col_text = st.columns([1.2, 1.2], gap="large")
+        with col_image:
+            render_hero_image()
+        with col_text:
+            render_hero_text()
+    else:
+        # English: Text on LEFT, Image on RIGHT
+        col_text, col_image = st.columns([1.2, 1.2], gap="large")
+        with col_text:
+            render_hero_text()
+        with col_image:
+            render_hero_image()
 
     # Features
     st.markdown(
