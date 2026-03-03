@@ -231,6 +231,29 @@ def _inject_css():
             box-shadow: 0 14px 30px rgba(37,99,235,0.20);
         }
         .cta-link:visited{ color:#ffffff !important; }
+        
+        /* Get Started button specific styling */
+        [data-testid="stButton"][class*="st-key-hero_start"] button,
+        button[kind="primary"] {
+            min-width: 200px !important;
+            min-height: 60px !important;
+            padding: 1rem 2.5rem !important;
+            font-size: 1.2rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            gap: 0.5rem !important;
+        }
+        
+        [data-testid="stButton"][class*="st-key-hero_start"] button > div,
+        button[kind="primary"] > div {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            width: auto !important;
+        }
 
         /* Feature cards */
         .feat-grid{
