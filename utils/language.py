@@ -14,6 +14,7 @@ TRANSLATIONS = {
         "hero_title": "AI-Powered Learning for Every Student",
         "hero_subtitle": "Learn with an intelligent chatbot designed specifically for Pakistani students with special learning needs",
         "adaptive_tutor": "Adaptive AI Tutor for Grades 4-7",
+        "hero_image_caption": "AI-Powered Learning for Every Student",
         
         # Features
         "ai_tutor": "AI Tutor",
@@ -176,6 +177,7 @@ TRANSLATIONS = {
         "hero_title": "ہر طالب علم کے لیے AI سے چلنے والی تعلیم",
         "hero_subtitle": "خصوصی تعلیمی ضروریات والے پاکستانی طلباء کے لیے ڈیزائن کردہ ذہین چیٹ بوٹ سے سیکھیں",
         "adaptive_tutor": "گریڈ 4-7 کے لیے AI ٹیوٹر",
+        "hero_image_caption": "ہر طالب علم کے لیے AI سے چلنے والی تعلیم",
         
         # Features
         "ai_tutor": "AI ٹیوٹر",

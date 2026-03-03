@@ -50,24 +50,65 @@ def _inject_css():
     st.markdown(
         """
         <style>
-        /* Background gradient */
+        /* Background - white base */
         .stApp {
-            background: linear-gradient(135deg, #EAF2FF 0%, #F4F8FF 45%, #EDEBFF 100%);
+            background: #FFFFFF;
         }
 
         /* Main container */
         section.main > div.block-container {
             max-width: 1180px;
-            padding-top: 1.4rem;
-            padding-bottom: 2.8rem;
-            background: rgba(255,255,255,0.55);
-            border: 1px solid rgba(148,163,184,0.18);
-            border-radius: 22px;
-            box-shadow: 0 12px 35px rgba(15,23,42,0.07);
-            backdrop-filter: blur(10px);
+            padding-top: 0;
+            padding-bottom: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
         }
 
-        .block-container { padding-left: 2.0rem; padding-right: 2.0rem; }
+        .block-container { padding-left: 0; padding-right: 0; }
+        
+        /* Top navigation bar - white */
+        .nav-section {
+            background: #FFFFFF;
+            padding: 1rem 2rem;
+            margin: 0 -2rem;
+            width: calc(100% + 4rem);
+        }
+        
+        /* Hero section - light blue */
+        .hero-section {
+            background: linear-gradient(135deg, #E8F4FD 0%, #EDF6FF 50%, #E3F0FC 100%);
+            padding: 2rem 2rem 2.5rem 2rem;
+            margin: 0 -2rem;
+            width: calc(100% + 4rem);
+            border-radius: 0 0 30px 30px;
+        }
+        
+        /* Features section - white */
+        .features-section {
+            background: #FFFFFF;
+            padding: 2rem 2rem;
+            margin: 0 -2rem;
+            width: calc(100% + 4rem);
+        }
+        
+        /* How it works section - white */
+        .how-section {
+            background: #FFFFFF;
+            padding: 1rem 2rem 2rem 2rem;
+            margin: 0 -2rem;
+            width: calc(100% + 4rem);
+        }
+        
+        /* Footer section - white */
+        .footer-section {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            margin: 0 -2rem;
+            width: calc(100% + 4rem);
+            border-top: 1px solid rgba(148,163,184,0.20);
+        }
 
         footer {visibility: hidden;}
         #MainMenu {visibility: hidden;}
@@ -264,11 +305,11 @@ def _inject_css():
             margin-bottom: 0.55rem; /* a little more breathing room below cards */
         }
         .feat-card{
-            background: rgba(255,255,255,0.72);
-            border: 1px solid rgba(148,163,184,0.22);
+            background: #FFFFFF;
+            border: 1px solid rgba(148,163,184,0.25);
             border-radius: 18px;
             padding: 1.35rem 1.25rem;
-            box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+            box-shadow: 0 4px 15px rgba(15,23,42,0.08);
             transition: transform .15s ease, box-shadow .15s ease;
             text-align:center;
             min-height: 175px;
@@ -394,6 +435,9 @@ def render_landing():
         </style>
         """, unsafe_allow_html=True)
 
+    # Start nav section with white background
+    st.markdown('<div class="nav-section">', unsafe_allow_html=True)
+    
     # Header with Streamlit buttons (no HTML links)
     col_brand, col_space, col_lang_en, col_lang_ur, col_about, col_faq = st.columns([2, 0.5, 1.2, 1.2, 1.2, 1.2])
     
@@ -422,7 +466,10 @@ def render_landing():
         if st.button(t("faq"), key="nav_faq", use_container_width=True):
             _safe_navigate("faq")
 
-    st.markdown('<hr style="border:none;border-top:1px solid rgba(148,163,184,0.25);margin:0.6rem 0 1.3rem 0;">', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Start hero section with light blue background
+    st.markdown('<div class="hero-section">', unsafe_allow_html=True)
 
     # HERO (keep nice balance)
     left, right = st.columns([1.2, 1.2], gap="large")
@@ -468,18 +515,24 @@ def render_landing():
                 unsafe_allow_html=True,
             )
         else:
-            # Fallback
+            # Fallback - student with laptop and robot illustration
             st.markdown(
-                """
-                <div style="text-align:right; padding: 1.0rem 0;">
-                    <div style="font-size: 7.2rem; line-height: 1;">👩‍🎓🤖</div>
+                f"""
+                <div style="text-align:center; padding: 1.0rem 0;">
+                    <div style="font-size: 6rem; line-height: 1;">👨‍💻🤖</div>
                     <div style="margin-top: 0.6rem; color:#64748B; font-size:1.15rem; font-weight:800;">
-                        AI-Powered Learning for Every Student
+                        {t("hero_image_caption")}
                     </div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+    
+    # Close hero section
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Start features section with white background
+    st.markdown('<div class="features-section">', unsafe_allow_html=True)
 
     # Features
     st.markdown(
@@ -509,6 +562,12 @@ def render_landing():
         """,
         unsafe_allow_html=True,
     )
+    
+    # Close features section
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Start how section with white background
+    st.markdown('<div class="how-section">', unsafe_allow_html=True)
 
     # How it works
     st.markdown(f'<div class="how-title">{t("how_it_works")}</div>', unsafe_allow_html=True)
@@ -529,11 +588,17 @@ def render_landing():
         """,
         unsafe_allow_html=True,
     )
+    
+    # Close how section
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Start footer section
+    st.markdown('<div class="footer-section">', unsafe_allow_html=True)
 
     # Footer only
     st.markdown(
         """
-        <div class="foot-wrap">
+        <div class="foot-wrap" style="margin-top: 0; border-top: none;">
           <div class="foot-links">
             <span style="color:#2563EB; font-weight:900; margin:0 0.9rem; cursor:pointer;">Privacy Policy</span> |
             <span style="color:#2563EB; font-weight:900; margin:0 0.9rem; cursor:pointer;">Terms</span> |
@@ -544,3 +609,6 @@ def render_landing():
         """,
         unsafe_allow_html=True,
     )
+    
+    # Close footer section
+    st.markdown('</div>', unsafe_allow_html=True)
