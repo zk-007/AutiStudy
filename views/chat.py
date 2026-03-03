@@ -27,136 +27,188 @@ def render_chat():
     if "generated_audio" not in st.session_state:
         st.session_state.generated_audio = {}
 
-    if "show_right_sidebar" not in st.session_state:
-        st.session_state.show_right_sidebar = False
-
-    # RTL support for Urdu
-    if is_urdu():
-        st.markdown("""
-        <style>
-        .stApp { direction: rtl; }
-        [data-testid="stChatMessage"] { direction: rtl; text-align: right; }
-        </style>
-        """, unsafe_allow_html=True)
-    
-    # Hide "Press Enter to submit form" helper text + Fix layout issues
+    # ===== CRITICAL CSS FIXES =====
+    # This CSS is carefully designed to work on both localhost AND Streamlit Cloud
     st.markdown("""
     <style>
-    /* Hide form helper text */
-    .stForm [data-testid="InputInstructions"],
-    .stForm .st-emotion-cache-1gulkj5,
-    div[data-testid="InputInstructions"] {
-        display: none !important;
-        visibility: hidden !important;
+    /* ===== PREVENT HORIZONTAL SCROLL ===== */
+    html, body, .stApp, .main, section.main, [data-testid="stAppViewContainer"] {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
     }
     
-    /* Prevent horizontal scrolling */
-    .stApp, .main, section.main {
+    .block-container {
+        max-width: 100% !important;
+        padding: 1rem 1rem 2rem 1rem !important;
         overflow-x: hidden !important;
     }
     
-    /* Remove white background from form */
+    /* Ensure columns don't overflow */
+    [data-testid="stHorizontalBlock"] {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        flex-wrap: wrap !important;
+    }
+    
+    [data-testid="column"] {
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    /* ===== FORM STYLING - Remove white box ===== */
     .stForm {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+    
+    .stForm > div {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        gap: 0.5rem !important;
+    }
+    
+    .stForm [data-testid="stFormSubmitButton"] {
+        margin-top: 0 !important;
+    }
+    
+    /* Hide form instructions completely */
+    [data-testid="InputInstructions"],
+    .stForm [data-testid="InputInstructions"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* ===== TEXT INPUT - Clean pill style only ===== */
+    .stTextInput {
+        background: transparent !important;
+    }
+    
+    .stTextInput > div {
         background: transparent !important;
         border: none !important;
         padding: 0 !important;
     }
     
-    /* Fix Previous Chats title - keep on one line */
+    .stTextInput > div > div {
+        background: transparent !important;
+        border: none !important;
+    }
+    
+    .stTextInput input {
+        border-radius: 25px !important;
+        border: 2px solid #CBD5E1 !important;
+        padding: 0.75rem 1.25rem !important;
+        font-size: 1rem !important;
+        background: white !important;
+        min-height: 48px !important;
+        width: 100% !important;
+    }
+    
+    .stTextInput input:focus {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+        outline: none !important;
+    }
+    
+    .stTextInput input::placeholder {
+        color: #94A3B8 !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* ===== QUICK QUESTION BUTTONS ===== */
+    .quick-btn-container {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        margin-top: 0.5rem !important;
+    }
+    
+    .quick-btn-container .stButton {
+        flex: 1 1 auto !important;
+        min-width: 120px !important;
+        max-width: 200px !important;
+    }
+    
+    .quick-btn-container .stButton > button {
+        font-size: 0.85rem !important;
+        padding: 0.5rem 0.75rem !important;
+        min-height: 42px !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        line-height: 1.3 !important;
+    }
+    
+    /* ===== PREVIOUS CHATS SIDEBAR ===== */
+    .previous-chats-col {
+        background: linear-gradient(180deg, #E9D5FF 0%, #DDD6FE 100%) !important;
+        border-radius: 16px !important;
+        padding: 1rem !important;
+        min-height: 200px !important;
+    }
+    
     .previous-chats-title {
+        color: #1E3A8A !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        text-align: center !important;
+        margin-bottom: 0.75rem !important;
         white-space: nowrap !important;
     }
     
-    /* Force sidebar to show on chat page */
-    [data-testid="stSidebar"] {
-        display: block !important;
-        width: 300px !important;
+    .previous-chats-empty {
+        background: rgba(255, 255, 255, 0.5) !important;
+        border: 1px dashed rgba(99, 102, 241, 0.4) !important;
+        border-radius: 12px !important;
+        padding: 0.75rem !important;
+        text-align: center !important;
+        color: #475569 !important;
+        font-size: 0.85rem !important;
     }
     
-    [data-testid="stSidebar"][aria-expanded="false"] {
-        display: block !important;
-        margin-left: 0 !important;
-        transform: none !important;
+    /* Previous chat buttons */
+    .prev-chat-btn .stButton > button {
+        background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%) !important;
+        font-size: 0.8rem !important;
+        padding: 0.6rem 0.5rem !important;
+        min-height: 56px !important;
+        border-radius: 12px !important;
+        white-space: normal !important;
+        line-height: 1.25 !important;
+        margin-bottom: 0.4rem !important;
+    }
+    
+    .prev-chat-btn .stButton > button:hover {
+        background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%) !important;
+    }
+    
+    /* ===== RTL SUPPORT ===== */
+    .rtl-mode {
+        direction: rtl !important;
+    }
+    
+    .rtl-mode [data-testid="stChatMessage"] {
+        direction: rtl !important;
+        text-align: right !important;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Force sidebar to expand
-    st.markdown("""
-    <script>
-        const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            sidebar.setAttribute('aria-expanded', 'true');
-        }
-    </script>
-    """, unsafe_allow_html=True)
-    
-    # GLOBAL PAGE CSS
-    st.markdown(
-        """
-        <style>
-        /* REAL previous chats column */
-        div[data-testid="column"]:has(#previous-chats-anchor) {
-            background: linear-gradient(180deg, #D7C3F8 0%, #CDB2F4 100%);
-            border-radius: 22px;
-            padding: 1rem 1rem 1.25rem 1rem;
-            border-left: 2px solid rgba(124, 58, 237, 0.30);
-            box-shadow: 0 8px 22px rgba(124, 58, 237, 0.08);
-        }
+    # RTL support for Urdu
+    if is_urdu():
+        st.markdown('<div class="rtl-mode">', unsafe_allow_html=True)
 
-        div[data-testid="column"]:has(#previous-chats-anchor) .previous-chats-title {
-            color: #1E3A8A;
-            font-weight: 800;
-            font-size: 1.1rem;
-            text-align: center;
-            margin-bottom: 1rem;
-            letter-spacing: 0.2px;
-            white-space: nowrap !important;
-        }
-
-        div[data-testid="column"]:has(#previous-chats-anchor) .previous-chats-empty {
-            background: rgba(255, 255, 255, 0.40);
-            border: 1px dashed rgba(99, 102, 241, 0.30);
-            border-radius: 14px;
-            padding: 1rem;
-            text-align: center;
-            color: #334155;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        div[data-testid="column"]:has(#previous-chats-anchor) .stButton > button {
-            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 18px !important;
-            font-size: 0.95rem !important;
-            font-weight: 600 !important;
-            padding: 0.85rem 0.9rem !important;
-            min-height: 72px !important;
-            white-space: normal !important;
-            line-height: 1.35 !important;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.16) !important;
-        }
-
-        div[data-testid="column"]:has(#previous-chats-anchor) .stButton > button:hover {
-            background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
-            color: white !important;
-        }
-
-        div[data-testid="column"]:has(#previous-chats-anchor) .stButton > button:focus {
-            box-shadow: 0 0 0 0.18rem rgba(59, 130, 246, 0.24) !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Left Sidebar
+    # ===== LEFT SIDEBAR =====
     with st.sidebar:
         st.markdown(
             """
-            <div style="background: white; border-radius: 20px; padding: 1.5rem; margin-bottom: 1rem; text-align: center;">
+            <div style="background: white; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; text-align: center;">
             """,
             unsafe_allow_html=True,
         )
@@ -164,18 +216,16 @@ def render_chat():
         first_letter = user.get("name", "S")[0].upper()
         st.markdown(
             f"""
-            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-                display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 2rem; font-weight: 700;">
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+                display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; color: white; font-size: 1.75rem; font-weight: 700;">
                 {first_letter}
             </div>
-            <h3 style="color: #1E3A5F; margin: 0; font-weight: 700;">{user.get('name', 'Student')}</h3>
-            <p style="color: #2563EB; margin: 0.3rem 0;">Grade {grade} - {subject}</p>
+            <h3 style="color: #1E3A5F; margin: 0; font-weight: 700; font-size: 1.1rem;">{user.get('name', 'Student')}</h3>
+            <p style="color: #2563EB; margin: 0.25rem 0; font-size: 0.9rem;">Grade {grade} - {subject}</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
-
-        st.markdown("<br>", unsafe_allow_html=True)
 
         if st.button(f"🏠 {t('dashboard')}", key="nav_dashboard", use_container_width=True):
             st.session_state.navigate("dashboard")
@@ -197,7 +247,7 @@ def render_chat():
             st.session_state.generated_images = {}
             st.rerun()
 
-        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
 
         if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
             logout()
@@ -206,27 +256,27 @@ def render_chat():
         # Current Session Info
         st.markdown(
             f"""
-            <div style="background: #EFF6FF; border-radius: 12px; padding: 1rem; margin-top: 1rem;">
-                <p style="color: #1E3A5F; font-weight: 600; margin: 0 0 0.5rem 0;">{t('current_session')}</p>
-                <p style="color: #64748B; font-size: 0.9rem; margin: 0;">{t('grade')}: {grade}</p>
-                <p style="color: #64748B; font-size: 0.9rem; margin: 0;">{t('subject')}: {subject}</p>
+            <div style="background: #EFF6FF; border-radius: 12px; padding: 0.875rem; margin-top: 0.75rem;">
+                <p style="color: #1E3A5F; font-weight: 600; margin: 0 0 0.4rem 0; font-size: 0.9rem;">{t('current_session')}</p>
+                <p style="color: #64748B; font-size: 0.8rem; margin: 0;">{t('grade')}: {grade}</p>
+                <p style="color: #64748B; font-size: 0.8rem; margin: 0;">{t('subject')}: {subject}</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-    # Main Layout with right sidebar
-    main_col, right_col = st.columns([4, 1], gap="large")
+    # ===== MAIN LAYOUT - Use 3:1 ratio for better fit =====
+    main_col, right_col = st.columns([3, 1], gap="medium")
 
     with main_col:
         # Header
         st.markdown(
             f"""
-            <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
-                <div style="font-size: 2.5rem; margin-right: 1rem;">🤖</div>
+            <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                <div style="font-size: 2rem; margin-right: 0.75rem;">🤖</div>
                 <div>
-                    <h2 style="color: #1E3A5F; font-weight: 800; margin: 0;">{t('ai_tutor_title')}</h2>
-                    <p style="color: #64748B; margin: 0;">{t('grade')} {grade} - {subject}</p>
+                    <h2 style="color: #1E3A5F; font-weight: 800; margin: 0; font-size: 1.4rem;">{t('ai_tutor_title')}</h2>
+                    <p style="color: #64748B; margin: 0; font-size: 0.9rem;">{t('grade')} {grade} - {subject}</p>
                 </div>
             </div>
             """,
@@ -238,15 +288,15 @@ def render_chat():
             tutor_intro = t('tutor_intro').format(subject=subject, grade=grade)
             st.markdown(
                 f"""
-                <div style="background: linear-gradient(135deg, #DBEAFE 0%, #E0E7FF 50%, #EDE9FE 100%); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #2563EB;">
+                <div style="background: linear-gradient(135deg, #DBEAFE 0%, #E0E7FF 50%, #EDE9FE 100%); border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; border-left: 4px solid #2563EB;">
                     <div style="display: flex; align-items: flex-start;">
-                        <div style="font-size: 2rem; margin-right: 1rem;">💡</div>
+                        <div style="font-size: 1.5rem; margin-right: 0.75rem;">💡</div>
                         <div>
-                            <p style="color: #1E3A5F; font-weight: 700; margin: 0 0 0.5rem 0; font-size: 1.2rem;">{t('how_to_ask')}</p>
-                            <p style="color: #475569; margin: 0; font-size: 1.1rem;">
+                            <p style="color: #1E3A5F; font-weight: 700; margin: 0 0 0.4rem 0; font-size: 1.1rem;">{t('how_to_ask')}</p>
+                            <p style="color: #475569; margin: 0; font-size: 0.95rem;">
                                 {tutor_intro} 😊
                             </p>
-                            <p style="color: #64748B; font-size: 1rem; margin: 0.5rem 0 0 0;">
+                            <p style="color: #64748B; font-size: 0.85rem; margin: 0.4rem 0 0 0;">
                                 <em>{t('example_questions')}</em>
                             </p>
                         </div>
@@ -267,13 +317,10 @@ def render_chat():
             display_conversation_with_inputs(grade, subject, user_email)
 
     with right_col:
-        # Invisible anchor so CSS styles the REAL right column
-        st.markdown("<div id='previous-chats-anchor'></div>", unsafe_allow_html=True)
-
+        # Previous chats column with styling
+        st.markdown('<div class="previous-chats-col">', unsafe_allow_html=True)
         st.markdown(
-            f"""
-            <div class="previous-chats-title">📂 {t('previous_chats')}</div>
-            """,
+            f'<div class="previous-chats-title">📂 {t("previous_chats")}</div>',
             unsafe_allow_html=True,
         )
 
@@ -281,18 +328,16 @@ def render_chat():
         previous_chats = get_user_chats(user_email, current_language)
 
         if previous_chats:
-            for idx, chat in enumerate(previous_chats[:10]):  # Show last 10 chats
+            st.markdown('<div class="prev-chat-btn">', unsafe_allow_html=True)
+            for idx, chat in enumerate(previous_chats[:8]):  # Show last 8 chats
                 chat_title = chat.get("title", "Untitled")
                 chat_id = chat.get("id", "")
 
-                if len(chat_title) > 28:
-                    chat_title = chat_title[:28] + "..."
+                if len(chat_title) > 22:
+                    chat_title = chat_title[:22] + "..."
 
                 is_current = chat_id == st.session_state.current_chat_id
-                button_label = f"💬 {chat_title}"
-
-                if is_current:
-                    button_label = f"💬 ⭐ {chat_title}"
+                button_label = f"{'⭐ ' if is_current else '💬 '}{chat_title}"
 
                 if st.button(
                     button_label,
@@ -321,28 +366,29 @@ def render_chat():
                                 pair_idx += 1
                         
                         st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
         else:
             st.markdown(
-                f"""
-                <div class="previous-chats-empty">
-                    {t('no_previous_chats')}
-                </div>
-                """,
+                f'<div class="previous-chats-empty">{t("no_previous_chats")}</div>',
                 unsafe_allow_html=True,
             )
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Close RTL div if needed
+    if is_urdu():
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_input_area(grade, subject, user_email, key_suffix):
     """Render the input area for asking questions"""
     st.markdown(
-        f"""
-        <p style="color: #1E3A5F; font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem;">{t('ask_question')}</p>
-        """,
+        f'<p style="color: #1E3A5F; font-weight: 600; font-size: 1rem; margin-bottom: 0.4rem;">{t("ask_question")}</p>',
         unsafe_allow_html=True,
     )
 
     with st.form(key=f"chat_form_{key_suffix}", clear_on_submit=True):
-        col1, col2 = st.columns([5, 1])
+        col1, col2 = st.columns([4, 1], gap="small")
 
         with col1:
             user_input = st.text_input(
@@ -360,29 +406,11 @@ def render_input_area(grade, subject, user_email, key_suffix):
 
 
 def render_quick_questions(grade, subject, user_email):
-    """Render quick question buttons"""
+    """Render quick question buttons with responsive flex layout"""
     st.markdown(
-        f"""
-        <p style="color: #64748B; font-size: 1rem; margin: 0.5rem 0;">{t('quick_question')}</p>
-        """,
+        f'<p style="color: #64748B; font-size: 0.9rem; margin: 0.5rem 0 0.25rem 0;">{t("quick_question")}</p>',
         unsafe_allow_html=True,
     )
-    
-    # Add CSS for proper button spacing
-    st.markdown("""
-    <style>
-    /* Quick question buttons with proper spacing */
-    .quick-questions-row [data-testid="column"] {
-        padding: 0 0.5rem !important;
-    }
-    .quick-questions-row .stButton > button {
-        white-space: nowrap !important;
-        font-size: 0.9rem !important;
-        padding: 0.6rem 1rem !important;
-        min-height: 50px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
     quick_questions = {
         "Maths": [
@@ -407,10 +435,11 @@ def render_quick_questions(grade, subject, user_email):
 
     questions = quick_questions.get(subject, quick_questions["Maths"])
 
-    # Use gap parameter for proper spacing between columns
-    q_cols = st.columns(len(questions), gap="medium")
-    for idx, (col, question) in enumerate(zip(q_cols, questions)):
-        with col:
+    # Use 2 columns for better responsiveness (2 buttons per row)
+    col1, col2 = st.columns(2, gap="small")
+    
+    for idx, question in enumerate(questions):
+        with col1 if idx % 2 == 0 else col2:
             if st.button(question, key=f"quick_{idx}_{question}", use_container_width=True):
                 process_user_input(question, grade, subject, user_email)
 
@@ -475,8 +504,7 @@ def display_conversation_with_inputs(grade, subject, user_email):
                     st.write(assistant_msg["content"])
 
                     # ImageAid and VoiceAid buttons
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 3])
+                    btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 2])
 
                     # Get stored image/audio from message if available
                     stored_image = assistant_msg.get("image_url")
@@ -491,7 +519,6 @@ def display_conversation_with_inputs(grade, subject, user_email):
                                 image_url = generate_image(msg["content"], grade, subject)
                                 if image_url:
                                     st.session_state.generated_images[pair_idx] = image_url
-                                    # Save to database for persistence
                                     save_media_to_message(user_email, st.session_state.current_chat_id, assistant_msg_idx, image_url=image_url)
                                     st.rerun()
                                 else:
@@ -504,7 +531,6 @@ def display_conversation_with_inputs(grade, subject, user_email):
                                 audio_base64 = text_to_speech_base64(assistant_msg["content"], language)
                                 if audio_base64:
                                     st.session_state.generated_audio[pair_idx] = audio_base64
-                                    # Save to database for persistence
                                     save_media_to_message(user_email, st.session_state.current_chat_id, assistant_msg_idx, audio_base64=audio_base64)
                                     st.rerun()
                                 else:
@@ -513,11 +539,8 @@ def display_conversation_with_inputs(grade, subject, user_email):
                     # Display generated image (from session state or stored in DB)
                     display_image = st.session_state.generated_images.get(pair_idx) or stored_image
                     if display_image:
-                        st.markdown("<br>", unsafe_allow_html=True)
                         st.markdown(
-                            f"""
-                            <p style="color: #2563EB; font-weight: 600; font-size: 1rem;">🖼️ {t('generated_image')}</p>
-                            """,
+                            f'<p style="color: #2563EB; font-weight: 600; font-size: 0.9rem; margin-top: 0.75rem;">🖼️ {t("generated_image")}</p>',
                             unsafe_allow_html=True,
                         )
                         st.image(display_image, use_container_width=True)
@@ -525,18 +548,14 @@ def display_conversation_with_inputs(grade, subject, user_email):
                     # Display generated audio (from session state or stored in DB)
                     display_audio = st.session_state.generated_audio.get(pair_idx) or stored_audio
                     if display_audio:
-                        st.markdown("<br>", unsafe_allow_html=True)
                         st.markdown(
-                            f"""
-                            <p style="color: #10B981; font-weight: 600; font-size: 1rem;">🔊 {t('listen_response')}</p>
-                            """,
+                            f'<p style="color: #10B981; font-weight: 600; font-size: 0.9rem; margin-top: 0.75rem;">🔊 {t("listen_response")}</p>',
                             unsafe_allow_html=True,
                         )
                         st.markdown(
                             f"""
                             <audio controls style="width: 100%; border-radius: 8px;">
                                 <source src="data:audio/mp3;base64,{display_audio}" type="audio/mp3">
-                                Your browser does not support the audio element.
                             </audio>
                             """,
                             unsafe_allow_html=True,
@@ -553,7 +572,7 @@ def display_conversation_with_inputs(grade, subject, user_email):
             i += 1
 
     # Divider
-    st.markdown("<hr style='margin: 1.5rem 0; border: none; border-top: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 1rem 0; border: none; border-top: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
 
     # Input area at the bottom for next question
     render_input_area(grade, subject, user_email, f"bottom_{len(messages)}")
