@@ -38,8 +38,8 @@ def apply_custom_styles():
         /* Main container - responsive padding */
         .block-container {
             padding-top: 1.5rem !important;
-            padding-left: 1.5rem !important;
-            padding-right: 1.5rem !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
             padding-bottom: 2rem !important;
             max-width: 100% !important;
             overflow-x: hidden !important;
@@ -48,19 +48,57 @@ def apply_custom_styles():
         /* Ensure all horizontal blocks don't overflow */
         [data-testid="stHorizontalBlock"] {
             flex-wrap: wrap !important;
-            gap: 0.5rem !important;
+            gap: 0.75rem !important;
             max-width: 100% !important;
             overflow-x: hidden !important;
         }
         
-        /* ===== Sidebar - DO NOT override Streamlit's native behavior ===== */
-        /* Just style it, don't force dimensions or transforms */
+        /* Ensure columns fit properly */
+        [data-testid="column"] {
+            min-width: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        /* Dashboard cards - ensure text doesn't overflow */
+        [data-testid="column"] > div {
+            overflow: hidden !important;
+        }
+        
+        /* ===== FORCE SIDEBAR TO ALWAYS SHOW ===== */
+        /* Critical for Streamlit Cloud deployment */
+        [data-testid="stSidebar"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-width: 280px !important;
+            width: 300px !important;
+            transform: none !important;
+            position: relative !important;
+        }
+        
         [data-testid="stSidebar"] > div:first-child {
             background: linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%);
+            width: 100% !important;
+            min-width: 280px !important;
+        }
+        
+        [data-testid="stSidebarContent"] {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        /* Hide the collapse button since we force it open */
+        [data-testid="stSidebar"] button[kind="header"] {
+            display: none !important;
         }
         
         div[data-testid="stSidebarNav"] {
             display: none;
+        }
+        
+        /* Adjust main content to account for sidebar */
+        [data-testid="stAppViewContainer"] > section:first-child {
+            margin-left: 0 !important;
         }
         
         /* ===== Form styling - Remove all backgrounds ===== */
