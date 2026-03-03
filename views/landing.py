@@ -99,10 +99,25 @@ def _inject_css():
 
         .nav-actions{
             display:flex;
-            gap: 1.10rem; /* a bit more space between About & FAQ */
+            gap: 1.10rem;
             align-items:center;
             justify-content:flex-end;
             margin-right: 0.35rem;
+        }
+        
+        /* Ensure all nav button columns are vertically aligned */
+        [data-testid="stHorizontalBlock"] {
+            align-items: center !important;
+        }
+        
+        [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        [data-testid="stHorizontalBlock"] > [data-testid="column"] > div {
+            width: 100% !important;
         }
 
         /* Hero layering (lets the image overlap the Get Started button slightly) */
@@ -142,15 +157,23 @@ def _inject_css():
             transform: translateY(-1px);
         }
         
-        /* Style ALL Streamlit buttons consistently - EXACT same size */
+        /* Style ALL Streamlit buttons consistently - both primary and secondary */
+        .stButton {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
         .stButton > button,
         .stButton > button[kind="primary"],
         .stButton > button[kind="secondary"] {
-            width: 130px !important;
-            min-width: 130px !important;
-            max-width: 130px !important;
-            height: 48px !important;
-            padding: 0 0.5rem !important;
+            min-width: 100px !important;
+            width: 100% !important;
+            height: 46px !important;
+            padding: 0.5rem 1rem !important;
+            margin: 0 !important;
             border-radius: 999px !important;
             font-weight: 800 !important;
             font-size: 1rem !important;
@@ -163,7 +186,7 @@ def _inject_css():
             justify-content: center !important;
             text-align: center !important;
             white-space: nowrap !important;
-            margin: 0 auto !important;
+            line-height: 1 !important;
         }
         
         .stButton > button > div,
