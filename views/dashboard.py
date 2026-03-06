@@ -16,39 +16,53 @@ def render_dashboard():
     # ── Global styles ──────────────────────────────────────────────────────────
     st.markdown("""
     <style>
-    /* Hide default streamlit nav */
-    div[data-testid="stSidebarNav"] { display: none !important; }
 
-    /* Sidebar nav buttons */
-    section[data-testid="stSidebar"] .stButton > button {
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
-        color: white !important;
-        border-radius: 12px !important;
-        border: none !important;
-        font-weight: 600 !important;
-        text-align: left !important;
-        justify-content: flex-start !important;
-        padding: 0.6rem 1rem !important;
-        min-height: 42px !important;
-        margin-bottom: 0.4rem !important;
-    }
-    section[data-testid="stSidebar"] .stButton > button:hover {
-        background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
-        transform: none !important;
-        box-shadow: 0 2px 8px rgba(37,99,235,0.3) !important;
-    }
-    section[data-testid="stSidebar"] .stButton > button p,
-    section[data-testid="stSidebar"] .stButton > button span,
-    section[data-testid="stSidebar"] .stButton > button div {
-        color: white !important;
-    }
-
-    /* Main content padding */
+    /* ===============================
+       FIX MAIN LAYOUT (IMPORTANT)
+    ================================*/
     .main .block-container {
-        padding-top: 2rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
-        max-width: 100% !important;
+        padding-top: 2rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    /* ===============================
+       SIDEBAR SAFE STYLING
+    ================================*/
+    section[data-testid="stSidebar"] {
+        background-color: #f8f9fc;
+        padding-top: 1rem;
+    }
+
+    /* hide default multipage navigation */
+    div[data-testid="stSidebarNav"] {
+        display: none;
+    }
+
+    /* sidebar buttons */
+    section[data-testid="stSidebar"] .stButton > button {
+        width: 100%;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #ffffff;
+        border: 1px solid #e6e6e6;
+        transition: all 0.2s ease;
+    }
+
+    section[data-testid="stSidebar"] .stButton > button:hover {
+        background-color: #f1f3f8;
+    }
+
+    /* ===============================
+       DASHBOARD CARDS
+    ================================*/
+    .dashboard-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        height: 100%;
     }
 
     /* Quick-action cards */
@@ -92,6 +106,14 @@ def render_dashboard():
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         margin-bottom: 1rem;
     }
+
+    /* ===============================
+       FIX OVERFLOW (important)
+    ================================*/
+    html, body {
+        overflow-x: hidden;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -255,92 +277,20 @@ def render_dashboard():
         stars_label     = t('stars_earned')
         keep_learning   = t('keep_learning')
 
-        import streamlit.components.v1 as components
-        components.html(f"""
-        <style>
-            * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-            body {{ background: transparent; }}
-            @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
-            .rbox {{
-                background: white;
-                border-radius: 20px;
-                padding: 1.8rem 1.5rem 2.5rem 1.5rem;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-                font-family: 'Nunito', sans-serif;
-                width: 100%;
-                min-height: 380px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }}
-            .rbox h3 {{
-                color: #1E3A5F;
-                font-weight: 700;
-                font-size: 1.6rem;
-                margin: 0 0 1.5rem 0;
-                text-align: left;
-            }}
-            .rbox .content {{
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }}
-            .rbox .stars-row {{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.5rem;
-                margin-bottom: 0.4rem;
-            }}
-            .rbox .stars-num {{
-                font-size: 4rem;
-                color: #F59E0B;
-                font-weight: 800;
-                line-height: 1;
-            }}
-            .rbox .star-emoji {{
-                font-size: 3.5rem;
-                line-height: 1;
-            }}
-            .rbox .stars-label {{
-                color: #64748B;
-                font-size: 1.2rem;
-                text-align: center;
-                margin: 0.3rem 0 2rem 0;
-            }}
-            .rbox .badges {{
-                display: flex;
-                justify-content: center;
-                gap: 1.2rem;
-                margin-bottom: 2rem;
-                font-size: 2.8rem;
-            }}
-            .rbox .footer-text {{
-                color: #64748B;
-                font-size: 1.15rem;
-                line-height: 1.5;
-                text-align: center;
-                max-width: 220px;
-                margin: 0 auto;
-            }}
-        </style>
-        <div class="rbox">
-            <h3>{rewards_title}</h3>
-            <div class="content">
-                <div class="stars-row">
-                    <span class="stars-num">{stars}</span>
-                    <span class="star-emoji">⭐</span>
-                </div>
-                <p class="stars-label">{stars_label}</p>
-                <div class="badges">
-                    <span>🏅</span><span>🎯</span><span>⭐</span><span>🌟</span>
-                </div>
-                <p class="footer-text">{keep_learning}</p>
+        st.markdown(f"""
+        <div class="dashboard-card" style="text-align: center; min-height: 380px;">
+            <h3 style="color:#1E3A5F;font-weight:700;margin-bottom:1.5rem;text-align:left;">{rewards_title}</h3>
+            <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:0.4rem;">
+                <span style="font-size:4rem;color:#F59E0B;font-weight:800;">{stars}</span>
+                <span style="font-size:3.5rem;">⭐</span>
             </div>
+            <p style="color:#64748B;font-size:1.2rem;margin:0.3rem 0 2rem 0;">{stars_label}</p>
+            <div style="display:flex;justify-content:center;gap:1.2rem;margin-bottom:2rem;font-size:2.8rem;">
+                <span>🏅</span><span>🎯</span><span>⭐</span><span>🌟</span>
+            </div>
+            <p style="color:#64748B;font-size:1.15rem;">{keep_learning}</p>
         </div>
-        """, height=450)
+        """, unsafe_allow_html=True)
 
     # ── Footer ─────────────────────────────────────────────────────────────────
     st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
