@@ -5,10 +5,6 @@ from utils.language import t, is_urdu
 def render_dashboard():
     user = st.session_state.user
 
-    # Initialize sidebar state
-    if "show_sidebar" not in st.session_state:
-        st.session_state.show_sidebar = True
-
     # RTL support for Urdu
     if is_urdu():
         st.markdown("""
@@ -131,74 +127,63 @@ def render_dashboard():
 
     # ── LAYOUT WITH CUSTOM SIDEBAR ────────────────────────────────────────────
     
-    # Toggle button row
-    toggle_col, _ = st.columns([0.1, 0.9])
-    with toggle_col:
-        if st.button("☰", key="toggle_sidebar", help="Toggle sidebar"):
-            st.session_state.show_sidebar = not st.session_state.show_sidebar
-            st.rerun()
-
-    # Main layout based on sidebar state
-    if st.session_state.show_sidebar:
-        sidebar_col, main_col = st.columns([1, 4])
-    else:
-        sidebar_col, main_col = st.columns([0.001, 5])
+    # Main layout with sidebar always visible
+    sidebar_col, main_col = st.columns([1, 4])
 
     # ── CUSTOM SIDEBAR CONTENT ────────────────────────────────────────────────
-    if st.session_state.show_sidebar:
-        with sidebar_col:
-            st.markdown('<div class="custom-sidebar">', unsafe_allow_html=True)
-            
-            first_letter = user.get("name", "S")[0].upper()
-            name = user.get("name", "Student")
-            grade_num = user.get("grade", 4)
-            stars = user.get("stars", 0)
+    with sidebar_col:
+        st.markdown('<div class="custom-sidebar">', unsafe_allow_html=True)
+        
+        first_letter = user.get("name", "S")[0].upper()
+        name = user.get("name", "Student")
+        grade_num = user.get("grade", 4)
+        stars = user.get("stars", 0)
 
-            # Avatar + name + grade
-            st.markdown(f"""
-            <div style="text-align:center; padding-bottom:1rem;
-                 border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
-                <div style="width:72px;height:72px;border-radius:50%;
-                    background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
-                    display:flex;align-items:center;justify-content:center;
-                    margin:0 auto 0.6rem;color:white;font-size:1.8rem;font-weight:700;">
-                    {first_letter}
-                </div>
-                <div style="color:#1E3A5F;font-weight:700;font-size:1.1rem;">{name}</div>
-                <div style="color:#2563EB;font-size:0.95rem;">{t('grade')} {grade_num}</div>
+        # Avatar + name + grade
+        st.markdown(f"""
+        <div style="text-align:center; padding-bottom:1rem;
+             border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
+            <div style="width:72px;height:72px;border-radius:50%;
+                background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
+                display:flex;align-items:center;justify-content:center;
+                margin:0 auto 0.6rem;color:white;font-size:1.8rem;font-weight:700;">
+                {first_letter}
             </div>
-            """, unsafe_allow_html=True)
+            <div style="color:#1E3A5F;font-weight:700;font-size:1.1rem;">{name}</div>
+            <div style="color:#2563EB;font-size:0.95rem;">{t('grade')} {grade_num}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-            # Stars badge
-            st.markdown(f"""
-            <div style="text-align:center;margin-bottom:1.2rem;">
-                <span style="background:linear-gradient(135deg,#FCD34D 0%,#F59E0B 100%);
-                    color:white;padding:0.4rem 1.2rem;border-radius:20px;
-                    font-weight:700;font-size:0.95rem;display:inline-block;">
-                    ⭐ {stars} {t('stars_earned')}
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
+        # Stars badge
+        st.markdown(f"""
+        <div style="text-align:center;margin-bottom:1.2rem;">
+            <span style="background:linear-gradient(135deg,#FCD34D 0%,#F59E0B 100%);
+                color:white;padding:0.4rem 1.2rem;border-radius:20px;
+                font-weight:700;font-size:0.95rem;display:inline-block;">
+                ⭐ {stars} {t('stars_earned')}
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
 
-            # Nav buttons
-            if st.button(f"🤖 {t('ai_tutor')}", key="nav_ai_tutor", use_container_width=True):
-                st.session_state.navigate("ai_tutor")
-            if st.button(f"📝 {t('practice_quiz')}", key="nav_practice", use_container_width=True):
-                st.info(t("coming_soon"))
-            if st.button(f"📊 {t('learning_analytics')}", key="nav_analytics", use_container_width=True):
-                st.info(t("coming_soon"))
-            if st.button(f"🏆 {t('earn_rewards')}", key="nav_rewards", use_container_width=True):
-                st.info(t("coming_soon"))
-            if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
-                st.info(t("coming_soon"))
+        # Nav buttons
+        if st.button(f"🤖 {t('ai_tutor')}", key="nav_ai_tutor", use_container_width=True):
+            st.session_state.navigate("ai_tutor")
+        if st.button(f"📝 {t('practice_quiz')}", key="nav_practice", use_container_width=True):
+            st.info(t("coming_soon"))
+        if st.button(f"📊 {t('learning_analytics')}", key="nav_analytics", use_container_width=True):
+            st.info(t("coming_soon"))
+        if st.button(f"🏆 {t('earn_rewards')}", key="nav_rewards", use_container_width=True):
+            st.info(t("coming_soon"))
+        if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
+            st.info(t("coming_soon"))
 
-            st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
 
-            if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
-                logout()
-                st.session_state.navigate("landing")
+        if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
+            logout()
+            st.session_state.navigate("landing")
 
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # ── MAIN CONTENT ───────────────────────────────────────────────────────────
     with main_col:
