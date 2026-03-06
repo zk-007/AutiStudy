@@ -5,14 +5,12 @@ from utils.language import t, is_urdu
 def render_dashboard():
     user = st.session_state.user
 
-    # Page styling
     st.markdown("""
     <style>
     .stApp {
         background: #EEF3FB;
     }
 
-    /* Let Streamlit handle sidebar open/close naturally */
     section[data-testid="stSidebar"] {
         background: #FFFFFF !important;
         border-right: 1px solid #E2E8F0;
@@ -20,19 +18,17 @@ def render_dashboard():
 
     [data-testid="stSidebarContent"] {
         background: #FFFFFF !important;
-        padding-top: 0.6rem;
+        padding-top: 0.5rem;
     }
 
-    /* Keep main area clean and wide */
     .main .block-container {
-        padding-top: 2.2rem;
+        padding-top: 2rem;
         padding-left: 2rem;
         padding-right: 2rem;
         padding-bottom: 2rem;
         max-width: 100%;
     }
 
-    /* Sidebar buttons */
     section[data-testid="stSidebar"] .stButton > button {
         width: 100%;
         border: none;
@@ -43,17 +39,14 @@ def render_dashboard():
         color: white;
         background: linear-gradient(135deg, #2F6CF6 0%, #244FD1 100%);
         box-shadow: none;
-        transition: 0.2s ease;
         margin-bottom: 0.55rem;
     }
 
     section[data-testid="stSidebar"] .stButton > button:hover {
         color: white;
-        transform: translateY(-1px);
         background: linear-gradient(135deg, #3A78FF 0%, #2A58E0 100%);
     }
 
-    /* Main action buttons */
     .stButton > button {
         border: none;
         border-radius: 22px;
@@ -63,21 +56,13 @@ def render_dashboard():
         color: white;
         background: linear-gradient(135deg, #2F6CF6 0%, #244FD1 100%);
         box-shadow: none;
-        transition: 0.2s ease;
     }
 
     .stButton > button:hover {
         color: white;
-        transform: translateY(-1px);
         background: linear-gradient(135deg, #3A78FF 0%, #2A58E0 100%);
     }
 
-    /* Remove extra top gap from columns */
-    div[data-testid="column"] > div {
-        width: 100%;
-    }
-
-    /* Responsive card text */
     .dashboard-card-title {
         font-size: 1.1rem;
         font-weight: 700;
@@ -85,6 +70,7 @@ def render_dashboard():
         margin-bottom: 0.35rem;
         white-space: normal;
         word-break: break-word;
+        text-align: center;
     }
 
     .dashboard-card-subtitle {
@@ -93,18 +79,11 @@ def render_dashboard():
         line-height: 1.35;
         white-space: normal;
         word-break: break-word;
-    }
-
-    @media (max-width: 1200px) {
-        .main .block-container {
-            padding-left: 1.25rem;
-            padding-right: 1.25rem;
-        }
+        text-align: center;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # RTL support for Urdu
     if is_urdu():
         st.markdown("""
         <style>
@@ -112,7 +91,6 @@ def render_dashboard():
         </style>
         """, unsafe_allow_html=True)
 
-    # Sidebar
     with st.sidebar:
         first_letter = user.get("name", "S")[0].upper()
 
@@ -120,8 +98,8 @@ def render_dashboard():
         <div style="
             background: white;
             border-radius: 24px;
-            padding: 1rem 0.2rem 0.5rem 0.2rem;
-            text-align: left;
+            padding: 1rem 0.4rem 0.7rem 0.4rem;
+            text-align: center;
             margin-bottom: 1rem;
         ">
             <div style="
@@ -154,7 +132,7 @@ def render_dashboard():
                 font-weight: 700;
                 font-size: 1rem;
                 text-align: center;
-                margin-bottom: 1rem;
+                margin-bottom: 0.5rem;
             ">
                 ⭐ {user.get('stars', 0)} {t('stars_earned')}
             </div>
@@ -176,44 +154,34 @@ def render_dashboard():
         if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
             st.info(t("coming_soon"))
 
-        st.markdown("<div style='height: 0.8rem;'></div>", unsafe_allow_html=True)
-
         if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
             logout()
             st.session_state.navigate("landing")
 
-    # Header
     st.markdown(f"""
-    <div style="margin-bottom: 2rem;">
-        <h1 style="
-            color: #1E3A5F;
-            font-weight: 800;
-            font-size: 3rem;
-            line-height: 1.1;
-            margin: 0;
-        ">
-            {t('welcome_back_name')}, {user.get('name', 'Student')}! 👋
-        </h1>
-    </div>
+    <h1 style="
+        color: #1E3A5F;
+        font-weight: 800;
+        font-size: 3rem;
+        line-height: 1.1;
+        margin-bottom: 2rem;
+    ">
+        {t('welcome_back_name')}, {user.get('name', 'Student')}! 👋
+    </h1>
     """, unsafe_allow_html=True)
 
-    # Quick Actions title
     st.markdown(f"""
-    <div style="margin-bottom: 1rem;">
-        <h2 style="
-            color: #1E3A5F;
-            font-weight: 800;
-            font-size: 2rem;
-            margin: 0;
-        ">
-            {t('quick_actions')}
-        </h2>
-    </div>
+    <h2 style="
+        color: #1E3A5F;
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    ">
+        {t('quick_actions')}
+    </h2>
     """, unsafe_allow_html=True)
 
-    # Quick Actions cards
     q1, q2, q3, q4 = st.columns(4, gap="large")
-
     card_height = "230px"
 
     with q1:
@@ -310,7 +278,6 @@ def render_dashboard():
 
     st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
 
-    # Lower section
     col_main, col_side = st.columns([2.2, 1], gap="large")
 
     with col_main:
@@ -404,6 +371,8 @@ def render_dashboard():
                     st.session_state.navigate("chat")
 
     with col_side:
+        stars = user.get("stars", 0)
+
         st.markdown(f"""
         <div style="
             background: white;
@@ -411,62 +380,52 @@ def render_dashboard():
             padding: 1.8rem 1.6rem;
             min-height: 465px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            text-align: center;
         ">
             <h3 style="
                 color: #1E3A5F;
                 font-weight: 800;
                 font-size: 1.8rem;
                 margin-top: 0;
-                margin-bottom: 1.6rem;
+                margin-bottom: 1.8rem;
+                text-align: left;
             ">
                 {t('your_rewards')}
             </h3>
 
-            <div style="text-align: center; margin-bottom: 1rem;">
-                <div style="
-                    font-size: 3.8rem;
-                    font-weight: 800;
-                    color: #F59E0B;
-                    line-height: 1;
-                    margin-bottom: 0.4rem;
-                ">
-                    {user.get('stars', 0)} ⭐
-                </div>
-                <div style="
-                    color: #64748B;
-                    font-size: 1.05rem;
-                    line-height: 1.4;
-                ">
-                    {t('stars_earned')}
-                </div>
+            <div style="
+                font-size: 3.8rem;
+                font-weight: 800;
+                color: #F59E0B;
+                line-height: 1;
+                margin-bottom: 0.5rem;
+            ">
+                {stars} ⭐
             </div>
 
             <div style="
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.9rem 1rem;
-                margin: 1.2rem 0 1.5rem 0;
+                color: #64748B;
+                font-size: 1.05rem;
+                line-height: 1.4;
+                margin-bottom: 1.4rem;
             ">
-                <span style="font-size: 2.8rem;">🏅</span>
-                <span style="font-size: 2.8rem;">🎯</span>
-                <span style="font-size: 2.8rem;">⭐</span>
-                <span style="font-size: 2.8rem;">🌟</span>
+                {t('stars_earned')}
             </div>
 
-            <p style="
-                text-align: center;
+            <div style="font-size: 2.8rem; margin-bottom: 1.4rem;">
+                🏅 🎯 ⭐ 🌟
+            </div>
+
+            <div style="
                 color: #64748B;
                 font-size: 1rem;
                 line-height: 1.7;
-                margin: 0;
             ">
                 {t('keep_learning')}
-            </p>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
-    # Footer
     st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
     st.markdown("""
     <div style="
