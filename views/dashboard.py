@@ -135,7 +135,13 @@ def render_dashboard():
         
         grade = user.get("grade", 4)
         
-        from utils.rag import GRADE_SUBJECTS
+        # Grade to subjects mapping (lightweight - no heavy imports)
+        GRADE_SUBJECTS = {
+            4: ["Maths", "General Science"],
+            5: ["Maths", "General Science"],
+            6: ["Maths", "General Science", "Computer"],
+            7: ["Maths", "General Science", "Computer"]
+        }
         subjects = GRADE_SUBJECTS.get(grade, ["Maths", "General Science"])
         
         subject_icons = {

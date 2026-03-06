@@ -90,10 +90,11 @@ def tokenize(s: str) -> List[str]:
 
 
 def get_embedder():
-    """Get or initialize the sentence transformer embedder"""
+    """Get or initialize the sentence transformer embedder (lazy loading)"""
     global _embedder
     if _embedder is None and EMBEDDER_AVAILABLE:
         try:
+            # Only load when actually needed
             _embedder = SentenceTransformer(EMBED_MODEL_NAME)
             print(f"Loaded embedding model: {EMBED_MODEL_NAME}")
         except Exception as e:
@@ -103,10 +104,11 @@ def get_embedder():
 
 
 def get_reranker():
-    """Get or initialize the CrossEncoder reranker (CELL 33)"""
+    """Get or initialize the CrossEncoder reranker (lazy loading)"""
     global _reranker
     if _reranker is None and EMBEDDER_AVAILABLE:
         try:
+            # Only load when actually needed
             _reranker = CrossEncoder(RERANKER_MODEL_NAME)
             print(f"Loaded reranker: {RERANKER_MODEL_NAME}")
         except Exception as e:
