@@ -90,13 +90,6 @@ def render_dashboard():
         padding: 1.5rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         text-align: center;
-        max-width: 100%;
-    }
-    .rewards-box p {
-        max-width: 180px;
-        margin-left: auto;
-        margin-right: auto;
-        word-wrap: break-word;
     }
 
     /* Subject cards */
@@ -276,39 +269,58 @@ def render_dashboard():
 
     with col_side:
         stars = user.get("stars", 0)
+        rewards_title   = t('your_rewards')
+        stars_label     = t('stars_earned')
+        keep_learning   = t('keep_learning')
 
-        # Title
-        st.markdown(f"""
-        <div class="rewards-box">
-            <h3 style="color:#1E3A5F;font-weight:700;margin:0 0 0.75rem 0;">{t('your_rewards')}</h3>
-        """, unsafe_allow_html=True)
-
-        # Stars count — separate call prevents emoji stripping
-        st.markdown(f"""
-            <div style="text-align:center;">
-                <div style="font-size:2.8rem;color:#F59E0B;font-weight:800;line-height:1.1;">
-                    {stars} ⭐
-                </div>
-                <p style="color:#64748B;font-size:1rem;margin:0.3rem 0 0.75rem 0;">
-                    {t('stars_earned')}
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Badges row — separate call
-        st.markdown("""
-            <div style="text-align:center;font-size:2rem;margin-bottom:0.75rem;">
-                🏅 🎯 ⭐ 🌟
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Footer text + close wrapper div
-        st.markdown(f"""
-            <p style="text-align:center;color:#64748B;font-size:0.95rem;margin:0;">
-                {t('keep_learning')}
-            </p>
+        import streamlit.components.v1 as components
+        components.html(f"""
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+            .rbox {{
+                background: white;
+                border-radius: 20px;
+                padding: 1.5rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+                text-align: center;
+                font-family: 'Nunito', sans-serif;
+            }}
+            .rbox h3 {{
+                color: #1E3A5F;
+                font-weight: 700;
+                font-size: 1.25rem;
+                margin: 0 0 1rem 0;
+            }}
+            .rbox .stars-num {{
+                font-size: 2.8rem;
+                color: #F59E0B;
+                font-weight: 800;
+                line-height: 1.1;
+            }}
+            .rbox .stars-label {{
+                color: #64748B;
+                font-size: 1rem;
+                margin: 0.3rem 0 1rem 0;
+            }}
+            .rbox .badges {{
+                font-size: 2rem;
+                margin-bottom: 0.75rem;
+                letter-spacing: 0.2rem;
+            }}
+            .rbox .footer-text {{
+                color: #64748B;
+                font-size: 0.95rem;
+                margin: 0;
+            }}
+        </style>
+        <div class="rbox">
+            <h3>{rewards_title}</h3>
+            <div class="stars-num">{stars} ⭐</div>
+            <p class="stars-label">{stars_label}</p>
+            <div class="badges">🏅 🎯 ⭐ 🌟</div>
+            <p class="footer-text">{keep_learning}</p>
         </div>
-        """, unsafe_allow_html=True)
+        """, height=260)
 
     # ── Footer ─────────────────────────────────────────────────────────────────
     st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
