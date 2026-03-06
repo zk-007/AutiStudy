@@ -443,6 +443,16 @@ def apply_custom_styles():
             display: none;
         }
         
+        /* Make sidebar wider */
+        section[data-testid="stSidebar"] {
+            width: 280px !important;
+            min-width: 280px !important;
+        }
+        
+        section[data-testid="stSidebar"] > div {
+            width: 280px !important;
+        }
+        
         .block-container {
             padding-top: 2rem;
             padding-left: 2rem;
