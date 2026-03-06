@@ -5,85 +5,7 @@ from utils.language import t, is_urdu
 def render_dashboard():
     user = st.session_state.user
 
-    st.markdown("""
-    <style>
-    .stApp {
-        background: #EEF3FB;
-    }
-
-    section[data-testid="stSidebar"] {
-        background: #FFFFFF !important;
-        border-right: 1px solid #E2E8F0;
-    }
-
-    [data-testid="stSidebarContent"] {
-        background: #FFFFFF !important;
-        padding-top: 0.5rem;
-    }
-
-    .main .block-container {
-        padding-top: 2rem;
-        padding-left: 2rem;
-        padding-right: 2rem;
-        padding-bottom: 2rem;
-        max-width: 100%;
-    }
-
-    section[data-testid="stSidebar"] .stButton > button {
-        width: 100%;
-        border: none;
-        border-radius: 22px;
-        min-height: 58px;
-        font-size: 1rem;
-        font-weight: 600;
-        color: white;
-        background: linear-gradient(135deg, #2F6CF6 0%, #244FD1 100%);
-        box-shadow: none;
-        margin-bottom: 0.55rem;
-    }
-
-    section[data-testid="stSidebar"] .stButton > button:hover {
-        color: white;
-        background: linear-gradient(135deg, #3A78FF 0%, #2A58E0 100%);
-    }
-
-    .stButton > button {
-        border: none;
-        border-radius: 22px;
-        min-height: 54px;
-        font-size: 1rem;
-        font-weight: 600;
-        color: white;
-        background: linear-gradient(135deg, #2F6CF6 0%, #244FD1 100%);
-        box-shadow: none;
-    }
-
-    .stButton > button:hover {
-        color: white;
-        background: linear-gradient(135deg, #3A78FF 0%, #2A58E0 100%);
-    }
-
-    .dashboard-card-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        line-height: 1.25;
-        margin-bottom: 0.35rem;
-        white-space: normal;
-        word-break: break-word;
-        text-align: center;
-    }
-
-    .dashboard-card-subtitle {
-        font-size: 0.95rem;
-        opacity: 0.95;
-        line-height: 1.35;
-        white-space: normal;
-        word-break: break-word;
-        text-align: center;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
+    # RTL support for Urdu
     if is_urdu():
         st.markdown("""
         <style>
@@ -91,353 +13,258 @@ def render_dashboard():
         </style>
         """, unsafe_allow_html=True)
 
+    st.markdown("""
+    <style>
+    /* ── Sidebar base ── */
+    section[data-testid="stSidebar"] {
+        background: white !important;
+        width: 260px !important;
+        min-width: 260px !important;
+        padding: 0 !important;
+        transition: all 0.3s ease !important;
+    }
+
+    /* Sidebar inner content */
+    section[data-testid="stSidebar"] > div:first-child {
+        padding: 1.5rem 1rem !important;
+        background: white !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+    }
+
+    /* Collapse toggle arrow button — always visible */
+    button[data-testid="baseButton-headerNoPadding"],
+    [data-testid="collapsedControl"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 999999 !important;
+        color: #2563EB !important;
+    }
+
+    /* Main content area */
+    .main .block-container {
+        padding-top: 2rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 100% !important;
+    }
+
+    /* Hide streamlit default nav */
+    div[data-testid="stSidebarNav"] { display: none !important; }
+
+    /* Sidebar buttons */
+    section[data-testid="stSidebar"] .stButton > button {
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        border: none !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        padding: 0.65rem 1rem !important;
+        min-height: 44px !important;
+        margin-bottom: 0.4rem !important;
+        width: 100% !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+    }
+
+    section[data-testid="stSidebar"] .stButton > button:hover {
+        background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
+        transform: none !important;
+        box-shadow: 0 2px 8px rgba(37,99,235,0.3) !important;
+    }
+
+    /* Quick action cards */
+    .qa-card {
+        border-radius: 16px;
+        padding: 1.4rem 1rem;
+        text-align: center;
+        color: white;
+        margin-bottom: 0.75rem;
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .qa-icon { font-size: 2.6rem; margin-bottom: 0.4rem; }
+    .qa-title { font-weight: 700; font-size: 1.05rem; line-height: 1.3; }
+    .qa-sub   { font-size: 0.9rem; opacity: 0.9; }
+
+    /* Subject cards */
+    .subj-card {
+        background: #F8FAFC;
+        border-radius: 16px;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        border: 2px solid #E2E8F0;
+        margin-bottom: 0.75rem;
+    }
+    .subj-icon  { font-size: 3rem; margin-bottom: 0.4rem; }
+    .subj-title { color: #1E3A5F; font-weight: 700; font-size: 1.15rem; }
+    .subj-grade { color: #64748B; font-size: 0.95rem; }
+
+    /* Rewards card */
+    .rewards-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        text-align: center;
+    }
+    .rewards-title  { color: #1E3A5F; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.75rem; }
+    .rewards-stars  { font-size: 2.6rem; color: #F59E0B; font-weight: 800; line-height: 1; }
+    .rewards-label  { color: #64748B; font-size: 1rem; margin-top: 0.3rem; }
+    .rewards-badges { font-size: 2rem; margin-top: 1rem; letter-spacing: 0.3rem; }
+    .rewards-footer { color: #64748B; font-size: 0.9rem; margin-top: 0.75rem; }
+
+    /* Subjects section wrapper */
+    .subjects-wrapper {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .section-title { color: #1E3A5F; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ── SIDEBAR ──────────────────────────────────────────────
     with st.sidebar:
         first_letter = user.get("name", "S")[0].upper()
 
         st.markdown(f"""
-        <div style="
-            background: white;
-            border-radius: 24px;
-            padding: 1rem 0.4rem 0.7rem 0.4rem;
-            text-align: center;
-            margin-bottom: 1rem;
-        ">
-            <div style="
-                width: 88px;
-                height: 88px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #2F6CF6 0%, #244FD1 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin: 0 auto 1rem auto;
-                color: white;
-                font-size: 2.2rem;
-                font-weight: 700;
-            ">{first_letter}</div>
-
-            <div style="color: #1E3A5F; font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem;">
-                {user.get('name', 'Student')}
+        <div style="text-align:center; padding-bottom:1rem; border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
+            <div style="width:72px;height:72px;border-radius:50%;
+                background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
+                display:flex;align-items:center;justify-content:center;
+                margin:0 auto 0.75rem;color:white;font-size:1.8rem;font-weight:700;">
+                {first_letter}
             </div>
-
-            <div style="color: #2563EB; font-size: 0.95rem; margin-bottom: 1rem;">
-                {t('grade')} {user.get('grade', 4)}
-            </div>
-
-            <div style="
-                background: linear-gradient(135deg, #F7C53A 0%, #F2A40A 100%);
-                color: white;
-                border-radius: 22px;
-                padding: 0.9rem 1rem;
-                font-weight: 700;
-                font-size: 1rem;
-                text-align: center;
-                margin-bottom: 0.5rem;
-            ">
-                ⭐ {user.get('stars', 0)} {t('stars_earned')}
+            <div style="color:#1E3A5F;font-weight:700;font-size:1.1rem;">{user.get('name','Student')}</div>
+            <div style="color:#2563EB;font-size:0.95rem;">{t('grade')} {user.get('grade',4)}</div>
+            <div style="background:linear-gradient(135deg,#FCD34D 0%,#F59E0B 100%);
+                color:white;padding:0.4rem 1rem;border-radius:20px;
+                display:inline-block;font-weight:700;font-size:0.95rem;margin-top:0.75rem;">
+                ⭐ {user.get('stars',0)} {t('stars_earned')}
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button(f"🤖 {t('ai_tutor')}", key="nav_ai_tutor", use_container_width=True):
+        if st.button(f"🤖 {t('ai_tutor')}",          key="nav_ai_tutor",   use_container_width=True):
             st.session_state.navigate("ai_tutor")
-
-        if st.button(f"📝 {t('practice_quiz')}", key="nav_practice", use_container_width=True):
+        if st.button(f"📝 {t('practice_quiz')}",      key="nav_practice",   use_container_width=True):
+            st.info(t("coming_soon"))
+        if st.button(f"📊 {t('learning_analytics')}", key="nav_analytics",  use_container_width=True):
+            st.info(t("coming_soon"))
+        if st.button(f"🏆 {t('earn_rewards')}",       key="nav_rewards",    use_container_width=True):
+            st.info(t("coming_soon"))
+        if st.button(f"⚙️ Settings",                  key="nav_settings",   use_container_width=True):
             st.info(t("coming_soon"))
 
-        if st.button(f"📊 {t('learning_analytics')}", key="nav_analytics", use_container_width=True):
-            st.info(t("coming_soon"))
-
-        if st.button(f"🏆 {t('earn_rewards')}", key="nav_rewards", use_container_width=True):
-            st.info(t("coming_soon"))
-
-        if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
-            st.info(t("coming_soon"))
+        st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
 
         if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
             logout()
             st.session_state.navigate("landing")
 
+    # ── MAIN CONTENT ─────────────────────────────────────────
     st.markdown(f"""
-    <h1 style="
-        color: #1E3A5F;
-        font-weight: 800;
-        font-size: 3rem;
-        line-height: 1.1;
-        margin-bottom: 2rem;
-    ">
-        {t('welcome_back_name')}, {user.get('name', 'Student')}! 👋
+    <h1 style="color:#1E3A5F;font-weight:800;margin-bottom:1.5rem;">
+        {t('welcome_back_name')}, {user.get('name','Student')}! 👋
     </h1>
     """, unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <h2 style="
-        color: #1E3A5F;
-        font-weight: 800;
-        font-size: 2rem;
-        margin-bottom: 1rem;
-    ">
-        {t('quick_actions')}
-    </h2>
-    """, unsafe_allow_html=True)
+    # Quick Actions
+    st.markdown(f'<div class="section-title">{t("quick_actions")}</div>', unsafe_allow_html=True)
 
-    q1, q2, q3, q4 = st.columns(4, gap="large")
-    card_height = "230px"
+    qa_col1, qa_col2, qa_col3, qa_col4 = st.columns(4)
 
-    with q1:
-        st.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #67A7F8 0%, #4A86E8 100%);
-            border-radius: 20px;
-            height: {card_height};
-            padding: 1.6rem 1.2rem;
-            text-align: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 0.8rem;
-        ">
-            <div style="font-size: 3.2rem; margin-bottom: 0.8rem;">🤖</div>
-            <div class="dashboard-card-title">{t('chat_with_tutor')}</div>
-            <div class="dashboard-card-subtitle">{t('ask_any_question')}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button(t("start_chat"), key="quick_chat", use_container_width=True):
-            st.session_state.navigate("ai_tutor")
+    qa_items = [
+        (qa_col1, "#3B82F6",  "#60A5FA", "🤖", t("chat_with_tutor"), t("ask_any_question"), t("start_chat"),     "quick_chat",     "ai_tutor"),
+        (qa_col2, "#059669",  "#10B981", "📝", t("practice_quiz"),   t("test_knowledge"),  t("start_practice"), "quick_practice", None),
+        (qa_col3, "#7C3AED",  "#8B5CF6", "📊", t("learning_analytics"), t("track_progress"), t("view_progress"), "quick_analytics", None),
+        (qa_col4, "#D97706",  "#F59E0B", "🏆", t("earn_rewards"),    t("collect_badges"),  t("view_rewards"),   "quick_rewards",  None),
+    ]
 
-    with q2:
-        st.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #1FC48D 0%, #12A974 100%);
-            border-radius: 20px;
-            height: {card_height};
-            padding: 1.6rem 1.2rem;
-            text-align: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 0.8rem;
-        ">
-            <div style="font-size: 3.2rem; margin-bottom: 0.8rem;">📝</div>
-            <div class="dashboard-card-title">{t('practice_quiz')}</div>
-            <div class="dashboard-card-subtitle">{t('test_knowledge')}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button(t("start_practice"), key="quick_practice", use_container_width=True):
-            st.info(t("coming_soon"))
+    for col, c1, c2, icon, title, sub, btn_label, btn_key, nav_target in qa_items:
+        with col:
+            st.markdown(f"""
+            <div class="qa-card" style="background:linear-gradient(135deg,{c2} 0%,{c1} 100%);">
+                <div class="qa-icon">{icon}</div>
+                <div class="qa-title">{title}</div>
+                <div class="qa-sub">{sub}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button(btn_label, key=btn_key, use_container_width=True):
+                if nav_target:
+                    st.session_state.navigate(nav_target)
+                else:
+                    st.info(t("coming_soon"))
 
-    with q3:
-        st.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #9860F6 0%, #7B42E8 100%);
-            border-radius: 20px;
-            height: {card_height};
-            padding: 1.6rem 1.2rem;
-            text-align: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 0.8rem;
-        ">
-            <div style="font-size: 3.2rem; margin-bottom: 0.8rem;">📊</div>
-            <div class="dashboard-card-title">{t('learning_analytics')}</div>
-            <div class="dashboard-card-subtitle">{t('track_progress')}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button(t("view_progress"), key="quick_analytics", use_container_width=True):
-            st.info(t("coming_soon"))
+    st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
 
-    with q4:
-        st.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #F5A105 0%, #E58D00 100%);
-            border-radius: 20px;
-            height: {card_height};
-            padding: 1.6rem 1.2rem;
-            text-align: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 0.8rem;
-        ">
-            <div style="font-size: 3.2rem; margin-bottom: 0.8rem;">🏆</div>
-            <div class="dashboard-card-title">{t('earn_rewards')}</div>
-            <div class="dashboard-card-subtitle">{t('collect_badges')}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button(t("view_rewards"), key="quick_rewards", use_container_width=True):
-            st.info(t("coming_soon"))
+    # Your Subjects + Your Rewards
+    col_main, col_side = st.columns([2, 1])
 
-    st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
-
-    col_main, col_side = st.columns([2.2, 1], gap="large")
+    grade   = user.get("grade", 4)
+    GRADE_SUBJECTS = {
+        4: ["Maths", "General Science"],
+        5: ["Maths", "General Science"],
+        6: ["Maths", "General Science", "Computer"],
+        7: ["Maths", "General Science", "Computer"],
+    }
+    subjects = GRADE_SUBJECTS.get(grade, ["Maths", "General Science"])
+    subject_icons = {"Maths": "🔢", "General Science": "🔬", "Computer": "💻"}
+    subject_translations = {
+        "Maths":           t("maths"),
+        "General Science": t("general_science"),
+        "Computer":        t("computer"),
+    }
 
     with col_main:
         st.markdown(f"""
-        <div style="
-            background: white;
-            border-radius: 24px;
-            padding: 1.6rem;
-            min-height: 145px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-            margin-bottom: 1rem;
-        ">
-            <h3 style="
-                color: #1E3A5F;
-                font-weight: 800;
-                font-size: 1.9rem;
-                margin: 0;
-            ">
-                {t('your_subjects')}
-            </h3>
+        <div class="subjects-wrapper">
+            <div class="section-title">{t('your_subjects')}</div>
         </div>
         """, unsafe_allow_html=True)
 
-        grade = user.get("grade", 4)
-
-        GRADE_SUBJECTS = {
-            4: ["Maths", "General Science"],
-            5: ["Maths", "General Science"],
-            6: ["Maths", "General Science", "Computer"],
-            7: ["Maths", "General Science", "Computer"]
-        }
-        subjects = GRADE_SUBJECTS.get(grade, ["Maths", "General Science"])
-
-        subject_icons = {
-            "Maths": "🔢",
-            "General Science": "🔬",
-            "Computer": "💻"
-        }
-
-        subject_translations = {
-            "Maths": t("maths"),
-            "General Science": t("general_science"),
-            "Computer": t("computer")
-        }
-
-        sub_cols = st.columns(len(subjects), gap="large")
-
-        for col, subject in zip(sub_cols, subjects):
-            with col:
-                icon = subject_icons.get(subject, "📚")
-                translated_subject = subject_translations.get(subject, subject)
-
+        sub_cols = st.columns(len(subjects))
+        for scol, subject in zip(sub_cols, subjects):
+            with scol:
+                icon             = subject_icons.get(subject, "📚")
+                translated_subj  = subject_translations.get(subject, subject)
                 st.markdown(f"""
-                <div style="
-                    background: #F8FAFC;
-                    border-radius: 20px;
-                    padding: 1.7rem 1rem;
-                    min-height: 285px;
-                    text-align: center;
-                    border: 1.5px solid #E2E8F0;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    margin-bottom: 0.8rem;
-                ">
-                    <div style="font-size: 4rem; margin-bottom: 0.9rem;">{icon}</div>
-                    <div style="
-                        color: #1E3A5F;
-                        font-weight: 800;
-                        font-size: 1.3rem;
-                        line-height: 1.25;
-                        margin-bottom: 0.35rem;
-                        text-align: center;
-                    ">
-                        {translated_subject}
-                    </div>
-                    <div style="
-                        color: #64748B;
-                        font-size: 1rem;
-                        line-height: 1.3;
-                    ">
-                        {t('grade')} {grade}
-                    </div>
+                <div class="subj-card">
+                    <div class="subj-icon">{icon}</div>
+                    <div class="subj-title">{translated_subj}</div>
+                    <div class="subj-grade">{t('grade')} {grade}</div>
                 </div>
                 """, unsafe_allow_html=True)
-
-                if st.button(f"{t('study')} {translated_subject}", key=f"study_{subject}", use_container_width=True):
-                    st.session_state.selected_grade = grade
+                if st.button(f"{t('study')} {translated_subj}", key=f"study_{subject}", use_container_width=True):
+                    st.session_state.selected_grade   = grade
                     st.session_state.selected_subject = subject
                     st.session_state.navigate("chat")
 
     with col_side:
         stars = user.get("stars", 0)
-
         st.markdown(f"""
-        <div style="
-            background: white;
-            border-radius: 24px;
-            padding: 1.8rem 1.6rem;
-            min-height: 465px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-            text-align: center;
-        ">
-            <h3 style="
-                color: #1E3A5F;
-                font-weight: 800;
-                font-size: 1.8rem;
-                margin-top: 0;
-                margin-bottom: 1.8rem;
-                text-align: left;
-            ">
-                {t('your_rewards')}
-            </h3>
-
-            <div style="
-                font-size: 3.8rem;
-                font-weight: 800;
-                color: #F59E0B;
-                line-height: 1;
-                margin-bottom: 0.5rem;
-            ">
-                {stars} ⭐
-            </div>
-
-            <div style="
-                color: #64748B;
-                font-size: 1.05rem;
-                line-height: 1.4;
-                margin-bottom: 1.4rem;
-            ">
-                {t('stars_earned')}
-            </div>
-
-            <div style="font-size: 2.8rem; margin-bottom: 1.4rem;">
-                🏅 🎯 ⭐ 🌟
-            </div>
-
-            <div style="
-                color: #64748B;
-                font-size: 1rem;
-                line-height: 1.7;
-            ">
-                {t('keep_learning')}
-            </div>
+        <div class="rewards-card">
+            <div class="rewards-title">{t('your_rewards')}</div>
+            <div class="rewards-stars">{stars} ⭐</div>
+            <div class="rewards-label">{t('stars_earned')}</div>
+            <div class="rewards-badges">🏅 🎯 ⭐ 🌟</div>
+            <div class="rewards-footer">{t('keep_learning')}</div>
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
+    # Footer
+    st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="
-        text-align: center;
-        padding: 1.2rem 0 0.5rem 0;
-        border-top: 1px solid #E2E8F0;
-        color: #94A3B8;
-        font-size: 1rem;
-    ">
+    <div style="text-align:center;padding:1rem;border-top:1px solid #E2E8F0;color:#94A3B8;font-size:0.95rem;">
         By using our services, you agree to our
-        <a href="#" style="color: #2563EB;">Privacy Policy</a>
-        and
-        <a href="#" style="color: #2563EB;">Terms of Service</a>.
+        <a href="#" style="color:#2563EB;">Privacy Policy</a> and
+        <a href="#" style="color:#2563EB;">Terms of Service</a>.
     </div>
     """, unsafe_allow_html=True)
