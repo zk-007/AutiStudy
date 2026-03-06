@@ -124,28 +124,28 @@ def render_dashboard():
         grade_num    = user.get("grade", 4)
         stars        = user.get("stars", 0)
 
-        # Avatar + name + grade
+        # Avatar + name + grade (smaller for sidebar fit)
         st.markdown(f"""
-        <div style="text-align:center; padding-bottom:1rem;
-             border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
-            <div style="width:72px;height:72px;border-radius:50%;
+        <div style="text-align:center; padding-bottom:0.8rem;
+             border-bottom:1px solid #E2E8F0; margin-bottom:0.8rem;">
+            <div style="width:56px;height:56px;border-radius:50%;
                 background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
                 display:flex;align-items:center;justify-content:center;
-                margin:0 auto 0.6rem;color:white;font-size:1.8rem;font-weight:700;">
+                margin:0 auto 0.5rem;color:white;font-size:1.4rem;font-weight:700;">
                 {first_letter}
             </div>
-            <div style="color:#1E3A5F;font-weight:700;font-size:1.1rem;">{name}</div>
-            <div style="color:#2563EB;font-size:0.95rem;">{t('grade')} {grade_num}</div>
+            <div style="color:#1E3A5F;font-weight:700;font-size:1rem;">{name}</div>
+            <div style="color:#2563EB;font-size:0.85rem;">{t('grade')} {grade_num}</div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Stars badge — separate call avoids flex/emoji stripping
+        # Stars badge (smaller)
         st.markdown(f"""
-        <div style="text-align:center;margin-bottom:1.2rem;">
+        <div style="text-align:center;margin-bottom:1rem;">
             <span style="background:linear-gradient(135deg,#FCD34D 0%,#F59E0B 100%);
-                color:white;padding:0.4rem 1.2rem;border-radius:20px;
-                font-weight:700;font-size:0.95rem;display:inline-block;">
-                ⭐ {stars} {t('stars_earned')}
+                color:white;padding:0.35rem 0.8rem;border-radius:16px;
+                font-weight:700;font-size:0.85rem;display:inline-block;">
+                ⭐ {stars} Stars
             </span>
         </div>
         """, unsafe_allow_html=True)

@@ -439,18 +439,27 @@ def apply_custom_styles():
             font-size: 1.5rem;
         }
         
+        /* Hide default page nav only */
         div[data-testid="stSidebarNav"] {
             display: none;
         }
         
-        /* Safe sidebar styling - no hardcoded width */
+        /* Sidebar base */
         section[data-testid="stSidebar"] {
             background-color: #f8f9fc;
         }
         
         section[data-testid="stSidebar"] > div {
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
+            padding-left: 0.7rem !important;
+            padding-right: 0.7rem !important;
+            padding-top: 1rem !important;
+        }
+        
+        /* Sidebar text sizing */
+        section[data-testid="stSidebar"] p,
+        section[data-testid="stSidebar"] span,
+        section[data-testid="stSidebar"] div {
+            font-size: 1rem !important;
         }
         
         /* Sidebar buttons */
@@ -460,13 +469,31 @@ def apply_custom_styles():
         
         section[data-testid="stSidebar"] .stButton > button {
             width: 100% !important;
-            border-radius: 14px !important;
+            min-width: 0 !important;
+            padding: 0.8rem 0.9rem !important;
+            border-radius: 16px !important;
+            font-size: 1rem !important;
+            line-height: 1.2 !important;
+            white-space: normal !important;
+            height: auto !important;
         }
         
+        /* Make button inner content wrap properly */
+        section[data-testid="stSidebar"] .stButton > button p,
+        section[data-testid="stSidebar"] .stButton > button span,
+        section[data-testid="stSidebar"] .stButton > button div {
+            font-size: 1rem !important;
+            white-space: normal !important;
+            overflow-wrap: anywhere !important;
+            text-align: center !important;
+            justify-content: center !important;
+        }
+        
+        /* Main page */
         .block-container {
             padding-top: 2rem;
-            padding-left: 2rem;
-            padding-right: 2rem;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
         }
         
         header[data-testid="stHeader"] {
