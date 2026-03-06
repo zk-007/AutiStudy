@@ -922,6 +922,58 @@ def compute_relevance_score(hits: List[Dict]) -> float:
     return min(1.0, avg_score)
 
 
+# Subject-specific keywords to help detect off-topic questions
+SUBJECT_KEYWORDS = {
+    "Maths": [
+        "add", "subtract", "multiply", "divide", "number", "count", "sum", "total",
+        "fraction", "decimal", "percent", "equation", "solve", "calculate", "math",
+        "plus", "minus", "times", "equal", "greater", "less", "angle", "shape",
+        "triangle", "square", "circle", "rectangle", "area", "perimeter", "volume",
+        "geometry", "algebra", "arithmetic", "digit", "place value", "even", "odd",
+        "prime", "factor", "multiple", "ratio", "proportion", "average", "mean",
+        "graph", "chart", "table", "pattern", "sequence", "formula", "measurement",
+        "meter", "kilometer", "gram", "kilogram", "liter", "time", "clock", "money"
+    ],
+    "General Science": [
+        "animal", "plant", "cell", "body", "organ", "blood", "heart", "brain",
+        "water", "air", "earth", "sun", "moon", "star", "planet", "weather",
+        "energy", "force", "gravity", "magnet", "electric", "light", "sound",
+        "heat", "temperature", "solid", "liquid", "gas", "matter", "atom",
+        "molecule", "chemical", "reaction", "food", "nutrition", "health",
+        "disease", "medicine", "environment", "pollution", "ecosystem", "habitat",
+        "photosynthesis", "respiration", "digestion", "skeleton", "muscle", "nerve",
+        "metal", "brass", "iron", "copper", "zinc", "rock", "mineral", "soil"
+    ],
+    "Computer": [
+        "computer", "keyboard", "mouse", "monitor", "screen", "cpu", "ram",
+        "memory", "storage", "hard drive", "software", "hardware", "program",
+        "code", "coding", "internet", "website", "browser", "email", "file",
+        "folder", "save", "delete", "copy", "paste", "print", "scan", "input",
+        "output", "process", "data", "information", "digital", "technology",
+        "network", "wifi", "bluetooth", "usb", "application", "app", "operating",
+        "windows", "icon", "desktop", "laptop", "tablet", "smartphone"
+    ]
+}
+
+
+def is_query_related_to_subject(query: str, subject: str) -> bool:
+    """
+    Check if the query contains keywords related to the subject.
+    Returns True if query seems related, False if it seems off-topic.
+    """
+    query_lower = query.lower()
+    keywords = SUBJECT_KEYWORDS.get(subject, [])
+    
+    # Check if any subject keyword appears in the query
+    for keyword in keywords:
+        if keyword in query_lower:
+            return True
+    
+    # If query doesn't contain any subject keywords, it might be off-topic
+    # But we'll still let RAG decide with stricter threshold
+    return False
+
+
 def query_knowledge_base(
     query: str,
     grade: int,
@@ -971,12 +1023,19 @@ def query_knowledge_base(
         result = retrieve_hybrid_science(query, top_k=n_results)
         hits = result.get("hits", [])
     
-    # Compute relevance score
+    # Check if query seems related to the subject using keywords
+    query_seems_related = is_query_related_to_subject(query, subject)
+    
+    # Compute relevance score from retrieved hits
     relevance_score = compute_relevance_score(hits)
     
-    # Threshold for considering content "relevant" (from textbook)
-    # Below this, we consider the topic NOT in the textbook
-    RELEVANCE_THRESHOLD = 0.25
+    # Use different thresholds based on whether query seems related
+    # If query doesn't seem related to subject, use MUCH stricter threshold
+    if query_seems_related:
+        RELEVANCE_THRESHOLD = 0.35  # Normal threshold for on-topic queries
+    else:
+        RELEVANCE_THRESHOLD = 0.55  # Strict threshold for potentially off-topic queries
+    
     is_relevant = relevance_score >= RELEVANCE_THRESHOLD and len(hits) > 0
     
     # Format results
@@ -988,12 +1047,14 @@ def query_knowledge_base(
             "score": h.get("rerank_score") or h.get("dense_sim") or h.get("hybrid_score") or h.get("rrf") or h.get("score", 0)
         })
     
-    print(f"[RAG] Retrieved {len(documents)} documents | Relevance: {relevance_score:.3f} | Is relevant: {is_relevant}")
+    print(f"[RAG] Query related to {subject}: {query_seems_related} | Relevance: {relevance_score:.3f} | Threshold: {RELEVANCE_THRESHOLD} | Is relevant: {is_relevant}")
     
     return {
         "documents": documents,
         "relevance_score": relevance_score,
-        "is_relevant": is_relevant
+        "is_relevant": is_relevant,
+        "subject": subject,
+        "query_related_to_subject": query_seems_related
     }
 
 

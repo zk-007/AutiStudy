@@ -54,6 +54,7 @@ def generate_response(
     
     context = ""
     is_from_textbook = True
+    query_related_to_subject = True
     
     if use_rag:
         try:
@@ -61,12 +62,13 @@ def generate_response(
             documents = rag_result.get("documents", [])
             is_from_textbook = rag_result.get("is_relevant", False)
             relevance_score = rag_result.get("relevance_score", 0)
+            query_related_to_subject = rag_result.get("query_related_to_subject", True)
             
             if documents and is_from_textbook:
                 context = format_context_for_prompt(documents)
                 print(f"Retrieved {len(documents)} documents for query: {user_message[:50]}...")
             else:
-                print(f"Topic NOT in textbook (relevance: {relevance_score:.3f}): {user_message[:50]}...")
+                print(f"Topic NOT in textbook (relevance: {relevance_score:.3f}, related: {query_related_to_subject}): {user_message[:50]}...")
         except Exception as e:
             print(f"RAG retrieval error: {e}")
             context = ""
@@ -77,11 +79,22 @@ def generate_response(
     if context and is_from_textbook:
         system_prompt += f"\n\nRelevant learning material:\n{context}"
     elif not is_from_textbook:
-        system_prompt += f"""
+        if not query_related_to_subject:
+            # Question is about a different subject entirely
+            system_prompt += f"""
 
-IMPORTANT: This question is NOT covered in the student's textbook. Please:
-1. First, kindly inform the student that this topic is not in their Grade {grade} {subject} textbook
-2. Then, if possible, provide a brief, simple explanation
+IMPORTANT: This question does NOT seem to be about {subject}. Please:
+1. Tell the student: "This question doesn't seem to be about {subject}."
+2. Suggest they select the correct subject (like Science, Computer, etc.)
+3. Give a VERY brief explanation (2-3 sentences only) just to help
+4. Encourage them to ask {subject} questions instead
+"""
+        else:
+            system_prompt += f"""
+
+IMPORTANT: This topic is NOT covered in the student's Grade {grade} {subject} textbook. Please:
+1. First, kindly inform the student that this topic is not in their textbook
+2. Then, provide a brief, simple explanation
 3. Encourage the student to ask questions from their textbook topics
 """
     
