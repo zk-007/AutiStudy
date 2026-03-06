@@ -16,40 +16,6 @@ def render_dashboard():
     # ── Global styles ──────────────────────────────────────────────────────────
     st.markdown("""
     <style>
-    /* Sidebar expanded state */
-    section[data-testid="stSidebar"] {
-        background: white !important;
-        min-width: 260px !important;
-        width: 260px !important;
-    }
-    section[data-testid="stSidebar"] > div:first-child {
-        background: white !important;
-        padding: 1.5rem 1rem !important;
-    }
-
-    /* Arrow button - ALWAYS visible and fixed position */
-    [data-testid="collapsedControl"] {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: fixed !important;
-        top: 10px !important;
-        left: 10px !important;
-        z-index: 9999999 !important;
-        background: white !important;
-        border-radius: 8px !important;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.2) !important;
-        width: 32px !important;
-        height: 32px !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    [data-testid="collapsedControl"] svg {
-        width: 20px !important;
-        height: 20px !important;
-    }
-
     /* Hide default streamlit nav */
     div[data-testid="stSidebarNav"] { display: none !important; }
 

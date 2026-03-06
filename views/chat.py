@@ -64,34 +64,9 @@ def apply_global_styles():
             padding-bottom: 2rem !important;
         }}
 
-        /* Arrow button - ALWAYS visible and fixed position */
-        [data-testid="collapsedControl"] {{
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            position: fixed !important;
-            top: 10px !important;
-            left: 10px !important;
-            z-index: 9999999 !important;
-            background: white !important;
-            border-radius: 8px !important;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.2) !important;
-            width: 32px !important;
-            height: 32px !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }}
-        
-        [data-testid="collapsedControl"] svg {{
-            width: 20px !important;
-            height: 20px !important;
-        }}
-
+        /* Sidebar basic styling - let Streamlit handle collapse/expand */
         section[data-testid="stSidebar"] {{
-            min-width: 290px !important;
-            max-width: 320px !important;
             background: #FFFFFF !important;
-            border-right: 1px solid #E2E8F0 !important;
         }}
 
         section[data-testid="stSidebar"] .block-container {{
