@@ -19,7 +19,6 @@ inject_session_storage_script()
 # Try to restore session from persistent storage
 if not st.session_state.get("authenticated", False):
     if restore_session():
-        # Session restored successfully
         pass
 
 if "page" not in st.session_state:
@@ -27,7 +26,6 @@ if "page" not in st.session_state:
 
 def navigate_to(page):
     st.session_state.page = page
-    # Save current page to session for persistence
     if st.session_state.get("session_token"):
         update_session_page(st.session_state.session_token, page)
     st.rerun()
