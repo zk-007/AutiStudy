@@ -29,33 +29,37 @@ def render_dashboard():
         display: none !important;
     }
 
-    /* Main layout */
+    /* Main layout - no max-width stretch */
     .main .block-container {
-        padding-top: 1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        max-width: 100%;
+        padding-top: 1.2rem;
+        padding-left: 1.2rem;
+        padding-right: 1.2rem;
     }
 
-    /* Custom sidebar panel */
-    .custom-sidebar {
+    /* Profile card in sidebar */
+    .custom-sidebar-card {
         background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 100%);
-        border-radius: 16px;
-        padding: 1.5rem 1rem;
+        border-radius: 20px;
+        padding: 1.25rem 1rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        min-height: calc(100vh - 100px);
         border: 1px solid #E2E8F0;
+        margin-top: 0.4rem;
+        margin-bottom: 1rem;
     }
 
-    /* Toggle button */
-    .toggle-btn {
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 12px;
-        font-size: 1.2rem;
-        cursor: pointer;
+    /* Main page headings */
+    .main-heading {
+        color: #1E3A5F;
+        font-weight: 800;
+        font-size: 2.2rem;
+        margin-top: 0.5rem;
+        margin-bottom: 1.4rem;
+    }
+
+    .section-heading {
+        color: #1E3A5F;
+        font-weight: 700;
+        font-size: 1.4rem;
         margin-bottom: 1rem;
     }
 
@@ -102,29 +106,23 @@ def render_dashboard():
         margin-bottom: 1rem;
     }
 
-    /* Nav buttons in custom sidebar */
-    .nav-btn {
-        display: block;
-        width: 100%;
-        padding: 0.7rem 1rem;
-        margin-bottom: 0.5rem;
-        border-radius: 10px;
-        background: white;
-        border: 1px solid #e6e6e6;
-        text-align: left;
-        font-weight: 600;
-        color: #1E3A5F;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    .nav-btn:hover {
-        background: #EFF6FF;
-        border-color: #2563EB;
-    }
-
     /* Fix overflow */
     html, body {
         overflow-x: hidden;
+    }
+
+    /* Toggle button styling */
+    .toggle-button-container button {
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-size: 1.3rem !important;
+        min-height: 42px !important;
+        padding: 0.4rem 0.8rem !important;
+    }
+    .toggle-button-container button:hover {
+        background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
     }
 
     </style>
@@ -136,56 +134,54 @@ def render_dashboard():
 
     # ── LAYOUT ─────────────────────────────────────────────────────────────────
     
-    # Toggle button row
-    toggle_col, _ = st.columns([1, 11])
-    with toggle_col:
-        if st.button("☰", key="toggle_sidebar", help="Toggle sidebar", use_container_width=True):
+    # Toggle button row - narrow column to keep it in corner
+    top_left, top_rest = st.columns([0.6, 9.4])
+    with top_left:
+        st.markdown('<div class="toggle-button-container">', unsafe_allow_html=True)
+        if st.button("☰", key="toggle_sidebar", help="Toggle sidebar"):
             toggle_sidebar()
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # Main layout with or without sidebar
     if st.session_state.sidebar_visible:
-        sidebar_col, main_col = st.columns([1, 3.5])
+        sidebar_col, main_col = st.columns([1.05, 3.15], gap="large")
     else:
         sidebar_col, main_col = None, st.container()
 
     # ── CUSTOM SIDEBAR ─────────────────────────────────────────────────────────
     if st.session_state.sidebar_visible and sidebar_col is not None:
         with sidebar_col:
-            st.markdown('<div class="custom-sidebar">', unsafe_allow_html=True)
-            
             first_letter = user.get("name", "S")[0].upper()
             name = user.get("name", "Student")
             grade_num = user.get("grade", 4)
             stars = user.get("stars", 0)
 
-            # Avatar + name + grade
+            # Profile card - only this part is wrapped in HTML
             st.markdown(f"""
-            <div style="text-align:center; padding-bottom:1rem;
-                 border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
-                <div style="width:72px;height:72px;border-radius:50%;
-                    background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
-                    display:flex;align-items:center;justify-content:center;
-                    margin:0 auto 0.6rem;color:white;font-size:1.8rem;font-weight:700;">
-                    {first_letter}
+            <div class="custom-sidebar-card">
+                <div style="text-align:center; padding-bottom:1rem;
+                     border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
+                    <div style="width:72px;height:72px;border-radius:50%;
+                        background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
+                        display:flex;align-items:center;justify-content:center;
+                        margin:0 auto 0.6rem;color:white;font-size:1.8rem;font-weight:700;">
+                        {first_letter}
+                    </div>
+                    <div style="color:#1E3A5F;font-weight:700;font-size:1.1rem;">{name}</div>
+                    <div style="color:#2563EB;font-size:0.95rem;">{t('grade')} {grade_num}</div>
                 </div>
-                <div style="color:#1E3A5F;font-weight:700;font-size:1.1rem;">{name}</div>
-                <div style="color:#2563EB;font-size:0.95rem;">{t('grade')} {grade_num}</div>
+                <div style="text-align:center;">
+                    <span style="background:linear-gradient(135deg,#FCD34D 0%,#F59E0B 100%);
+                        color:white;padding:0.4rem 1.2rem;border-radius:20px;
+                        font-weight:700;font-size:0.95rem;display:inline-block;">
+                        ⭐ {stars} {t('stars_earned')}
+                    </span>
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
-            # Stars badge
-            st.markdown(f"""
-            <div style="text-align:center;margin-bottom:1.2rem;">
-                <span style="background:linear-gradient(135deg,#FCD34D 0%,#F59E0B 100%);
-                    color:white;padding:0.4rem 1.2rem;border-radius:20px;
-                    font-weight:700;font-size:0.95rem;display:inline-block;">
-                    ⭐ {stars} {t('stars_earned')}
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
-
-            # Nav buttons
+            # Nav buttons - NOT wrapped in HTML div
             if st.button(f"🤖 {t('ai_tutor')}", key="nav_ai_tutor", use_container_width=True):
                 st.session_state.navigate("ai_tutor")
             if st.button(f"📝 {t('practice_quiz')}", key="nav_practice", use_container_width=True):
@@ -197,23 +193,17 @@ def render_dashboard():
             if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
                 st.info(t("coming_soon"))
 
-            st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
 
             if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
                 logout()
                 st.session_state.navigate("landing")
 
-            st.markdown('</div>', unsafe_allow_html=True)
-
     # ── MAIN CONTENT ───────────────────────────────────────────────────────────
     with main_col:
-        # Welcome heading
-        st.markdown(f"""
-        <h1 style="color:#1E3A5F;font-weight:800;margin-bottom:1.5rem;">
-            {t('welcome_back_name')}, {user.get('name','Student')}! 👋
-        </h1>
-        <h3 style="color:#1E3A5F;font-weight:700;margin-bottom:1rem;">{t('quick_actions')}</h3>
-        """, unsafe_allow_html=True)
+        # Welcome heading - using classes
+        st.markdown(f'<div class="main-heading">{t("welcome_back_name")}, {user.get("name","Student")}! 👋</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="section-heading">{t("quick_actions")}</div>', unsafe_allow_html=True)
 
         # ── Quick Actions ──────────────────────────────────────────────────────
         col1, col2, col3, col4 = st.columns(4)
@@ -314,17 +304,17 @@ def render_dashboard():
             keep_learning = t('keep_learning')
 
             st.markdown(f"""
-            <div class="dashboard-card" style="text-align: center; min-height: 380px;">
+            <div class="dashboard-card" style="text-align: center; min-height: 300px;">
                 <h3 style="color:#1E3A5F;font-weight:700;margin-bottom:1.5rem;text-align:left;">{rewards_title}</h3>
                 <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:0.4rem;">
-                    <span style="font-size:4rem;color:#F59E0B;font-weight:800;">{stars}</span>
-                    <span style="font-size:3.5rem;">⭐</span>
+                    <span style="font-size:3.5rem;color:#F59E0B;font-weight:800;">{stars}</span>
+                    <span style="font-size:3rem;">⭐</span>
                 </div>
-                <p style="color:#64748B;font-size:1.2rem;margin:0.3rem 0 2rem 0;">{stars_label}</p>
-                <div style="display:flex;justify-content:center;gap:1.2rem;margin-bottom:2rem;font-size:2.8rem;">
+                <p style="color:#64748B;font-size:1.1rem;margin:0.3rem 0 1.5rem 0;">{stars_label}</p>
+                <div style="display:flex;justify-content:center;gap:1rem;margin-bottom:1.5rem;font-size:2.4rem;">
                     <span>🏅</span><span>🎯</span><span>⭐</span><span>🌟</span>
                 </div>
-                <p style="color:#64748B;font-size:1.15rem;">{keep_learning}</p>
+                <p style="color:#64748B;font-size:1rem;">{keep_learning}</p>
             </div>
             """, unsafe_allow_html=True)
 
