@@ -144,26 +144,52 @@ def generate_response(
         )
 
     context = ""
+    is_from_textbook = True
+    
     if use_rag:
         try:
-            documents = query_knowledge_base(user_message, grade, subject)
-            if documents:
+            rag_result = query_knowledge_base(user_message, grade, subject)
+            documents = rag_result.get("documents", [])
+            is_from_textbook = rag_result.get("is_relevant", False)
+            relevance_score = rag_result.get("relevance_score", 0)
+            
+            if documents and is_from_textbook:
                 context = format_context_for_prompt(documents)
                 print(f"Retrieved {len(documents)} documents for query: {user_message[:50]}...")
             else:
-                print(f"No documents retrieved for: {user_message[:50]}...")
+                print(f"Topic NOT in textbook (relevance: {relevance_score:.3f}): {user_message[:50]}...")
         except Exception as e:
             print(f"RAG retrieval error: {e}")
             context = ""
+            is_from_textbook = False
 
     # Get language-specific system prompt
     system_prompt = get_system_prompt(language).format(grade=grade, subject=subject)
 
-    if context:
+    # Add context or not-in-textbook instruction
+    if context and is_from_textbook:
         if language == "ur":
             system_prompt += f"\n\nمتعلقہ تعلیمی مواد:\n{context}"
         else:
             system_prompt += f"\n\nRelevant learning material:\n{context}"
+    elif not is_from_textbook:
+        # Instruct the LLM to inform the user this topic isn't in their textbook
+        if language == "ur":
+            system_prompt += """
+
+اہم: یہ سوال طالب علم کی نصابی کتاب میں نہیں ہے۔ براہ کرم:
+1. پہلے طالب علم کو بتائیں کہ یہ موضوع ان کی جماعت کی نصابی کتاب میں نہیں ہے
+2. پھر اگر ممکن ہو تو ایک مختصر، آسان وضاحت دیں
+3. طالب علم کو یاد دلائیں کہ وہ اپنی نصابی کتاب سے متعلق سوالات پوچھیں
+"""
+        else:
+            system_prompt += """
+
+IMPORTANT: This question is NOT covered in the student's textbook. Please:
+1. First, kindly inform the student that this topic is not in their Grade {grade} {subject} textbook
+2. Then, if possible, provide a brief, simple explanation
+3. Encourage the student to ask questions from their textbook topics
+""".format(grade=grade, subject=subject)
 
     messages = [{"role": "system", "content": system_prompt}]
 

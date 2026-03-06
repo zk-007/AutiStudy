@@ -53,22 +53,37 @@ def generate_response(
         return "I'm sorry, but I'm not properly configured yet. Please ask your teacher to set up the API key."
     
     context = ""
+    is_from_textbook = True
+    
     if use_rag:
         try:
-            documents = query_knowledge_base(user_message, grade, subject)
-            if documents:
+            rag_result = query_knowledge_base(user_message, grade, subject)
+            documents = rag_result.get("documents", [])
+            is_from_textbook = rag_result.get("is_relevant", False)
+            relevance_score = rag_result.get("relevance_score", 0)
+            
+            if documents and is_from_textbook:
                 context = format_context_for_prompt(documents)
                 print(f"Retrieved {len(documents)} documents for query: {user_message[:50]}...")
             else:
-                print(f"No documents retrieved for: {user_message[:50]}...")
+                print(f"Topic NOT in textbook (relevance: {relevance_score:.3f}): {user_message[:50]}...")
         except Exception as e:
             print(f"RAG retrieval error: {e}")
             context = ""
+            is_from_textbook = False
     
     system_prompt = SYSTEM_PROMPT.format(grade=grade, subject=subject)
     
-    if context:
+    if context and is_from_textbook:
         system_prompt += f"\n\nRelevant learning material:\n{context}"
+    elif not is_from_textbook:
+        system_prompt += f"""
+
+IMPORTANT: This question is NOT covered in the student's textbook. Please:
+1. First, kindly inform the student that this topic is not in their Grade {grade} {subject} textbook
+2. Then, if possible, provide a brief, simple explanation
+3. Encourage the student to ask questions from their textbook topics
+"""
     
     messages = [{"role": "system", "content": system_prompt}]
     

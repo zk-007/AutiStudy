@@ -893,15 +893,50 @@ def retrieve_hybrid_science(query: str, top_k: int = 8, dense_k: int = 40, bm25_
 # MAIN QUERY FUNCTION (Routes to subject-specific pipeline)
 # ============================================================
 
+def compute_relevance_score(hits: List[Dict]) -> float:
+    """
+    Compute overall relevance score from retrieved hits.
+    Returns a score between 0.0 and 1.0.
+    """
+    if not hits:
+        return 0.0
+    
+    scores = []
+    for h in hits:
+        # Try different score fields
+        score = h.get("rerank_score") or h.get("dense_sim") or h.get("hybrid_score") or h.get("rrf") or h.get("score", 0)
+        if score:
+            scores.append(float(score))
+    
+    if not scores:
+        return 0.0
+    
+    # Use average of top 3 scores
+    top_scores = sorted(scores, reverse=True)[:3]
+    avg_score = sum(top_scores) / len(top_scores)
+    
+    # Normalize to 0-1 range (rerank scores can be negative)
+    # Typical good rerank scores are > 0.5, poor are < 0
+    if avg_score < 0:
+        return max(0.0, 0.3 + avg_score * 0.1)  # Map negative to low positive
+    return min(1.0, avg_score)
+
+
 def query_knowledge_base(
     query: str,
     grade: int,
     subject: str,
     n_results: int = 6,
     use_rat: bool = True
-) -> List[Dict]:
+) -> Dict:
     """
     Main query function that routes to subject-specific retrieval pipeline.
+    
+    Returns:
+        Dict with keys:
+        - documents: List of retrieved documents
+        - relevance_score: Float 0-1 indicating how relevant the results are
+        - is_relevant: Boolean indicating if content is from the textbook
     
     Pipelines:
     - Maths: RAT + Hybrid (65% Dense + 35% BM25) + CrossEncoder Reranking
@@ -936,16 +971,30 @@ def query_knowledge_base(
         result = retrieve_hybrid_science(query, top_k=n_results)
         hits = result.get("hits", [])
     
+    # Compute relevance score
+    relevance_score = compute_relevance_score(hits)
+    
+    # Threshold for considering content "relevant" (from textbook)
+    # Below this, we consider the topic NOT in the textbook
+    RELEVANCE_THRESHOLD = 0.25
+    is_relevant = relevance_score >= RELEVANCE_THRESHOLD and len(hits) > 0
+    
     # Format results
     documents = []
     for h in hits:
         documents.append({
             "content": h.get("text", ""),
-            "metadata": h.get("meta", {})
+            "metadata": h.get("meta", {}),
+            "score": h.get("rerank_score") or h.get("dense_sim") or h.get("hybrid_score") or h.get("rrf") or h.get("score", 0)
         })
     
-    print(f"[RAG] Retrieved {len(documents)} documents")
-    return documents
+    print(f"[RAG] Retrieved {len(documents)} documents | Relevance: {relevance_score:.3f} | Is relevant: {is_relevant}")
+    
+    return {
+        "documents": documents,
+        "relevance_score": relevance_score,
+        "is_relevant": is_relevant
+    }
 
 
 def format_context_for_prompt(documents: List[Dict]) -> str:
