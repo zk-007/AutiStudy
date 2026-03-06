@@ -5,48 +5,42 @@ from utils.language import t, is_urdu
 def render_dashboard():
     user = st.session_state.user
     
-    # Ensure sidebar is visible with collapse arrow
+    # Force sidebar to be expanded and visible
     st.markdown("""
     <style>
-    /* Ensure sidebar is visible */
-    [data-testid="stSidebar"] {
+    /* Force sidebar to be expanded */
+    section[data-testid="stSidebar"] {
+        width: 280px !important;
+        min-width: 280px !important;
+        max-width: 280px !important;
+        transform: translateX(0) !important;
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
-        min-width: 250px !important;
+    }
+    
+    section[data-testid="stSidebar"] > div {
+        width: 280px !important;
+        min-width: 280px !important;
     }
     
     [data-testid="stSidebarContent"] {
         display: block !important;
         visibility: visible !important;
+        width: 100% !important;
     }
     
-    /* Sidebar collapse/expand control arrow */
+    /* Ensure main content adjusts */
+    .main .block-container {
+        margin-left: 0 !important;
+        max-width: calc(100% - 20px) !important;
+    }
+    
+    /* Sidebar collapse/expand arrow */
     [data-testid="collapsedControl"] {
         display: flex !important;
         visibility: visible !important;
-        opacity: 1 !important;
-        position: fixed !important;
-        left: 250px !important;
-        top: 50% !important;
         z-index: 999999 !important;
-    }
-    
-    /* When sidebar is collapsed */
-    [data-testid="stSidebar"][aria-expanded="false"] ~ [data-testid="collapsedControl"] {
-        left: 0 !important;
-    }
-    
-    /* Sidebar toggle button */
-    button[data-testid="baseButton-headerNoPadding"],
-    [data-testid="collapsedControl"] button {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        background: #2563EB !important;
-        color: white !important;
-        border-radius: 0 8px 8px 0 !important;
-        padding: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
