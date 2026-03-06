@@ -282,71 +282,83 @@ def render_dashboard():
             .rbox {{
                 background: white;
                 border-radius: 20px;
-                padding: 2.5rem 2rem;
+                padding: 1.8rem 1.5rem 2.5rem 1.5rem;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.06);
                 font-family: 'Nunito', sans-serif;
                 width: 100%;
-                min-height: 320px;
+                min-height: 380px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
             }}
             .rbox h3 {{
                 color: #1E3A5F;
                 font-weight: 700;
-                font-size: 1.5rem;
-                margin: 0 0 2rem 0;
+                font-size: 1.6rem;
+                margin: 0 0 1.5rem 0;
                 text-align: left;
+            }}
+            .rbox .content {{
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
             }}
             .rbox .stars-row {{
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 0.6rem;
-                margin-bottom: 0.6rem;
+                gap: 0.5rem;
+                margin-bottom: 0.4rem;
             }}
             .rbox .stars-num {{
-                font-size: 3.5rem;
+                font-size: 4rem;
                 color: #F59E0B;
                 font-weight: 800;
                 line-height: 1;
             }}
             .rbox .star-emoji {{
-                font-size: 3.2rem;
+                font-size: 3.5rem;
                 line-height: 1;
             }}
             .rbox .stars-label {{
                 color: #64748B;
-                font-size: 1.15rem;
+                font-size: 1.2rem;
                 text-align: center;
-                margin: 0.5rem 0 1.8rem 0;
+                margin: 0.3rem 0 2rem 0;
             }}
             .rbox .badges {{
                 display: flex;
                 justify-content: center;
-                gap: 1rem;
-                margin-bottom: 1.5rem;
-                font-size: 2.6rem;
+                gap: 1.2rem;
+                margin-bottom: 2rem;
+                font-size: 2.8rem;
             }}
             .rbox .footer-text {{
                 color: #64748B;
-                font-size: 1.1rem;
+                font-size: 1.15rem;
                 line-height: 1.5;
                 text-align: center;
-                max-width: 200px;
+                max-width: 220px;
                 margin: 0 auto;
             }}
         </style>
         <div class="rbox">
             <h3>{rewards_title}</h3>
-            <div class="stars-row">
-                <span class="stars-num">{stars}</span>
-                <span class="star-emoji">⭐</span>
+            <div class="content">
+                <div class="stars-row">
+                    <span class="stars-num">{stars}</span>
+                    <span class="star-emoji">⭐</span>
+                </div>
+                <p class="stars-label">{stars_label}</p>
+                <div class="badges">
+                    <span>🏅</span><span>🎯</span><span>⭐</span><span>🌟</span>
+                </div>
+                <p class="footer-text">{keep_learning}</p>
             </div>
-            <p class="stars-label">{stars_label}</p>
-            <div class="badges">
-                <span>🏅</span><span>🎯</span><span>⭐</span><span>🌟</span>
-            </div>
-            <p class="footer-text">{keep_learning}</p>
         </div>
-        """, height=400)
+        """, height=450)
 
     # ── Footer ─────────────────────────────────────────────────────────────────
     st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
