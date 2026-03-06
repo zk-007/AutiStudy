@@ -443,14 +443,26 @@ def apply_custom_styles():
             display: none;
         }
         
-        /* Make sidebar wider */
+        /* Make sidebar wider to fit longest button text */
         section[data-testid="stSidebar"] {
-            width: 280px !important;
-            min-width: 280px !important;
+            width: 320px !important;
+            min-width: 320px !important;
         }
         
         section[data-testid="stSidebar"] > div {
-            width: 280px !important;
+            width: 320px !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        /* Make all sidebar buttons equal width */
+        section[data-testid="stSidebar"] .stButton {
+            width: 100% !important;
+        }
+        
+        section[data-testid="stSidebar"] .stButton > button {
+            width: 100% !important;
+            min-width: 260px !important;
         }
         
         .block-container {
