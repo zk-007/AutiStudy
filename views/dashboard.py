@@ -29,22 +29,58 @@ def render_dashboard():
         display: none !important;
     }
 
-    /* Main layout - no max-width stretch */
+    /* Main layout */
     .main .block-container {
         padding-top: 1.2rem;
         padding-left: 1.2rem;
         padding-right: 1.2rem;
     }
 
-    /* Profile card in sidebar */
-    .custom-sidebar-card {
-        background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 100%);
-        border-radius: 20px;
-        padding: 1.25rem 1rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    /* =============================================
+       UNIFIED SIDEBAR PANEL STYLING
+       Multiple sections styled to look like ONE panel
+    ============================================= */
+    
+    /* Profile section - top of sidebar panel */
+    .sidebar-profile {
+        background: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1.25rem 1rem 1rem 1rem;
         border: 1px solid #E2E8F0;
-        margin-top: 0.4rem;
-        margin-bottom: 1rem;
+        border-bottom: none;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+    }
+
+    /* Nav buttons section - middle of sidebar panel */
+    .sidebar-nav {
+        background: white;
+        padding: 0.5rem 0.6rem;
+        border-left: 1px solid #E2E8F0;
+        border-right: 1px solid #E2E8F0;
+    }
+
+    /* Logout section - bottom of sidebar panel */
+    .sidebar-logout {
+        background: white;
+        border-radius: 0 0 20px 20px;
+        padding: 0.5rem 0.6rem 1rem 0.6rem;
+        border: 1px solid #E2E8F0;
+        border-top: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    /* Style all buttons in sidebar column to look unified */
+    [data-testid="column"]:first-child .stButton > button {
+        background: #f8f9fc !important;
+        color: #1E3A5F !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+    }
+    [data-testid="column"]:first-child .stButton > button:hover {
+        background: #EFF6FF !important;
+        border-color: #2563EB !important;
     }
 
     /* Main page headings */
@@ -124,6 +160,10 @@ def render_dashboard():
     .toggle-button-container button:hover {
         background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
     }
+    .toggle-button-container button p,
+    .toggle-button-container button span {
+        color: white !important;
+    }
 
     </style>
     """, unsafe_allow_html=True)
@@ -157,9 +197,9 @@ def render_dashboard():
             grade_num = user.get("grade", 4)
             stars = user.get("stars", 0)
 
-            # Profile card - only this part is wrapped in HTML
+            # SECTION 1: Profile card (top of unified panel)
             st.markdown(f"""
-            <div class="custom-sidebar-card">
+            <div class="sidebar-profile">
                 <div style="text-align:center; padding-bottom:1rem;
                      border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
                     <div style="width:72px;height:72px;border-radius:50%;
@@ -181,7 +221,8 @@ def render_dashboard():
             </div>
             """, unsafe_allow_html=True)
 
-            # Nav buttons - NOT wrapped in HTML div
+            # SECTION 2: Nav buttons (middle of unified panel)
+            st.markdown('<div class="sidebar-nav">', unsafe_allow_html=True)
             if st.button(f"🤖 {t('ai_tutor')}", key="nav_ai_tutor", use_container_width=True):
                 st.session_state.navigate("ai_tutor")
             if st.button(f"📝 {t('practice_quiz')}", key="nav_practice", use_container_width=True):
@@ -192,16 +233,18 @@ def render_dashboard():
                 st.info(t("coming_soon"))
             if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
                 st.info(t("coming_soon"))
+            st.markdown('</div>', unsafe_allow_html=True)
 
-            st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
-
+            # SECTION 3: Logout (bottom of unified panel)
+            st.markdown('<div class="sidebar-logout">', unsafe_allow_html=True)
             if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
                 logout()
                 st.session_state.navigate("landing")
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # ── MAIN CONTENT ───────────────────────────────────────────────────────────
     with main_col:
-        # Welcome heading - using classes
+        # Welcome heading
         st.markdown(f'<div class="main-heading">{t("welcome_back_name")}, {user.get("name","Student")}! 👋</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="section-heading">{t("quick_actions")}</div>', unsafe_allow_html=True)
 
