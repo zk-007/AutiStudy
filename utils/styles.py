@@ -439,30 +439,28 @@ def apply_custom_styles():
             font-size: 1.5rem;
         }
         
-        /* Hide default page nav only */
+        /* Hide default multipage nav */
         div[data-testid="stSidebarNav"] {
-            display: none;
+            display: none !important;
         }
         
-        /* Sidebar base */
+        /* Hide the sidebar collapse arrow/button - keeps sidebar permanently open */
+        [data-testid="collapsedControl"] {
+            display: none !important;
+        }
+        
+        /* Keep sidebar open-looking and styled */
         section[data-testid="stSidebar"] {
             background-color: #f8f9fc;
         }
         
         section[data-testid="stSidebar"] > div {
-            padding-left: 0.7rem !important;
-            padding-right: 0.7rem !important;
+            padding-left: 0.8rem !important;
+            padding-right: 0.8rem !important;
             padding-top: 1rem !important;
         }
         
-        /* Sidebar text sizing */
-        section[data-testid="stSidebar"] p,
-        section[data-testid="stSidebar"] span,
-        section[data-testid="stSidebar"] div {
-            font-size: 1rem !important;
-        }
-        
-        /* Sidebar buttons */
+        /* Sidebar buttons fit properly */
         section[data-testid="stSidebar"] .stButton {
             width: 100% !important;
         }
@@ -470,26 +468,26 @@ def apply_custom_styles():
         section[data-testid="stSidebar"] .stButton > button {
             width: 100% !important;
             min-width: 0 !important;
-            padding: 0.8rem 0.9rem !important;
             border-radius: 16px !important;
+            padding: 0.8rem 1rem !important;
             font-size: 1rem !important;
-            line-height: 1.2 !important;
             white-space: normal !important;
+            line-height: 1.2 !important;
             height: auto !important;
         }
         
-        /* Make button inner content wrap properly */
+        /* Prevent cut text inside sidebar buttons */
         section[data-testid="stSidebar"] .stButton > button p,
         section[data-testid="stSidebar"] .stButton > button span,
         section[data-testid="stSidebar"] .stButton > button div {
-            font-size: 1rem !important;
             white-space: normal !important;
             overflow-wrap: anywhere !important;
             text-align: center !important;
             justify-content: center !important;
+            font-size: 1rem !important;
         }
         
-        /* Main page */
+        /* Safe page spacing */
         .block-container {
             padding-top: 2rem;
             padding-left: 1.5rem;
@@ -510,10 +508,6 @@ def apply_custom_styles():
         
         footer {
             visibility: hidden;
-        }
-        
-        .stDeployButton {
-            display: none;
         }
     </style>
     """, unsafe_allow_html=True)
