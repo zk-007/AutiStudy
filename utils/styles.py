@@ -449,6 +449,15 @@ def apply_custom_styles():
             display: none !important;
         }
         
+        /* Hide the toolbar (share, edit, GitHub icons) */
+        [data-testid="stToolbar"] {
+            display: none !important;
+        }
+        
+        .stDeployButton {
+            display: none !important;
+        }
+        
         /* Fixed width sidebar - 320px */
         section[data-testid="stSidebar"] {
             width: 320px !important;
