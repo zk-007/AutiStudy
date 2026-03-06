@@ -444,29 +444,8 @@ def apply_custom_styles():
             display: none !important;
         }
         
-        /* Hide the sidebar collapse arrow/button - keeps sidebar permanently open */
+        /* Hide sidebar collapse arrow */
         [data-testid="collapsedControl"] {
-            display: none !important;
-            visibility: hidden !important;
-            width: 0 !important;
-            height: 0 !important;
-        }
-        
-        /* Hide collapse button in all forms */
-        button[kind="header"] {
-            display: none !important;
-        }
-        
-        [data-testid="stSidebar"] button[kind="header"],
-        section[data-testid="stSidebar"] [data-testid="collapsedControl"],
-        .stSidebar [data-testid="collapsedControl"] {
-            display: none !important;
-            visibility: hidden !important;
-        }
-        
-        /* Hide the chevron/arrow icon specifically */
-        [data-testid="stSidebar"] svg[data-testid="stChevron"],
-        section[data-testid="stSidebar"] button:has(svg) {
             display: none !important;
         }
         
@@ -517,6 +496,7 @@ def apply_custom_styles():
         
         header[data-testid="stHeader"] {
             background: transparent;
+            height: 0px;
         }
         
         .stApp > header {
