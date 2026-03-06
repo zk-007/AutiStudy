@@ -445,14 +445,12 @@ def apply_custom_styles():
         
         .block-container {
             padding-top: 2rem;
-            padding-left: 3rem;
-            padding-right: 3rem;
-            max-width: 100%;
+            padding-left: 2rem;
+            padding-right: 2rem;
         }
         
         header[data-testid="stHeader"] {
             background: transparent;
-            height: 0;
         }
         
         .stApp > header {
@@ -468,10 +466,6 @@ def apply_custom_styles():
         }
         
         .stDeployButton {
-            display: none;
-        }
-        
-        [data-testid="stToolbar"] {
             display: none;
         }
     </style>
