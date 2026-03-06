@@ -150,59 +150,44 @@ def render_dashboard():
     """, unsafe_allow_html=True)
 
     # ── CUSTOM SIDEBAR TOGGLE BUTTON ──────────────────────────────────────────
-    import streamlit.components.v1 as components
-    components.html("""
-    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+    st.markdown("""
+    <div id="custom-sidebar-toggle" class="sidebar-toggle-btn" title="Toggle Sidebar">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
         </svg>
-    </button>
-    <style>
-        .sidebar-toggle-btn {
-            position: fixed;
-            top: 14px;
-            left: 14px;
-            z-index: 999999;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-            transition: all 0.2s ease;
-        }
-        .sidebar-toggle-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-        }
-        .sidebar-toggle-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-    </style>
+    </div>
     <script>
-        function toggleSidebar() {
-            // Find Streamlit's native sidebar toggle button and click it
-            const collapseBtn = window.parent.document.querySelector('[data-testid="collapsedControl"] button');
-            const expandBtn = window.parent.document.querySelector('[data-testid="stSidebar"] button[kind="header"]');
-            
-            if (collapseBtn) {
-                collapseBtn.click();
-            } else if (expandBtn) {
-                expandBtn.click();
-            } else {
-                // Fallback: try to find any sidebar control button
-                const sidebarBtn = window.parent.document.querySelector('[data-testid="collapsedControl"]');
-                if (sidebarBtn) sidebarBtn.click();
+        // Wait for DOM to be ready then attach click handler
+        (function() {
+            function attachToggle() {
+                const btn = document.getElementById('custom-sidebar-toggle');
+                if (btn && !btn.hasAttribute('data-attached')) {
+                    btn.setAttribute('data-attached', 'true');
+                    btn.addEventListener('click', function() {
+                        // Try multiple selectors for sidebar toggle
+                        const selectors = [
+                            '[data-testid="collapsedControl"] button',
+                            '[data-testid="collapsedControl"]',
+                            'button[kind="header"]',
+                            '[data-testid="stSidebar"] button[aria-label]'
+                        ];
+                        for (const sel of selectors) {
+                            const el = document.querySelector(sel);
+                            if (el) {
+                                el.click();
+                                break;
+                            }
+                        }
+                    });
+                }
             }
-        }
+            // Try immediately and also after a short delay
+            attachToggle();
+            setTimeout(attachToggle, 500);
+            setTimeout(attachToggle, 1000);
+        })();
     </script>
-    """, height=0)
+    """, unsafe_allow_html=True)
 
     # ── SIDEBAR ────────────────────────────────────────────────────────────────
     with st.sidebar:
