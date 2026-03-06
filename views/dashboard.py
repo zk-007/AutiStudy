@@ -157,34 +157,42 @@ def render_dashboard():
         </svg>
     </div>
     <script>
-        // Wait for DOM to be ready then attach click handler
         (function() {
             function attachToggle() {
                 const btn = document.getElementById('custom-sidebar-toggle');
                 if (btn && !btn.hasAttribute('data-attached')) {
                     btn.setAttribute('data-attached', 'true');
                     btn.addEventListener('click', function() {
-                        // Try multiple selectors for sidebar toggle
-                        const selectors = [
-                            '[data-testid="collapsedControl"] button',
-                            '[data-testid="collapsedControl"]',
-                            'button[kind="header"]',
-                            '[data-testid="stSidebar"] button[aria-label]'
-                        ];
-                        for (const sel of selectors) {
-                            const el = document.querySelector(sel);
-                            if (el) {
-                                el.click();
-                                break;
+                        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+                        const mainContent = document.querySelector('.main');
+                        
+                        if (sidebar) {
+                            // Check current state
+                            const isCollapsed = sidebar.getAttribute('aria-expanded') === 'false' ||
+                                               sidebar.style.display === 'none' ||
+                                               sidebar.classList.contains('collapsed');
+                            
+                            if (isCollapsed) {
+                                // Show sidebar
+                                sidebar.style.display = 'flex';
+                                sidebar.style.transform = 'translateX(0)';
+                                sidebar.style.marginLeft = '0';
+                                sidebar.setAttribute('aria-expanded', 'true');
+                                sidebar.classList.remove('collapsed');
+                            } else {
+                                // Hide sidebar
+                                sidebar.style.transform = 'translateX(-100%)';
+                                sidebar.style.marginLeft = '-300px';
+                                sidebar.setAttribute('aria-expanded', 'false');
+                                sidebar.classList.add('collapsed');
                             }
                         }
                     });
                 }
             }
-            // Try immediately and also after a short delay
             attachToggle();
-            setTimeout(attachToggle, 500);
-            setTimeout(attachToggle, 1000);
+            setTimeout(attachToggle, 300);
+            setTimeout(attachToggle, 800);
         })();
     </script>
     """, unsafe_allow_html=True)
