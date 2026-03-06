@@ -537,13 +537,21 @@ def process_user_input(user_input, grade, subject, user_email):
     })
     save_message(user_email, st.session_state.current_chat_id, "user", user_input)
 
-    with st.spinner("Thinking... 🤔"):
-        response = generate_response(
-            user_input,
-            grade,
-            subject,
-            st.session_state.chat_history,
-        )
+    try:
+        with st.spinner("Thinking... 🤔"):
+            response = generate_response(
+                user_input,
+                grade,
+                subject,
+                st.session_state.chat_history,
+            )
+        
+        if not response:
+            response = "I'm having trouble answering right now. Please try again!"
+            
+    except Exception as e:
+        print(f"Error generating response: {e}")
+        response = f"I encountered an issue while thinking. Let me try again! (Error: {str(e)[:100]})"
 
     st.session_state.chat_history.append({
         "role": "assistant",
