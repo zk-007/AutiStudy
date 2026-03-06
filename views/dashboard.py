@@ -5,6 +5,10 @@ from utils.language import t, is_urdu
 def render_dashboard():
     user = st.session_state.user
 
+    # Initialize sidebar state
+    if "sidebar_visible" not in st.session_state:
+        st.session_state.sidebar_visible = True
+
     # RTL support for Urdu
     if is_urdu():
         st.markdown("""
@@ -35,11 +39,12 @@ def render_dashboard():
 
     /* Custom sidebar panel */
     .custom-sidebar {
-        background: white;
+        background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 100%);
         border-radius: 16px;
         padding: 1.5rem 1rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         min-height: calc(100vh - 100px);
+        border: 1px solid #E2E8F0;
     }
 
     /* Toggle button */
@@ -48,30 +53,10 @@ def render_dashboard():
         color: white;
         border: none;
         border-radius: 8px;
-        padding: 0.5rem 0.8rem;
-        cursor: pointer;
+        padding: 8px 12px;
         font-size: 1.2rem;
-        margin-bottom: 1rem;
-    }
-
-    /* Sidebar nav buttons */
-    .sidebar-nav-btn {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        margin-bottom: 0.5rem;
-        border-radius: 12px;
-        border: none;
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-        color: white;
-        font-weight: 600;
         cursor: pointer;
-        text-align: left;
-        transition: all 0.2s ease;
-    }
-
-    .sidebar-nav-btn:hover {
-        background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
-        box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+        margin-bottom: 1rem;
     }
 
     /* Dashboard cards */
@@ -117,6 +102,26 @@ def render_dashboard():
         margin-bottom: 1rem;
     }
 
+    /* Nav buttons in custom sidebar */
+    .nav-btn {
+        display: block;
+        width: 100%;
+        padding: 0.7rem 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 10px;
+        background: white;
+        border: 1px solid #e6e6e6;
+        text-align: left;
+        font-weight: 600;
+        color: #1E3A5F;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .nav-btn:hover {
+        background: #EFF6FF;
+        border-color: #2563EB;
+    }
+
     /* Fix overflow */
     html, body {
         overflow-x: hidden;
@@ -125,65 +130,80 @@ def render_dashboard():
     </style>
     """, unsafe_allow_html=True)
 
-    # ── LAYOUT WITH CUSTOM SIDEBAR ────────────────────────────────────────────
+    # ── Toggle button callback ─────────────────────────────────────────────────
+    def toggle_sidebar():
+        st.session_state.sidebar_visible = not st.session_state.sidebar_visible
+
+    # ── LAYOUT ─────────────────────────────────────────────────────────────────
     
-    # Main layout with sidebar always visible
-    sidebar_col, main_col = st.columns([1, 4])
+    # Toggle button row
+    toggle_col, _ = st.columns([1, 11])
+    with toggle_col:
+        if st.button("☰", key="toggle_sidebar", help="Toggle sidebar", use_container_width=True):
+            toggle_sidebar()
+            st.rerun()
 
-    # ── CUSTOM SIDEBAR CONTENT ────────────────────────────────────────────────
-    with sidebar_col:
-        st.markdown('<div class="custom-sidebar">', unsafe_allow_html=True)
-        
-        first_letter = user.get("name", "S")[0].upper()
-        name = user.get("name", "Student")
-        grade_num = user.get("grade", 4)
-        stars = user.get("stars", 0)
+    # Main layout with or without sidebar
+    if st.session_state.sidebar_visible:
+        sidebar_col, main_col = st.columns([1, 3.5])
+    else:
+        sidebar_col, main_col = None, st.container()
 
-        # Avatar + name + grade
-        st.markdown(f"""
-        <div style="text-align:center; padding-bottom:1rem;
-             border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
-            <div style="width:72px;height:72px;border-radius:50%;
-                background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
-                display:flex;align-items:center;justify-content:center;
-                margin:0 auto 0.6rem;color:white;font-size:1.8rem;font-weight:700;">
-                {first_letter}
+    # ── CUSTOM SIDEBAR ─────────────────────────────────────────────────────────
+    if st.session_state.sidebar_visible and sidebar_col is not None:
+        with sidebar_col:
+            st.markdown('<div class="custom-sidebar">', unsafe_allow_html=True)
+            
+            first_letter = user.get("name", "S")[0].upper()
+            name = user.get("name", "Student")
+            grade_num = user.get("grade", 4)
+            stars = user.get("stars", 0)
+
+            # Avatar + name + grade
+            st.markdown(f"""
+            <div style="text-align:center; padding-bottom:1rem;
+                 border-bottom:1px solid #E2E8F0; margin-bottom:1rem;">
+                <div style="width:72px;height:72px;border-radius:50%;
+                    background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
+                    display:flex;align-items:center;justify-content:center;
+                    margin:0 auto 0.6rem;color:white;font-size:1.8rem;font-weight:700;">
+                    {first_letter}
+                </div>
+                <div style="color:#1E3A5F;font-weight:700;font-size:1.1rem;">{name}</div>
+                <div style="color:#2563EB;font-size:0.95rem;">{t('grade')} {grade_num}</div>
             </div>
-            <div style="color:#1E3A5F;font-weight:700;font-size:1.1rem;">{name}</div>
-            <div style="color:#2563EB;font-size:0.95rem;">{t('grade')} {grade_num}</div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
-        # Stars badge
-        st.markdown(f"""
-        <div style="text-align:center;margin-bottom:1.2rem;">
-            <span style="background:linear-gradient(135deg,#FCD34D 0%,#F59E0B 100%);
-                color:white;padding:0.4rem 1.2rem;border-radius:20px;
-                font-weight:700;font-size:0.95rem;display:inline-block;">
-                ⭐ {stars} {t('stars_earned')}
-            </span>
-        </div>
-        """, unsafe_allow_html=True)
+            # Stars badge
+            st.markdown(f"""
+            <div style="text-align:center;margin-bottom:1.2rem;">
+                <span style="background:linear-gradient(135deg,#FCD34D 0%,#F59E0B 100%);
+                    color:white;padding:0.4rem 1.2rem;border-radius:20px;
+                    font-weight:700;font-size:0.95rem;display:inline-block;">
+                    ⭐ {stars} {t('stars_earned')}
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
 
-        # Nav buttons
-        if st.button(f"🤖 {t('ai_tutor')}", key="nav_ai_tutor", use_container_width=True):
-            st.session_state.navigate("ai_tutor")
-        if st.button(f"📝 {t('practice_quiz')}", key="nav_practice", use_container_width=True):
-            st.info(t("coming_soon"))
-        if st.button(f"📊 {t('learning_analytics')}", key="nav_analytics", use_container_width=True):
-            st.info(t("coming_soon"))
-        if st.button(f"🏆 {t('earn_rewards')}", key="nav_rewards", use_container_width=True):
-            st.info(t("coming_soon"))
-        if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
-            st.info(t("coming_soon"))
+            # Nav buttons
+            if st.button(f"🤖 {t('ai_tutor')}", key="nav_ai_tutor", use_container_width=True):
+                st.session_state.navigate("ai_tutor")
+            if st.button(f"📝 {t('practice_quiz')}", key="nav_practice", use_container_width=True):
+                st.info(t("coming_soon"))
+            if st.button(f"📊 {t('learning_analytics')}", key="nav_analytics", use_container_width=True):
+                st.info(t("coming_soon"))
+            if st.button(f"🏆 {t('earn_rewards')}", key="nav_rewards", use_container_width=True):
+                st.info(t("coming_soon"))
+            if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
+                st.info(t("coming_soon"))
 
-        st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
 
-        if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
-            logout()
-            st.session_state.navigate("landing")
+            if st.button(f"🚪 {t('logout')}", key="nav_logout", use_container_width=True):
+                logout()
+                st.session_state.navigate("landing")
 
-        st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # ── MAIN CONTENT ───────────────────────────────────────────────────────────
     with main_col:
@@ -195,7 +215,7 @@ def render_dashboard():
         <h3 style="color:#1E3A5F;font-weight:700;margin-bottom:1rem;">{t('quick_actions')}</h3>
         """, unsafe_allow_html=True)
 
-        # Quick Actions
+        # ── Quick Actions ──────────────────────────────────────────────────────
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
@@ -244,7 +264,7 @@ def render_dashboard():
 
         st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
 
-        # Your Subjects + Your Rewards
+        # ── Your Subjects + Your Rewards ───────────────────────────────────────
         col_main, col_side = st.columns([2, 1])
 
         grade = user.get("grade", 4)
@@ -308,7 +328,7 @@ def render_dashboard():
             </div>
             """, unsafe_allow_html=True)
 
-        # Footer
+        # ── Footer ─────────────────────────────────────────────────────────────
         st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
         st.markdown("""
         <div style="text-align:center;padding:1rem;border-top:1px solid #E2E8F0;
