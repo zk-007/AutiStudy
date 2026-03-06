@@ -468,5 +468,12 @@ def apply_custom_styles():
         .stDeployButton {
             display: none;
         }
+        
+        /* Hide Streamlit Cloud toolbar icons (safe method) */
+        [data-testid="stToolbar"] {
+            visibility: hidden;
+            height: 0%;
+            position: fixed;
+        }
     </style>
     """, unsafe_allow_html=True)
