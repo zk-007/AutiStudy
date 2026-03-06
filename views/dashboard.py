@@ -282,53 +282,56 @@ def render_dashboard():
             .rbox {{
                 background: white;
                 border-radius: 20px;
-                padding: 2rem 1.5rem;
+                padding: 2.5rem 2rem;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.06);
                 font-family: 'Nunito', sans-serif;
                 width: 100%;
+                min-height: 320px;
             }}
             .rbox h3 {{
                 color: #1E3A5F;
                 font-weight: 700;
-                font-size: 1.4rem;
-                margin: 0 0 1.5rem 0;
+                font-size: 1.5rem;
+                margin: 0 0 2rem 0;
                 text-align: left;
             }}
             .rbox .stars-row {{
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 0.5rem;
-                margin-bottom: 0.5rem;
+                gap: 0.6rem;
+                margin-bottom: 0.6rem;
             }}
             .rbox .stars-num {{
-                font-size: 3.2rem;
+                font-size: 3.5rem;
                 color: #F59E0B;
                 font-weight: 800;
                 line-height: 1;
             }}
             .rbox .star-emoji {{
-                font-size: 3rem;
+                font-size: 3.2rem;
                 line-height: 1;
             }}
             .rbox .stars-label {{
                 color: #64748B;
-                font-size: 1.05rem;
+                font-size: 1.15rem;
                 text-align: center;
-                margin: 0.4rem 0 1.5rem 0;
+                margin: 0.5rem 0 1.8rem 0;
             }}
             .rbox .badges {{
                 display: flex;
                 justify-content: center;
-                gap: 0.75rem;
-                margin-bottom: 1.2rem;
-                font-size: 2.4rem;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+                font-size: 2.6rem;
             }}
             .rbox .footer-text {{
                 color: #64748B;
-                font-size: 1rem;
-                line-height: 1.4;
+                font-size: 1.1rem;
+                line-height: 1.5;
                 text-align: center;
+                max-width: 200px;
+                margin: 0 auto;
             }}
         </style>
         <div class="rbox">
@@ -343,7 +346,7 @@ def render_dashboard():
             </div>
             <p class="footer-text">{keep_learning}</p>
         </div>
-        """, height=360)
+        """, height=400)
 
     # ── Footer ─────────────────────────────────────────────────────────────────
     st.markdown("<div style='height:2rem'></div>", unsafe_allow_html=True)
