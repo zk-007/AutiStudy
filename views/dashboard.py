@@ -16,44 +16,23 @@ def render_dashboard():
     # ── Global styles ──────────────────────────────────────────────────────────
     st.markdown("""
     <style>
-    /* Sidebar */
+    /* Sidebar expanded state */
     section[data-testid="stSidebar"] {
         background: white !important;
         min-width: 260px !important;
         width: 260px !important;
-        transition: all 0.3s ease !important;
     }
     section[data-testid="stSidebar"] > div:first-child {
         background: white !important;
         padding: 1.5rem 1rem !important;
-    }
-    
-    /* When sidebar is collapsed, hide it completely */
-    section[data-testid="stSidebar"][aria-expanded="false"] {
-        min-width: 0px !important;
-        max-width: 0px !important;
-        width: 0px !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-        overflow: hidden !important;
-    }
-    section[data-testid="stSidebar"][aria-expanded="false"] > div {
-        display: none !important;
     }
 
     /* Keep collapse arrow always visible */
     [data-testid="collapsedControl"] {
         display: flex !important;
         visibility: visible !important;
+        opacity: 1 !important;
         z-index: 999999 !important;
-        position: fixed !important;
-        top: 0.75rem !important;
-        left: 0.65rem !important;
-        background: white !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
-        padding: 0.2rem !important;
     }
 
     /* Hide default streamlit nav */
