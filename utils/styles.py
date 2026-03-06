@@ -458,8 +458,12 @@ def apply_custom_styles():
             display: none !important;
         }
         
-        /* Fixed width sidebar - 320px */
+        /* Fixed width sidebar - 320px (like Notion/ChatGPT) */
         section[data-testid="stSidebar"] {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
             width: 320px !important;
             min-width: 320px !important;
             background-color: #f8f9fc;
