@@ -1,3 +1,14 @@
+---
+title: AutiStudy
+emoji: 📚
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: 1.31.0
+app_file: app.py
+pinned: false
+---
+
 # AutiStudy - AI Tutor for Autistic Students
 
 An educational application designed specifically for autistic students in Pakistan (Grades 4-7). Features an AI-powered tutor with support for English and Urdu languages.
