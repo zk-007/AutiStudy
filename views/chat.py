@@ -64,11 +64,23 @@ def apply_global_styles():
             padding-bottom: 2rem !important;
         }}
 
+        /* Arrow button - always visible */
         [data-testid="collapsedControl"] {{
             display: flex !important;
             visibility: visible !important;
             opacity: 1 !important;
             z-index: 99999 !important;
+            background: white !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        }}
+        
+        /* When sidebar is collapsed - arrow floats outside */
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ [data-testid="collapsedControl"],
+        [data-testid="collapsedControl"]:has(+ section[data-testid="stSidebar"][aria-expanded="false"]) {{
+            position: fixed !important;
+            top: 14px !important;
+            left: 14px !important;
         }}
 
         section[data-testid="stSidebar"] {{
