@@ -449,24 +449,12 @@ def apply_custom_styles():
             padding-right: 2rem;
         }
         
-        /* Keep the header so the collapse arrow remains visible */
         header[data-testid="stHeader"] {
             background: transparent;
         }
         
         .stApp > header {
             background-color: transparent;
-        }
-        
-        /* Hide only the right-side toolbar container */
-        [data-testid="stToolbar"] > div {
-            display: none !important;
-        }
-        
-        /* Keep sidebar collapse control visible */
-        [data-testid="collapsedControl"] {
-            display: flex !important;
-            visibility: visible !important;
         }
         
         #MainMenu {
