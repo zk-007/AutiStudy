@@ -3,9 +3,8 @@ title: AutiStudy
 emoji: 📚
 colorFrom: blue
 colorTo: indigo
-sdk: streamlit
-sdk_version: 1.31.0
-app_file: app.py
+sdk: docker
+app_port: 7860
 pinned: false
 ---
 
