@@ -90,6 +90,13 @@ def render_dashboard():
         padding: 1.5rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         text-align: center;
+        max-width: 100%;
+    }
+    .rewards-box p {
+        max-width: 180px;
+        margin-left: auto;
+        margin-right: auto;
+        word-wrap: break-word;
     }
 
     /* Subject cards */
