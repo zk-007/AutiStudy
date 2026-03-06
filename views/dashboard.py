@@ -5,6 +5,29 @@ from utils.language import t, is_urdu
 def render_dashboard():
     user = st.session_state.user
     
+    # Ensure sidebar is visible
+    st.markdown("""
+    <style>
+    /* Ensure sidebar is visible */
+    [data-testid="stSidebar"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    [data-testid="stSidebarContent"] {
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    /* Sidebar toggle button */
+    button[data-testid="baseButton-headerNoPadding"] {
+        display: block !important;
+        visibility: visible !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # RTL support for Urdu
     if is_urdu():
         st.markdown("""
