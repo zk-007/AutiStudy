@@ -5,7 +5,7 @@ from utils.language import t, is_urdu
 def render_dashboard():
     user = st.session_state.user
     
-    # Ensure sidebar is visible
+    # Ensure sidebar is visible with collapse arrow
     st.markdown("""
     <style>
     /* Ensure sidebar is visible */
@@ -13,6 +13,7 @@ def render_dashboard():
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
+        min-width: 250px !important;
     }
     
     [data-testid="stSidebarContent"] {
@@ -20,10 +21,32 @@ def render_dashboard():
         visibility: visible !important;
     }
     
-    /* Sidebar toggle button */
-    button[data-testid="baseButton-headerNoPadding"] {
-        display: block !important;
+    /* Sidebar collapse/expand control arrow */
+    [data-testid="collapsedControl"] {
+        display: flex !important;
         visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        left: 250px !important;
+        top: 50% !important;
+        z-index: 999999 !important;
+    }
+    
+    /* When sidebar is collapsed */
+    [data-testid="stSidebar"][aria-expanded="false"] ~ [data-testid="collapsedControl"] {
+        left: 0 !important;
+    }
+    
+    /* Sidebar toggle button */
+    button[data-testid="baseButton-headerNoPadding"],
+    [data-testid="collapsedControl"] button {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        background: #2563EB !important;
+        color: white !important;
+        border-radius: 0 8px 8px 0 !important;
+        padding: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
