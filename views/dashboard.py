@@ -150,52 +150,70 @@ def render_dashboard():
     """, unsafe_allow_html=True)
 
     # ── CUSTOM SIDEBAR TOGGLE BUTTON ──────────────────────────────────────────
-    st.markdown("""
-    <div id="custom-sidebar-toggle" class="sidebar-toggle-btn" title="Toggle Sidebar">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-        </svg>
-    </div>
+    import streamlit.components.v1 as components
+    components.html("""
     <script>
+        // Create and inject the toggle button into the parent document
         (function() {
-            function attachToggle() {
-                const btn = document.getElementById('custom-sidebar-toggle');
-                if (btn && !btn.hasAttribute('data-attached')) {
-                    btn.setAttribute('data-attached', 'true');
-                    btn.addEventListener('click', function() {
-                        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-                        const mainContent = document.querySelector('.main');
-                        
-                        if (sidebar) {
-                            // Check current state
-                            const isCollapsed = sidebar.getAttribute('aria-expanded') === 'false' ||
-                                               sidebar.style.display === 'none' ||
-                                               sidebar.classList.contains('collapsed');
-                            
-                            if (isCollapsed) {
-                                // Show sidebar
-                                sidebar.style.display = 'flex';
-                                sidebar.style.transform = 'translateX(0)';
-                                sidebar.style.marginLeft = '0';
-                                sidebar.setAttribute('aria-expanded', 'true');
-                                sidebar.classList.remove('collapsed');
-                            } else {
-                                // Hide sidebar
-                                sidebar.style.transform = 'translateX(-100%)';
-                                sidebar.style.marginLeft = '-300px';
-                                sidebar.setAttribute('aria-expanded', 'false');
-                                sidebar.classList.add('collapsed');
-                            }
-                        }
-                    });
+            const parent = window.parent.document;
+            
+            // Remove existing button if any
+            const existing = parent.getElementById('custom-sidebar-toggle');
+            if (existing) existing.remove();
+            
+            // Create button
+            const btn = parent.createElement('div');
+            btn.id = 'custom-sidebar-toggle';
+            btn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="white"/></svg>';
+            btn.style.cssText = `
+                position: fixed;
+                top: 14px;
+                left: 14px;
+                z-index: 999999;
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+                transition: all 0.2s ease;
+            `;
+            
+            btn.onmouseover = function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.4)';
+            };
+            btn.onmouseout = function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = '0 2px 8px rgba(37, 99, 235, 0.3)';
+            };
+            
+            btn.onclick = function() {
+                const sidebar = parent.querySelector('[data-testid="stSidebar"]');
+                if (sidebar) {
+                    const isHidden = sidebar.getAttribute('data-collapsed') === 'true';
+                    if (isHidden) {
+                        sidebar.style.transform = 'none';
+                        sidebar.style.width = '';
+                        sidebar.style.minWidth = '';
+                        sidebar.setAttribute('data-collapsed', 'false');
+                    } else {
+                        sidebar.style.transform = 'translateX(-100%)';
+                        sidebar.style.width = '0';
+                        sidebar.style.minWidth = '0';
+                        sidebar.setAttribute('data-collapsed', 'true');
+                    }
                 }
-            }
-            attachToggle();
-            setTimeout(attachToggle, 300);
-            setTimeout(attachToggle, 800);
+            };
+            
+            parent.body.appendChild(btn);
         })();
     </script>
-    """, unsafe_allow_html=True)
+    """, height=0)
 
     # ── SIDEBAR ────────────────────────────────────────────────────────────────
     with st.sidebar:
