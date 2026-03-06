@@ -78,11 +78,27 @@ def apply_global_styles():
             padding: 0.2rem !important;
         }}
 
+        /* When sidebar is collapsed, hide it completely */
+        section[data-testid="stSidebar"][aria-expanded="false"] {{
+            min-width: 0px !important;
+            max-width: 0px !important;
+            width: 0px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            overflow: hidden !important;
+        }}
+        
+        section[data-testid="stSidebar"][aria-expanded="false"] > div {{
+            display: none !important;
+        }}
+
         section[data-testid="stSidebar"] {{
             min-width: 290px !important;
             max-width: 320px !important;
             background: #FFFFFF !important;
             border-right: 1px solid #E2E8F0 !important;
+            transition: all 0.3s ease !important;
         }}
 
         section[data-testid="stSidebar"] .block-container {{
