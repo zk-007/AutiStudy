@@ -449,49 +449,40 @@ def apply_custom_styles():
             display: none !important;
         }
         
-        /* Keep sidebar open-looking and styled */
+        /* Fixed width sidebar - 320px */
         section[data-testid="stSidebar"] {
+            width: 320px !important;
+            min-width: 320px !important;
             background-color: #f8f9fc;
         }
         
         section[data-testid="stSidebar"] > div {
-            padding-left: 0.8rem !important;
-            padding-right: 0.8rem !important;
+            width: 320px !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
             padding-top: 1rem !important;
         }
         
-        /* Sidebar buttons fit properly */
+        /* Make all sidebar buttons equal width */
         section[data-testid="stSidebar"] .stButton {
             width: 100% !important;
         }
         
         section[data-testid="stSidebar"] .stButton > button {
             width: 100% !important;
-            min-width: 0 !important;
+            min-width: 260px !important;
             border-radius: 16px !important;
             padding: 0.8rem 1rem !important;
             font-size: 1rem !important;
-            white-space: normal !important;
-            line-height: 1.2 !important;
+            line-height: 1.3 !important;
             height: auto !important;
-        }
-        
-        /* Prevent cut text inside sidebar buttons */
-        section[data-testid="stSidebar"] .stButton > button p,
-        section[data-testid="stSidebar"] .stButton > button span,
-        section[data-testid="stSidebar"] .stButton > button div {
-            white-space: normal !important;
-            overflow-wrap: anywhere !important;
-            text-align: center !important;
-            justify-content: center !important;
-            font-size: 1rem !important;
         }
         
         /* Safe page spacing */
         .block-container {
             padding-top: 2rem;
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
         }
         
         header[data-testid="stHeader"] {
