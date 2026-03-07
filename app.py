@@ -21,6 +21,12 @@ if not st.session_state.get("authenticated", False):
     if restore_session():
         pass
 
+# Preload RAG models in background when user is authenticated
+# This makes chat load instantly instead of waiting for models
+if st.session_state.get("authenticated", False):
+    from utils.rag import preload_models
+    preload_models()
+
 if "page" not in st.session_state:
     st.session_state.page = "landing"
 

@@ -12,6 +12,7 @@ import numpy as np
 from typing import List, Dict, Optional, Tuple
 from collections import Counter
 
+import streamlit as st
 import chromadb
 
 # Try to import required libraries
@@ -64,17 +65,73 @@ BLOCK_WEIGHT = {
     "WEBLINKS": 0.3
 }
 
-# Singletons
-_embedder = None
-_reranker = None
-_chroma_client = None
-_collection = None
-
-# BM25 indices per subject
+# BM25 indices per subject (kept in memory)
 _bm25_indices = {}
 _bm25_docs = {}
 _bm25_ids = {}
 _bm25_metas = {}
+
+
+# ============================================================
+# CACHED RESOURCE LOADING (for fast startup)
+# ============================================================
+
+@st.cache_resource(show_spinner=False)
+def get_embedder():
+    """Get or initialize the sentence transformer embedder (cached)"""
+    if not EMBEDDER_AVAILABLE:
+        return None
+    try:
+        embedder = SentenceTransformer(EMBED_MODEL_NAME)
+        print(f"Loaded embedding model: {EMBED_MODEL_NAME}")
+        return embedder
+    except Exception as e:
+        print(f"Error loading embedder: {e}")
+        return None
+
+
+@st.cache_resource(show_spinner=False)
+def get_reranker():
+    """Get or initialize the CrossEncoder reranker (cached)"""
+    if not EMBEDDER_AVAILABLE:
+        return None
+    try:
+        reranker = CrossEncoder(RERANKER_MODEL_NAME)
+        print(f"Loaded reranker: {RERANKER_MODEL_NAME}")
+        return reranker
+    except Exception as e:
+        print(f"Error loading reranker: {e}")
+        return None
+
+
+@st.cache_resource(show_spinner=False)
+def get_chroma_client():
+    """Initialize ChromaDB client (cached)"""
+    try:
+        client = chromadb.PersistentClient(path=CHROMA_PATH)
+        print(f"Connected to ChromaDB at: {CHROMA_PATH}")
+        return client
+    except Exception as e:
+        print(f"Error connecting to ChromaDB: {e}")
+        return None
+
+
+@st.cache_resource(show_spinner=False)
+def get_collection(collection_name: str = "educational_content"):
+    """Get or create the collection (cached)"""
+    client = get_chroma_client()
+    if client:
+        try:
+            collection = client.get_or_create_collection(
+                name=collection_name,
+                metadata={"description": "Educational content for grades 4-7"}
+            )
+            print(f"Collection ready. Total vectors: {collection.count()}")
+            return collection
+        except Exception as e:
+            print(f"Error getting collection: {e}")
+            return None
+    return None
 
 
 # ============================================================
@@ -87,65 +144,6 @@ def tokenize(s: str) -> List[str]:
     s = re.sub(r"[^a-z0-9\s]", " ", s)
     s = re.sub(r"\s{2,}", " ", s).strip()
     return s.split()
-
-
-def get_embedder():
-    """Get or initialize the sentence transformer embedder (lazy loading)"""
-    global _embedder
-    if _embedder is None and EMBEDDER_AVAILABLE:
-        try:
-            # Only load when actually needed
-            _embedder = SentenceTransformer(EMBED_MODEL_NAME)
-            print(f"Loaded embedding model: {EMBED_MODEL_NAME}")
-        except Exception as e:
-            print(f"Error loading embedder: {e}")
-            return None
-    return _embedder
-
-
-def get_reranker():
-    """Get or initialize the CrossEncoder reranker (lazy loading)"""
-    global _reranker
-    if _reranker is None and EMBEDDER_AVAILABLE:
-        try:
-            # Only load when actually needed
-            _reranker = CrossEncoder(RERANKER_MODEL_NAME)
-            print(f"Loaded reranker: {RERANKER_MODEL_NAME}")
-        except Exception as e:
-            print(f"Error loading reranker: {e}")
-            return None
-    return _reranker
-
-
-def get_chroma_client():
-    """Initialize ChromaDB client"""
-    global _chroma_client
-    if _chroma_client is None:
-        try:
-            _chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
-            print(f"Connected to ChromaDB at: {CHROMA_PATH}")
-        except Exception as e:
-            print(f"Error connecting to ChromaDB: {e}")
-            return None
-    return _chroma_client
-
-
-def get_collection(collection_name: str = "educational_content"):
-    """Get or create the collection"""
-    global _collection
-    if _collection is None:
-        client = get_chroma_client()
-        if client:
-            try:
-                _collection = client.get_or_create_collection(
-                    name=collection_name,
-                    metadata={"description": "Educational content for grades 4-7"}
-                )
-                print(f"Collection ready. Total vectors: {_collection.count()}")
-            except Exception as e:
-                print(f"Error getting collection: {e}")
-                return None
-    return _collection
 
 
 def build_bm25_index(doc_id: str):
@@ -1104,3 +1102,26 @@ def check_db_status() -> Dict:
         status["reranker_loaded"] = True
     
     return status
+
+
+def preload_models():
+    """
+    Preload all models and connections at app startup.
+    Call this early in app.py to warm up the cache before users need it.
+    This makes subsequent chat loads instant.
+    """
+    if "rag_models_loaded" not in st.session_state:
+        print("[RAG] Preloading models...")
+        
+        # Load ChromaDB connection
+        get_chroma_client()
+        get_collection()
+        
+        # Load embedding model (this is the slow one ~400MB)
+        get_embedder()
+        
+        # Load reranker
+        get_reranker()
+        
+        st.session_state.rag_models_loaded = True
+        print("[RAG] Models preloaded successfully!")
