@@ -65,3 +65,9 @@ elif st.session_state.page == "chat":
         render_chat()
     else:
         navigate_to("login")
+elif st.session_state.page == "about":
+    from views.about import render_about
+    render_about()
+elif st.session_state.page == "faq":
+    from views.faq import render_faq
+    render_faq()
