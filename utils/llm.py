@@ -242,6 +242,126 @@ IMPORTANT: This topic is NOT covered in the student's Grade {grade} {subject} te
 
 
 # =========================================================
+# "HOW" QUESTION DETECTION AND CONTEXT EXTRACTION
+# =========================================================
+
+HOW_QUESTION_PATTERNS = [
+    r"^how\??$",
+    r"^how is that\??$",
+    r"^how does that work\??$",
+    r"^how do you do that\??$",
+    r"^show me how\??$",
+    r"^can you show me\??$",
+    r"^explain how\??$",
+    r"^how did you get that\??$",
+    r"^how does it work\??$",
+    r"^why\??$",
+    r"^why is that\??$",
+]
+
+
+def is_followup_how_question(user_message: str) -> bool:
+    """
+    Detect if the user is asking a short follow-up "how" question
+    that refers to the previous conversation.
+    """
+    msg = user_message.strip().lower()
+    
+    # Check against patterns
+    for pattern in HOW_QUESTION_PATTERNS:
+        if re.match(pattern, msg):
+            return True
+    
+    # Short "how" questions (less than 5 words starting with how/why/show)
+    words = msg.split()
+    if len(words) <= 5 and words[0] in ["how", "why", "show", "explain"]:
+        return True
+    
+    return False
+
+
+def get_context_from_history(chat_history: List[Dict], user_message: str) -> str:
+    """
+    For follow-up "how" questions, extract the relevant context 
+    from the previous conversation to understand what the user is asking about.
+    """
+    if not chat_history:
+        return user_message
+    
+    # Get the last few exchanges
+    relevant_messages = []
+    for msg in chat_history[-4:]:  # Last 2 Q&A pairs
+        if msg.get("role") == "user":
+            relevant_messages.append(f"Student asked: {msg.get('content', '')}")
+        elif msg.get("role") == "assistant":
+            # Get first 200 chars of assistant response
+            content = msg.get("content", "")[:200]
+            relevant_messages.append(f"Tutor explained: {content}")
+    
+    context = "\n".join(relevant_messages)
+    return f"Previous conversation:\n{context}\n\nStudent now asks: {user_message}"
+
+
+def should_auto_generate_image(user_message: str, subject: str, chat_history: List[Dict]) -> bool:
+    """
+    Determine if we should automatically generate an image for this question.
+    Returns True for:
+    - Math questions asking "how" 
+    - Follow-up "how" questions about previous topics
+    - Questions with visual keywords
+    """
+    msg = user_message.strip().lower()
+    subj = subject.lower()
+    
+    # Always generate for explicit visual requests
+    visual_keywords = ["show me", "draw", "picture", "image", "visual", "diagram", "illustrate"]
+    if any(kw in msg for kw in visual_keywords):
+        return True
+    
+    # For Math subject
+    if subj in ["maths", "math"]:
+        # "How" questions in math benefit from visuals
+        if msg.startswith("how") or "how do" in msg or "how does" in msg:
+            return True
+        
+        # Follow-up "how" questions
+        if is_followup_how_question(msg) and chat_history:
+            return True
+        
+        # Direct math expressions benefit from step-by-step visuals
+        if re.search(r"\d+\s*[-+x×*/÷]\s*\d+", msg):
+            return True
+    
+    # For Computer subject - "how does X work" questions
+    if subj == "computer":
+        if "how" in msg and ("work" in msg or "does" in msg or "process" in msg):
+            return True
+    
+    # For Science - process/how questions
+    if subj in ["science", "general science"]:
+        if "how" in msg and ("work" in msg or "happen" in msg or "process" in msg):
+            return True
+    
+    return False
+
+
+def get_image_context(user_message: str, chat_history: List[Dict], subject: str) -> str:
+    """
+    Get the full context for image generation, especially for follow-up questions.
+    """
+    # If it's a follow-up "how" question, include the previous topic
+    if is_followup_how_question(user_message) and chat_history:
+        # Find the last user question that was substantive
+        for msg in reversed(chat_history[:-1]):  # Exclude current message
+            if msg.get("role") == "user":
+                prev_question = msg.get("content", "")
+                if len(prev_question) > 10:  # Substantive question
+                    return f"{prev_question} - explain how this works visually"
+        
+    return user_message
+
+
+# =========================================================
 # IMAGE PROMPT BUILDER
 # =========================================================
 IMAGE_BUILDER_SYSTEM_PROMPT = """You are VisualPromptBuilder for an autism-friendly learning app.
@@ -819,15 +939,23 @@ def _save_b64_image_to_temp(b64_string: str) -> Optional[str]:
         return None
 
 
-def generate_image(question: str, grade: int, subject: str) -> Optional[str]:
+def generate_image(
+    question: str, 
+    grade: int, 
+    subject: str,
+    chat_history: List[Dict] = None
+) -> Optional[str]:
     """Generate an educational image using OpenAI image generation."""
     client = get_openai_client()
     if not client:
         print("OpenAI client not found")
         return None
 
-    print("Building image prompt with GPT-4o-mini VisualPromptBuilder...")
-    prompt_data = enhance_image_prompt(question, grade, subject)
+    # Get full context for image generation (handles follow-up questions)
+    image_question = get_image_context(question, chat_history or [], subject)
+    
+    print(f"Building image prompt for: {image_question[:100]}...")
+    prompt_data = enhance_image_prompt(image_question, grade, subject)
 
     image_prompt = prompt_data.get("prompt", "")
     aspect_ratio = prompt_data.get("aspect_ratio", "4:3")
@@ -985,6 +1113,53 @@ def text_to_speech_base64(text: str, language: str = "en") -> Optional[str]:
     if audio_bytes:
         return base64.b64encode(audio_bytes).decode("utf-8")
     return None
+
+
+# =========================================================
+# COMBINED RESPONSE WITH AUTO-IMAGE
+# =========================================================
+def generate_response_with_auto_image(
+    user_message: str,
+    grade: int,
+    subject: str,
+    chat_history: List[Dict],
+    use_rag: bool = True,
+    language: str = None,
+) -> Dict[str, Any]:
+    """
+    Generate a text response and automatically generate an image
+    if the question is a "how" question or would benefit from visuals.
+    
+    Returns:
+        Dict with keys:
+        - text_response: The text answer
+        - image_url: URL/path to generated image (or None)
+        - auto_image_generated: Whether image was auto-generated
+    """
+    # Generate text response first
+    text_response = generate_response(
+        user_message, grade, subject, chat_history, use_rag, language
+    )
+    
+    result = {
+        "text_response": text_response,
+        "image_url": None,
+        "auto_image_generated": False
+    }
+    
+    # Check if we should auto-generate an image
+    if should_auto_generate_image(user_message, subject, chat_history):
+        print(f"Auto-generating image for: {user_message[:50]}...")
+        try:
+            image_url = generate_image(user_message, grade, subject, chat_history)
+            if image_url:
+                result["image_url"] = image_url
+                result["auto_image_generated"] = True
+                print("Auto-image generated successfully!")
+        except Exception as e:
+            print(f"Auto-image generation failed: {e}")
+    
+    return result
 
 
 # =========================================================

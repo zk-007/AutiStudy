@@ -1,6 +1,6 @@
 import html
 import streamlit as st
-from utils.llm import generate_response, generate_image, text_to_speech_base64
+from utils.llm import generate_response, generate_image, text_to_speech_base64, generate_response_with_auto_image
 from utils.auth import logout
 from utils.chat_db import (
     get_user_chats,
@@ -539,12 +539,16 @@ def process_user_input(user_input, grade, subject, user_email):
 
     try:
         with st.spinner("Thinking... 🤔"):
-            response = generate_response(
+            # Use the new function that auto-generates images for "how" questions
+            result = generate_response_with_auto_image(
                 user_input,
                 grade,
                 subject,
                 st.session_state.chat_history,
             )
+        
+        response = result.get("text_response", "")
+        auto_image_url = result.get("image_url")
         
         if not response:
             response = "I'm having trouble answering right now. Please try again!"
@@ -552,12 +556,34 @@ def process_user_input(user_input, grade, subject, user_email):
     except Exception as e:
         print(f"Error generating response: {e}")
         response = f"I encountered an issue while thinking. Let me try again! (Error: {str(e)[:100]})"
+        auto_image_url = None
 
-    st.session_state.chat_history.append({
+    # Save the assistant message
+    assistant_msg = {
         "role": "assistant",
         "content": response,
-    })
+    }
+    
+    # If an image was auto-generated, include it
+    if auto_image_url:
+        assistant_msg["image_url"] = auto_image_url
+        # Also store in generated_images for display
+        pair_idx = len([m for m in st.session_state.chat_history if m.get("role") == "assistant"])
+        st.session_state.generated_images[pair_idx] = auto_image_url
+    
+    st.session_state.chat_history.append(assistant_msg)
     save_message(user_email, st.session_state.current_chat_id, "assistant", response)
+    
+    # Save image to message if auto-generated
+    if auto_image_url:
+        msg_idx = len(st.session_state.chat_history) - 1
+        save_media_to_message(
+            user_email,
+            st.session_state.current_chat_id,
+            msg_idx,
+            image_url=auto_image_url,
+        )
+    
     st.rerun()
 
 
