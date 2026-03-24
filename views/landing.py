@@ -517,26 +517,10 @@ def render_landing():
         unsafe_allow_html=True,
     )
 
-    # ---------- About & FAQ Links ----------
-    st.markdown("<div style='height: 1.5rem'></div>", unsafe_allow_html=True)
-    
-    link_col1, link_col2, link_col3 = st.columns([1, 2, 1])
-    with link_col2:
-        btn_col1, btn_col2 = st.columns(2)
-        with btn_col1:
-            if st.button("📚 About AutiStudy", key="footer_about", use_container_width=True):
-                _safe_navigate("about")
-        with btn_col2:
-            if st.button("❓ FAQs", key="footer_faq", use_container_width=True):
-                _safe_navigate("faq")
-    
     # ---------- Footer ----------
     st.markdown(
         """
         <div class="foot-wrap">
-          <div style="color:#2563EB; font-weight:900;">
-            Privacy Policy &nbsp; | &nbsp; Terms &nbsp; | &nbsp; Contact
-          </div>
           <div class="foot-sub">© 2024 AutiStudy. Made with ❤️ for students in Pakistan</div>
         </div>
         """,
