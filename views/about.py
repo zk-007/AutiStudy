@@ -236,7 +236,8 @@ def render_about():
     # Header with back button
     col1, col2, col3 = st.columns([1, 4, 1])
     with col1:
-        if st.button("← Back", key="back_home", use_container_width=True):
+        back_label = "← واپس" if urdu else "← Back"
+        if st.button(back_label, key="back_home", use_container_width=True):
             st.session_state.navigate("landing")
     with col3:
         # Language toggle
@@ -325,16 +326,29 @@ def render_about():
             unsafe_allow_html=True,
         )
 
-    st.markdown(
-        """
-        <div class="highlight-box">
-            <p><strong>🎓 Target Students:</strong> Children on the autism spectrum in Grades 4, 5, 6, and 7</p>
-            <p><strong>📍 Region:</strong> Designed specifically for students in Pakistan</p>
-            <p><strong>📖 Curriculum:</strong> Aligned with Pakistan's National Curriculum textbooks</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # Target Students box
+    if urdu:
+        st.markdown(
+            f"""
+            <div class="highlight-box {text_dir}">
+                <p><strong>🎓 ہدف طلباء:</strong> جماعت 4، 5، 6 اور 7 میں آٹزم سپیکٹرم کے بچے</p>
+                <p><strong>📍 علاقہ:</strong> خاص طور پر پاکستان کے طلباء کے لیے ڈیزائن کیا گیا</p>
+                <p><strong>📖 نصاب:</strong> پاکستان کے قومی نصاب کی کتابوں سے ہم آہنگ</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div class="highlight-box">
+                <p><strong>🎓 Target Students:</strong> Children on the autism spectrum in Grades 4, 5, 6, and 7</p>
+                <p><strong>📍 Region:</strong> Designed specifically for students in Pakistan</p>
+                <p><strong>📖 Curriculum:</strong> Aligned with Pakistan's National Curriculum textbooks</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     # Bilingual Support
     if urdu:
@@ -378,106 +392,188 @@ def render_about():
     )
 
     # Technologies Used
-    st.markdown(
-        """
-        <div class="section-title">🔧 Technologies We Use</div>
-        <div class="section-content">
-            AutiStudy is built using cutting-edge AI and modern web technologies to provide 
-            the best learning experience:
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <div class="tech-grid">
-            <div class="tech-card">
-                <div class="tech-icon">🤖</div>
-                <div class="tech-name">OpenAI GPT-4o-mini</div>
-                <div class="tech-desc">Advanced AI for intelligent, patient tutoring conversations</div>
+    if urdu:
+        st.markdown(
+            f"""
+            <div class="section-title {text_dir}">🔧 ہم جو ٹیکنالوجیز استعمال کرتے ہیں</div>
+            <div class="section-content {text_dir}">
+                آٹی اسٹڈی جدید ترین AI اور ویب ٹیکنالوجیز کا استعمال کرتے ہوئے بنایا گیا ہے:
             </div>
-            <div class="tech-card">
-                <div class="tech-icon">🔍</div>
-                <div class="tech-name">RAG System</div>
-                <div class="tech-desc">Retrieval-Augmented Generation for accurate curriculum-based answers</div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            """
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🤖</div>
+                    <div class="tech-name">OpenAI GPT-4o-mini</div>
+                    <div class="tech-desc">ذہین، صبر کرنے والی تعلیمی گفتگو کے لیے جدید AI</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🔍</div>
+                    <div class="tech-name">RAG سسٹم</div>
+                    <div class="tech-desc">نصاب پر مبنی درست جوابات کے لیے</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">📊</div>
+                    <div class="tech-name">ChromaDB</div>
+                    <div class="tech-desc">پاکستانی نصاب کا مواد ذخیرہ کرنے والا ڈیٹابیس</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🖼️</div>
+                    <div class="tech-name">تصویر بنانا</div>
+                    <div class="tech-desc">بہتر سمجھ کے لیے خودکار بصری امداد</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🔊</div>
+                    <div class="tech-name">آواز میں تبدیلی</div>
+                    <div class="tech-desc">آڈیو پر مبنی سیکھنے کے لیے وضاحتیں سنیں</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🌐</div>
+                    <div class="tech-name">Streamlit</div>
+                    <div class="tech-desc">جدید، ریسپانسیو ویب انٹرفیس</div>
+                </div>
             </div>
-            <div class="tech-card">
-                <div class="tech-icon">📊</div>
-                <div class="tech-name">ChromaDB</div>
-                <div class="tech-desc">Vector database storing Pakistan curriculum content</div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div class="section-title">🔧 Technologies We Use</div>
+            <div class="section-content">
+                AutiStudy is built using cutting-edge AI and modern web technologies to provide 
+                the best learning experience:
             </div>
-            <div class="tech-card">
-                <div class="tech-icon">🖼️</div>
-                <div class="tech-name">GPT Image Generation</div>
-                <div class="tech-desc">Auto-generates visual aids for better understanding</div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            """
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🤖</div>
+                    <div class="tech-name">OpenAI GPT-4o-mini</div>
+                    <div class="tech-desc">Advanced AI for intelligent, patient tutoring conversations</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🔍</div>
+                    <div class="tech-name">RAG System</div>
+                    <div class="tech-desc">Retrieval-Augmented Generation for accurate curriculum-based answers</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">📊</div>
+                    <div class="tech-name">ChromaDB</div>
+                    <div class="tech-desc">Vector database storing Pakistan curriculum content</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🖼️</div>
+                    <div class="tech-name">GPT Image Generation</div>
+                    <div class="tech-desc">Auto-generates visual aids for better understanding</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🔊</div>
+                    <div class="tech-name">Text-to-Speech</div>
+                    <div class="tech-desc">Listen to explanations for audio-based learning</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🌐</div>
+                    <div class="tech-name">Streamlit</div>
+                    <div class="tech-desc">Modern, responsive web interface</div>
+                </div>
             </div>
-            <div class="tech-card">
-                <div class="tech-icon">🔊</div>
-                <div class="tech-name">Text-to-Speech</div>
-                <div class="tech-desc">Listen to explanations for audio-based learning</div>
-            </div>
-            <div class="tech-card">
-                <div class="tech-icon">🌐</div>
-                <div class="tech-name">Streamlit</div>
-                <div class="tech-desc">Modern, responsive web interface</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+            """,
+            unsafe_allow_html=True,
+        )
 
     # RAG System Details
-    st.markdown(
-        """
-        <div class="highlight-box">
-            <p><strong>📖 Our RAG (Retrieval-Augmented Generation) System:</strong></p>
-            <p>• <strong>Hybrid Retrieval:</strong> Combines dense (semantic) and sparse (BM25) search for accurate results</p>
-            <p>• <strong>Subject-Specific Pipelines:</strong> Different optimized pipelines for Maths, Science, and Computer</p>
-            <p>• <strong>Cross-Encoder Reranking:</strong> Neural reranking for highest quality responses</p>
-            <p>• <strong>Textbook Verification:</strong> Ensures answers come from official curriculum content</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    if urdu:
+        st.markdown(
+            f"""
+            <div class="highlight-box {text_dir}">
+                <p><strong>📖 ہمارا RAG سسٹم:</strong></p>
+                <p>• <strong>ہائبرڈ تلاش:</strong> درست نتائج کے لیے سیمینٹک اور BM25 تلاش کا امتزاج</p>
+                <p>• <strong>مضمون کے لحاظ سے پائپ لائنز:</strong> ریاضی، سائنس اور کمپیوٹر کے لیے مختلف بہتر پائپ لائنز</p>
+                <p>• <strong>کراس انکوڈر ری رینکنگ:</strong> اعلیٰ معیار کے جوابات کے لیے نیورل ری رینکنگ</p>
+                <p>• <strong>نصابی کتاب کی تصدیق:</strong> جوابات سرکاری نصاب سے آتے ہیں</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div class="highlight-box">
+                <p><strong>📖 Our RAG (Retrieval-Augmented Generation) System:</strong></p>
+                <p>• <strong>Hybrid Retrieval:</strong> Combines dense (semantic) and sparse (BM25) search for accurate results</p>
+                <p>• <strong>Subject-Specific Pipelines:</strong> Different optimized pipelines for Maths, Science, and Computer</p>
+                <p>• <strong>Cross-Encoder Reranking:</strong> Neural reranking for highest quality responses</p>
+                <p>• <strong>Textbook Verification:</strong> Ensures answers come from official curriculum content</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     # Key Features
-    st.markdown(
-        """
-        <div class="section-title">✨ Key Features</div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    col1, col2 = st.columns(2)
-
-    with col1:
+    if urdu:
         st.markdown(
-            """
-            <ul class="feature-list">
-                <li>AI tutor with autism-friendly communication style</li>
-                <li>Step-by-step explanations with patience</li>
-                <li>Auto-generated visual aids for "how" questions</li>
-                <li>Voice playback of explanations</li>
-                <li>Curriculum-aligned content (Grades 4-7)</li>
-            </ul>
+            f"""
+            <div class="section-title {text_dir}">✨ اہم خصوصیات</div>
             """,
             unsafe_allow_html=True,
         )
-
-    with col2:
         st.markdown(
-            """
-            <ul class="feature-list">
-                <li>Bilingual support (English & Urdu)</li>
-                <li>Chat memory for contextual conversations</li>
-                <li>Quick question suggestions</li>
-                <li>Progress tracking with stars and rewards</li>
-                <li>Subject detection and validation</li>
-            </ul>
+            f"""
+            <div class="highlight-box {text_dir}">
+                <p>• آٹزم دوست مواصلاتی انداز کے ساتھ AI ٹیوٹر</p>
+                <p>• صبر کے ساتھ قدم بہ قدم وضاحتیں</p>
+                <p>• "کیسے" سوالات کے لیے خودکار بصری امداد</p>
+                <p>• وضاحتوں کی آواز میں پلے بیک</p>
+                <p>• نصاب کے مطابق مواد (جماعت 4-7)</p>
+                <p>• دو زبانوں میں سپورٹ (انگریزی اور اردو)</p>
+                <p>• سیاق و سباق کی گفتگو کے لیے چیٹ میموری</p>
+                <p>• فوری سوالات کی تجاویز</p>
+                <p>• ستاروں اور انعامات کے ساتھ پیش رفت کا سراغ</p>
+            </div>
             """,
             unsafe_allow_html=True,
         )
+    else:
+        st.markdown(
+            """
+            <div class="section-title">✨ Key Features</div>
+            """,
+            unsafe_allow_html=True,
+        )
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(
+                """
+                <ul class="feature-list">
+                    <li>AI tutor with autism-friendly communication style</li>
+                    <li>Step-by-step explanations with patience</li>
+                    <li>Auto-generated visual aids for "how" questions</li>
+                    <li>Voice playback of explanations</li>
+                    <li>Curriculum-aligned content (Grades 4-7)</li>
+                </ul>
+                """,
+                unsafe_allow_html=True,
+            )
+        with col2:
+            st.markdown(
+                """
+                <ul class="feature-list">
+                    <li>Bilingual support (English & Urdu)</li>
+                    <li>Chat memory for contextual conversations</li>
+                    <li>Quick question suggestions</li>
+                    <li>Progress tracking with stars and rewards</li>
+                    <li>Subject detection and validation</li>
+                </ul>
+                """,
+                unsafe_allow_html=True,
+            )
 
     # Why Autism-Friendly
     if urdu:
@@ -486,6 +582,14 @@ def render_about():
             <div class="section-title {text_dir}">💙 آٹزم دوست کیوں؟</div>
             <div class="section-content {text_dir}">
                 آٹی اسٹڈی خاص طور پر آٹزم والے بچوں کی ضروریات کو مدنظر رکھتے ہوئے ڈیزائن کیا گیا ہے:
+            </div>
+            <div class="highlight-box {text_dir}">
+                <p>• <strong>واضح، آسان زبان:</strong> پیچیدہ جملوں سے گریز</p>
+                <p>• <strong>قدم بہ قدم نقطہ نظر:</strong> تصورات کو چھوٹے ٹکڑوں میں تقسیم کرتا ہے</p>
+                <p>• <strong>بصری سیکھنا:</strong> تصورات کی وضاحت کے لیے خودکار تصاویر</p>
+                <p>• <strong>صبر اور حوصلہ افزائی:</strong> کبھی جلدی نہیں، ہمیشہ معاون</p>
+                <p>• <strong>پیشین گوئی انٹرفیس:</strong> مستقل، پرسکون ڈیزائن</p>
+                <p>• <strong>ملٹی موڈل لرننگ:</strong> ٹیکسٹ، تصاویر اور آڈیو کے اختیارات</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -497,58 +601,90 @@ def render_about():
             <div class="section-content">
                 AutiStudy is specifically designed with autism spectrum needs in mind:
             </div>
+            <div class="highlight-box">
+                <p>• <strong>Clear, Simple Language:</strong> Avoids complex sentences and jargon</p>
+                <p>• <strong>Step-by-Step Approach:</strong> Breaks down concepts into manageable pieces</p>
+                <p>• <strong>Visual Learning:</strong> Auto-generates images to explain concepts</p>
+                <p>• <strong>Patience & Encouragement:</strong> Never rushes, always supportive</p>
+                <p>• <strong>Predictable Interface:</strong> Consistent, calm design without overwhelming elements</p>
+                <p>• <strong>Multi-Modal Learning:</strong> Text, images, and audio options</p>
+            </div>
             """,
             unsafe_allow_html=True,
         )
 
-    st.markdown(
-        """
-        <div class="highlight-box">
-            <p>• <strong>Clear, Simple Language:</strong> Avoids complex sentences and jargon</p>
-            <p>• <strong>Step-by-Step Approach:</strong> Breaks down concepts into manageable pieces</p>
-            <p>• <strong>Visual Learning:</strong> Auto-generates images to explain concepts</p>
-            <p>• <strong>Patience & Encouragement:</strong> Never rushes, always supportive</p>
-            <p>• <strong>Predictable Interface:</strong> Consistent, calm design without overwhelming elements</p>
-            <p>• <strong>Multi-Modal Learning:</strong> Text, images, and audio options</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     # Subjects Covered
-    st.markdown(
-        """
-        <div class="section-title">📚 Subjects Covered</div>
-        <div class="tech-grid">
-            <div class="tech-card">
-                <div class="tech-icon">🔢</div>
-                <div class="tech-name">Mathematics</div>
-                <div class="tech-desc">Grades 4-7: Arithmetic, Algebra, Geometry, and more</div>
+    if urdu:
+        st.markdown(
+            f"""
+            <div class="section-title {text_dir}">📚 شامل مضامین</div>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🔢</div>
+                    <div class="tech-name">ریاضی</div>
+                    <div class="tech-desc">جماعت 4-7: حساب، الجبرا، جیومیٹری</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🔬</div>
+                    <div class="tech-name">جنرل سائنس</div>
+                    <div class="tech-desc">جماعت 4-7: حیاتیات، طبیعیات، کیمیا</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">💻</div>
+                    <div class="tech-name">کمپیوٹر سائنس</div>
+                    <div class="tech-desc">جماعت 6-7: کمپیوٹر کی بنیادیں، سافٹ ویئر، انٹرنیٹ</div>
+                </div>
             </div>
-            <div class="tech-card">
-                <div class="tech-icon">🔬</div>
-                <div class="tech-name">General Science</div>
-                <div class="tech-desc">Grades 4-7: Biology, Physics, Chemistry basics</div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div class="section-title">📚 Subjects Covered</div>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🔢</div>
+                    <div class="tech-name">Mathematics</div>
+                    <div class="tech-desc">Grades 4-7: Arithmetic, Algebra, Geometry, and more</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🔬</div>
+                    <div class="tech-name">General Science</div>
+                    <div class="tech-desc">Grades 4-7: Biology, Physics, Chemistry basics</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">💻</div>
+                    <div class="tech-name">Computer Science</div>
+                    <div class="tech-desc">Grades 6-7: Computer basics, software, internet</div>
+                </div>
             </div>
-            <div class="tech-card">
-                <div class="tech-icon">💻</div>
-                <div class="tech-name">Computer Science</div>
-                <div class="tech-desc">Grades 6-7: Computer basics, software, internet</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+            """,
+            unsafe_allow_html=True,
+        )
 
     # Footer
-    st.markdown(
-        """
-        <div style="text-align:center; margin-top:3rem; padding-top:2rem; border-top:1px solid rgba(148,163,184,0.3);">
-            <div style="font-size:2rem; margin-bottom:0.5rem;">🎓</div>
-            <div style="color:#2563EB; font-weight:800; font-size:1.5rem;">AutiStudy</div>
-            <div style="color:#64748B; margin-top:0.5rem;">Made with ❤️ for students in Pakistan</div>
-            <div style="color:#94A3B8; font-size:0.9rem; margin-top:0.5rem;">© 2024 AutiStudy. All rights reserved.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    if urdu:
+        st.markdown(
+            """
+            <div style="text-align:center; margin-top:3rem; padding-top:2rem; border-top:1px solid rgba(148,163,184,0.3);">
+                <div style="font-size:2rem; margin-bottom:0.5rem;">🎓</div>
+                <div style="color:#2563EB; font-weight:800; font-size:1.5rem;">آٹی اسٹڈی</div>
+                <div style="color:#64748B; margin-top:0.5rem;">پاکستان کے طلباء کے لیے ❤️ سے بنایا گیا</div>
+                <div style="color:#94A3B8; font-size:0.9rem; margin-top:0.5rem;">© 2024 آٹی اسٹڈی۔ جملہ حقوق محفوظ ہیں۔</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div style="text-align:center; margin-top:3rem; padding-top:2rem; border-top:1px solid rgba(148,163,184,0.3);">
+                <div style="font-size:2rem; margin-bottom:0.5rem;">🎓</div>
+                <div style="color:#2563EB; font-weight:800; font-size:1.5rem;">AutiStudy</div>
+                <div style="color:#64748B; margin-top:0.5rem;">Made with ❤️ for students in Pakistan</div>
+                <div style="color:#94A3B8; font-size:0.9rem; margin-top:0.5rem;">© 2024 AutiStudy. All rights reserved.</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )

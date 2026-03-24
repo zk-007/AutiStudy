@@ -309,11 +309,12 @@ FAQ_DATA_UR = {
                 <li>جماعت 4، 5، 6 اور 7 کے <strong>آٹزم سپیکٹرم</strong> کے طلباء</li>
                 <li>پاکستانی نصاب پڑھنے والے طلباء</li>
                 <li>جو بچے <strong>صبر اور قدم بہ قدم سیکھنے</strong> سے فائدہ اٹھاتے ہیں</li>
+                <li>جو سیکھنے والے <strong>بصری اور ملٹی موڈل</strong> وضاحتیں پسند کرتے ہیں</li>
             </ul>"""
         },
         {
             "q": "کیا آٹی اسٹڈی مفت ہے؟",
-            "a": """جی ہاں! آٹی اسٹڈی فی الحال مفت ہے۔ ہمارا مشن معیاری تعلیم کو تمام طلباء کے لیے قابل رسائی بنانا ہے۔"""
+            "a": """جی ہاں! آٹی اسٹڈی فی الحال مفت ہے۔ ہمارا مشن معیاری تعلیم کو تمام طلباء کے لیے قابل رسائی بنانا ہے، خاص طور پر خاص سیکھنے کی ضروریات والے طلباء کے لیے۔"""
         },
         {
             "q": "کون سی زبانیں دستیاب ہیں؟",
@@ -321,18 +322,20 @@ FAQ_DATA_UR = {
             <ul>
                 <li><strong>انگریزی</strong> - مکمل انٹرفیس اور AI جوابات</li>
                 <li><strong>اردو</strong> - مکمل انٹرفیس اور AI جوابات</li>
-            </ul>"""
+            </ul>
+            آپ کسی بھی وقت زبان ٹوگل استعمال کرکے زبانیں تبدیل کر سکتے ہیں۔"""
         }
     ],
     "سیکھنے کے سوالات": [
         {
             "q": "کون سے مضامین پڑھ سکتے ہیں؟",
-            "a": """آٹی اسٹڈی تین مضامین پڑھاتا ہے:
+            "a": """آٹی اسٹڈی تین اہم مضامین پڑھاتا ہے:
             <ul>
-                <li><strong>🔢 ریاضی</strong> - جماعت 4-7</li>
-                <li><strong>🔬 جنرل سائنس</strong> - جماعت 4-7</li>
-                <li><strong>💻 کمپیوٹر سائنس</strong> - جماعت 6-7</li>
-            </ul>"""
+                <li><strong>🔢 ریاضی</strong> - جماعت 4-7: حساب، الجبرا، جیومیٹری، اور مزید</li>
+                <li><strong>🔬 جنرل سائنس</strong> - جماعت 4-7: حیاتیات، طبیعیات، کیمیا کی بنیادیں</li>
+                <li><strong>💻 کمپیوٹر سائنس</strong> - جماعت 6-7: کمپیوٹر کی بنیادیں، سافٹ ویئر، انٹرنیٹ</li>
+            </ul>
+            تمام مواد پاکستان کے قومی نصاب کی کتابوں کے مطابق ہے۔"""
         },
         {
             "q": "AI ٹیوٹر کیسے کام کرتا ہے؟",
@@ -341,11 +344,81 @@ FAQ_DATA_UR = {
                 <li>یہ آپ کی نصابی کتاب سے متعلقہ معلومات تلاش کرتا ہے</li>
                 <li>یہ درست، نصاب پر مبنی جوابات فراہم کرتا ہے</li>
                 <li>یہ آسان زبان میں قدم بہ قدم وضاحت کرتا ہے</li>
+                <li>یہ صبر کرنے والا اور حوصلہ افزا ہے، کبھی جلدی نہیں کرتا</li>
             </ul>"""
         },
         {
             "q": "کیا AI تصاویر بنا سکتا ہے؟",
-            "a": """جی ہاں! جب آپ "کیسے" کا سوال پوچھتے ہیں، آٹی اسٹڈی <strong>خودکار طور پر تصویری وضاحت</strong> بناتا ہے۔ مثال کے طور پر، "2+4 کیسے؟" پوچھیں اور 2 سیب + 4 سیب = 6 سیب کی تصویر دیکھیں۔"""
+            "a": """جی ہاں! آٹی اسٹڈی جب آپ "کیسے" کے سوالات پوچھتے ہیں یا وضاحت کی درخواست کرتے ہیں تو <strong>خودکار طور پر بصری امداد</strong> بناتا ہے۔ مثال کے طور پر:
+            <ul>
+                <li>"2+4 کیا ہے؟" پوچھیں اور پھر "کیسے؟" → 2 سیب + 4 سیب = 6 سیب کی تصویر دیکھیں</li>
+                <li>"ضرب کیسے کام کرتی ہے؟" → قدم بہ قدم بصری وضاحت حاصل کریں</li>
+            </ul>"""
+        },
+        {
+            "q": "کیا AI میرے پچھلے سوالات یاد رکھتا ہے؟",
+            "a": """جی ہاں! AI کے پاس <strong>چیٹ میموری</strong> ہے۔ یہ آپ کی گفتگو میں پچھلے کئی سوالات اور جوابات یاد رکھتا ہے۔ اس لیے اگر آپ پوچھیں "جمع کیا ہے؟" اور پھر "کیسے؟"، AI جانتا ہے کہ آپ جمع کے بارے میں پوچھ رہے ہیں۔"""
+        }
+    ],
+    "تکنیکی سوالات": [
+        {
+            "q": "اگر میرا سوال کتاب سے نہیں ہے تو؟",
+            "a": """آٹی اسٹڈی:
+            <ul>
+                <li><strong>آپ کو مطلع کرے گا</strong> کہ یہ موضوع آپ کی جماعت کی کتاب میں نہیں ہے</li>
+                <li><strong>مختصر وضاحت فراہم کرے گا</strong> سمجھنے میں مدد کے لیے</li>
+                <li><strong>آپ کی حوصلہ افزائی کرے گا</strong> اپنی کتاب کے موضوعات سے سوال پوچھنے کی</li>
+            </ul>
+            اگر آپ کا سوال بالکل مختلف مضمون کے بارے میں ہے، تو یہ صحیح مضمون میں جانے کا مشورہ دے گا۔"""
+        },
+        {
+            "q": "کیا میں AI کی وضاحتیں سن سکتا ہوں؟",
+            "a": """جی ہاں! آٹی اسٹڈی میں <strong>ٹیکسٹ ٹو اسپیچ</strong> کی صلاحیت ہے۔ AI کے جواب دینے کے بعد، "🔊 آواز" بٹن پر کلک کریں تاکہ وضاحت اونچی آواز میں سنیں۔ یہ آڈیو سیکھنے والوں کے لیے مددگار ہے۔"""
+        },
+        {
+            "q": "اکاؤنٹ کیسے بنائیں؟",
+            "a": """اکاؤنٹ بنانا آسان ہے:
+            <ul>
+                <li>لینڈنگ پیج پر "شروع کریں" پر کلک کریں</li>
+                <li>اپنا نام، ای میل درج کریں اور پاس ورڈ منتخب کریں</li>
+                <li>اپنی جماعت (4، 5، 6، یا 7) منتخب کریں</li>
+                <li>سیکھنا شروع کریں!</li>
+            </ul>"""
+        }
+    ],
+    "آٹزم دوست خصوصیات": [
+        {
+            "q": "آٹی اسٹڈی آٹزم دوست کیسے ہے؟",
+            "a": """آٹی اسٹڈی آٹزم سپیکٹرم کی ضروریات کو مدنظر رکھتے ہوئے ڈیزائن کیا گیا ہے:
+            <ul>
+                <li><strong>واضح، آسان زبان</strong> - کوئی پیچیدہ اصطلاحات نہیں</li>
+                <li><strong>قدم بہ قدم وضاحتیں</strong> - تصورات چھوٹے ٹکڑوں میں</li>
+                <li><strong>بصری سیکھنا</strong> - خودکار تصاویر اور ڈایاگرام</li>
+                <li><strong>صبر</strong> - AI کبھی جلدی نہیں کرتا، ہمیشہ معاون</li>
+                <li><strong>پیشن گوئی انٹرفیس</strong> - پرسکون، مستقل ڈیزائن</li>
+                <li><strong>ملٹی موڈل لرننگ</strong> - ٹیکسٹ، تصاویر اور آڈیو کے اختیارات</li>
+            </ul>"""
+        },
+        {
+            "q": "کیا انٹرفیس پرسکون ہے؟",
+            "a": """جی ہاں! آٹی اسٹڈی انٹرفیس استعمال کرتا ہے:
+            <ul>
+                <li><strong>نرم، پرسکون رنگ</strong> - نیلے اور سفید</li>
+                <li><strong>صاف لے آؤٹ</strong> - کوئی بے ترتیب عناصر نہیں</li>
+                <li><strong>مستقل ڈیزائن</strong> - تمام صفحات پر ایک جیسا</li>
+                <li><strong>بڑا، پڑھنے میں آسان متن</strong> - آنکھوں کے لیے آرام دہ</li>
+                <li><strong>سادہ نیویگیشن</strong> - جو چاہیں آسانی سے ڈھونڈیں</li>
+            </ul>"""
+        },
+        {
+            "q": "کیا والدین/اساتذہ پیش رفت دیکھ سکتے ہیں؟",
+            "a": """فی الحال، طلباء اپنی پیش رفت کی نگرانی کر سکتے ہیں:
+            <ul>
+                <li><strong>حاصل کردہ ستارے</strong> - سیکھنے کے انعامات</li>
+                <li><strong>چیٹ ہسٹری</strong> - پچھلی گفتگو کا جائزہ</li>
+                <li><strong>مضمون کی پیش رفت</strong> - دیکھیں آپ نے کون سے موضوعات پڑھے</li>
+            </ul>
+            والدین/اساتذہ کے ڈیش بورڈز جلد آ رہے ہیں!"""
         }
     ]
 }
@@ -360,7 +433,8 @@ def render_faq():
     # Header with back button
     col1, col2, col3 = st.columns([1, 4, 1])
     with col1:
-        if st.button("← Back", key="back_home", use_container_width=True):
+        back_label = "← واپس" if urdu else "← Back"
+        if st.button(back_label, key="back_home", use_container_width=True):
             st.session_state.navigate("landing")
     with col3:
         # Language toggle
@@ -403,6 +477,8 @@ def render_faq():
         "Autism-Friendly Features": "💙",
         "عمومی سوالات": "📋",
         "سیکھنے کے سوالات": "📚",
+        "تکنیکی سوالات": "⚙️",
+        "آٹزم دوست خصوصیات": "💙",
     }
 
     for category, questions in faq_data.items():
@@ -456,24 +532,46 @@ def render_faq():
         )
 
     # Quick tip
-    st.markdown(
-        """
-        <div class="highlight-tip">
-            <strong>💡 Quick Tip:</strong> You can ask the AI tutor any question about your subjects! 
-            Just select your grade and subject, then type your question. The AI will help you understand 
-            step by step.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    if urdu:
+        st.markdown(
+            f"""
+            <div class="highlight-tip {text_dir}">
+                <strong>💡 فوری ٹپ:</strong> آپ AI ٹیوٹر سے اپنے مضامین کے بارے میں کوئی بھی سوال پوچھ سکتے ہیں! 
+                بس اپنی جماعت اور مضمون منتخب کریں، پھر اپنا سوال لکھیں۔ AI آپ کو قدم بہ قدم سمجھنے میں مدد کرے گا۔
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div class="highlight-tip">
+                <strong>💡 Quick Tip:</strong> You can ask the AI tutor any question about your subjects! 
+                Just select your grade and subject, then type your question. The AI will help you understand 
+                step by step.
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     # Footer
-    st.markdown(
-        """
-        <div style="text-align:center; margin-top:2rem; padding-top:1.5rem; border-top:1px solid rgba(148,163,184,0.3);">
-            <div style="color:#2563EB; font-weight:800; font-size:1.3rem;">AutiStudy</div>
-            <div style="color:#64748B; margin-top:0.3rem; font-size:0.95rem;">Made with ❤️ for students in Pakistan</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    if urdu:
+        st.markdown(
+            """
+            <div style="text-align:center; margin-top:2rem; padding-top:1.5rem; border-top:1px solid rgba(148,163,184,0.3);">
+                <div style="color:#2563EB; font-weight:800; font-size:1.3rem;">آٹی اسٹڈی</div>
+                <div style="color:#64748B; margin-top:0.3rem; font-size:0.95rem;">پاکستان کے طلباء کے لیے ❤️ سے بنایا گیا</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div style="text-align:center; margin-top:2rem; padding-top:1.5rem; border-top:1px solid rgba(148,163,184,0.3);">
+                <div style="color:#2563EB; font-weight:800; font-size:1.3rem;">AutiStudy</div>
+                <div style="color:#64748B; margin-top:0.3rem; font-size:0.95rem;">Made with ❤️ for students in Pakistan</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
