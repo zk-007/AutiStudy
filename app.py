@@ -71,3 +71,15 @@ elif st.session_state.page == "about":
 elif st.session_state.page == "faq":
     from views.faq import render_faq
     render_faq()
+elif st.session_state.page == "practice_quiz":
+    if check_authentication():
+        from views.practice_quiz import render_practice_quiz
+        render_practice_quiz()
+    else:
+        navigate_to("login")
+elif st.session_state.page == "analytics":
+    if check_authentication():
+        from views.analytics import render_analytics
+        render_analytics()
+    else:
+        navigate_to("login")

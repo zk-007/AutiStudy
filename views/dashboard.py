@@ -154,11 +154,11 @@ def render_dashboard():
         if st.button(f"🤖 {t('ai_tutor')}",          key="nav_ai_tutor",  use_container_width=True):
             st.session_state.navigate("ai_tutor")
         if st.button(f"📝 {t('practice_quiz')}",      key="nav_practice",  use_container_width=True):
-            st.info(t("coming_soon"))
+            st.session_state.navigate("practice_quiz")
         if st.button(f"📊 {t('learning_analytics')}", key="nav_analytics", use_container_width=True):
-            st.info(t("coming_soon"))
+            st.session_state.navigate("analytics")
         if st.button(f"🏆 {t('earn_rewards')}",       key="nav_rewards",   use_container_width=True):
-            st.info(t("coming_soon"))
+            st.session_state.navigate("analytics")  # Link to analytics for now
         if st.button("⚙️ Settings",                   key="nav_settings",  use_container_width=True):
             st.info(t("coming_soon"))
 
@@ -201,7 +201,7 @@ def render_dashboard():
         </div>
         """, unsafe_allow_html=True)
         if st.button(t("start_practice"), key="quick_practice", use_container_width=True):
-            st.info(t("coming_soon"))
+            st.session_state.navigate("practice_quiz")
 
     with col3:
         st.markdown(f"""
@@ -212,7 +212,7 @@ def render_dashboard():
         </div>
         """, unsafe_allow_html=True)
         if st.button(t("view_progress"), key="quick_analytics", use_container_width=True):
-            st.info(t("coming_soon"))
+            st.session_state.navigate("analytics")
 
     with col4:
         st.markdown(f"""
@@ -223,7 +223,7 @@ def render_dashboard():
         </div>
         """, unsafe_allow_html=True)
         if st.button(t("view_rewards"), key="quick_rewards", use_container_width=True):
-            st.info(t("coming_soon"))
+            st.session_state.navigate("analytics")
 
     st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
 
