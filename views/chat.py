@@ -433,102 +433,88 @@ def render_main_content(grade, subject, user_email):
         # Trigger confetti/balloons
         st.balloons()
         
-        # Welcome animation with confetti CSS
+        # Welcome animation CSS (separate block)
         st.markdown(
-            f"""
+            """
             <style>
-            @keyframes fadeInUp {{
-                from {{
-                    opacity: 0;
-                    transform: translateY(30px);
-                }}
-                to {{
-                    opacity: 1;
-                    transform: translateY(0);
-                }}
-            }}
-            
-            @keyframes bounce {{
-                0%, 20%, 50%, 80%, 100% {{ transform: translateY(0); }}
-                40% {{ transform: translateY(-20px); }}
-                60% {{ transform: translateY(-10px); }}
-            }}
-            
-            @keyframes pulse {{
-                0% {{ transform: scale(1); }}
-                50% {{ transform: scale(1.05); }}
-                100% {{ transform: scale(1); }}
-            }}
-            
-            .welcome-container {{
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(30px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-20px); }
+                60% { transform: translateY(-10px); }
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            .welcome-container {
                 text-align: center;
                 padding: 2rem;
                 animation: fadeInUp 0.8s ease-out;
-            }}
-            
-            .welcome-emoji {{
+            }
+            .welcome-emoji {
                 font-size: 5rem;
                 animation: bounce 1.5s ease infinite;
                 display: inline-block;
-            }}
-            
-            .welcome-title {{
+            }
+            .welcome-title {
                 color: #0F2D4A;
                 font-size: 2.5rem;
                 font-weight: 900;
                 margin: 1rem 0;
-                animation: fadeInUp 0.8s ease-out 0.2s both;
-            }}
-            
-            .welcome-subtitle {{
+            }
+            .welcome-subtitle {
                 color: #2563EB;
                 font-size: 1.4rem;
                 font-weight: 700;
                 margin: 0.5rem 0;
-                animation: fadeInUp 0.8s ease-out 0.4s both;
-            }}
-            
-            .welcome-message {{
+            }
+            .welcome-message {
                 color: #64748B;
                 font-size: 1.15rem;
                 margin: 1rem 0;
-                animation: fadeInUp 0.8s ease-out 0.6s both;
-            }}
-            
-            .welcome-card {{
+            }
+            .welcome-card {
                 background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 50%, #E0E7FF 100%);
                 border-radius: 24px;
                 padding: 2.5rem;
-                margin: 1.5rem 0;
+                margin: 1.5rem auto;
+                max-width: 600px;
                 box-shadow: 0 12px 40px rgba(37, 99, 235, 0.15);
-                animation: pulse 2s ease-in-out infinite;
-            }}
-            
-            .subject-badge {{
+            }
+            .welcome-badge {
                 display: inline-block;
                 background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-                color: white;
-                padding: 0.6rem 1.5rem;
+                color: white !important;
+                padding: 0.5rem 1.2rem;
                 border-radius: 30px;
                 font-weight: 700;
-                font-size: 1.1rem;
-                margin: 0.5rem;
-            }}
+                font-size: 1rem;
+            }
             </style>
-            
+            """,
+            unsafe_allow_html=True,
+        )
+        
+        # Welcome HTML content (separate block)
+        st.markdown(
+            f"""
             <div class="welcome-container">
                 <div class="welcome-emoji">🎉</div>
                 <h1 class="welcome-title">Welcome, {html.escape(user_name)}!</h1>
                 <p class="welcome-subtitle">Ready to learn {safe_subject}?</p>
-                
                 <div class="welcome-card">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">🤖✨📚</div>
-                    <p style="color: #1E3A5F; font-size: 1.2rem; font-weight: 600; margin: 0;">
-                        I'm your AI Tutor! I'm here to help you understand 
-                        <span class="subject-badge">{safe_subject}</span>
+                    <p style="color: #1E3A5F; font-size: 1.2rem; font-weight: 600; margin: 0 0 0.5rem 0;">
+                        I'm your AI Tutor! I'm here to help you understand
                     </p>
+                    <span class="welcome-badge">{safe_subject}</span>
                     <p class="welcome-message">
-                        Ask me anything - I'll explain step by step with patience! 
+                        Ask me anything - I'll explain step by step with patience!<br>
                         Let's make learning fun together! 🌟
                     </p>
                 </div>
