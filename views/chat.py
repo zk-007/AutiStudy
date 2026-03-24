@@ -33,10 +33,10 @@ def render_chat():
 # State + Styles
 # =========================
 def initialize_chat_state(user_email, grade, subject, current_language):
-    if "current_chat_id" not in st.session_state or not st.session_state.current_chat_id:
-        st.session_state.current_chat_id = create_chat_session(
-            user_email, grade, subject, current_language
-        )
+    # Don't create a new chat session automatically - only when user sends first message
+    # Just initialize the session state variables
+    if "current_chat_id" not in st.session_state:
+        st.session_state.current_chat_id = None  # Will be created on first message
 
     st.session_state.setdefault("chat_history", [])
     st.session_state.setdefault("generated_images", {})
@@ -546,6 +546,13 @@ def render_quick_questions(grade, subject, user_email):
 # Chat processing
 # =========================
 def process_user_input(user_input, grade, subject, user_email):
+    # Create chat session on FIRST message only (not on page load)
+    if not st.session_state.current_chat_id:
+        current_language = get_language()
+        st.session_state.current_chat_id = create_chat_session(
+            user_email, grade, subject, current_language
+        )
+    
     st.session_state.chat_history.append({
         "role": "user",
         "content": user_input,
