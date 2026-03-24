@@ -648,59 +648,36 @@ def _heuristic_visual_plan(question: str, grade: int, subject: str) -> Dict[str,
         layout = "Top row: first group + second group. Bottom row: result group."
         aspect_ratio = "1:1"  # Square format to prevent cropping
         
-        # Build visual prompt with actual objects - HORIZONTAL layout: A + B = C
+        # Build simple, general prompt - let the model decide layout
         if is_addition:
             prompt = (
-                f"Create a simple math equation image showing: {n1} + {n2} = {result}. "
-                f"White background, flat cartoon style. "
-                f"LAYOUT FROM LEFT TO RIGHT IN ONE ROW: "
-                f"1. FIRST: Exactly {n1} red apples grouped together, with '{n1}' written below. "
-                f"2. THEN: A large black PLUS sign (+). "
-                f"3. THEN: Exactly {n2} green apples grouped together, with '{n2}' written below. "
-                f"4. THEN: A large black EQUALS sign (=). "
-                f"5. LAST: Exactly {result} apples (mixed colors), with '{result}' written below. "
-                f"ORDER IS CRITICAL: {n1} apples, then +, then {n2} apples, then =, then {result} apples. "
-                f"The {result} apples MUST be on the far RIGHT, not in the middle. "
-                f"All in one horizontal row, reading left to right like a math equation. "
-                f"Simple, clear, child-friendly. No extra decorations. "
+                f"Educational math illustration for children: {n1} + {n2} = {result}. "
+                f"Show the equation using small, simple icons (dots, circles, or shapes). "
+                f"Group 1: {n1} icons. Plus sign. Group 2: {n2} icons. Equals sign. Result: {result} icons. "
+                f"Use small icons so everything fits. Clean white background. "
+                f"Write the numbers {n1}, {n2}, and {result} as labels. "
+                f"Simple, minimal, easy to understand at a glance. "
             )
         elif is_subtraction:
             prompt = (
-                f"Create a simple autism-friendly VISUAL math image showing: {n1} - {n2} = {result}. "
-                f"White background, flat vector style, soft educational colors. "
-                f"IMPORTANT: Show this using REAL OBJECTS, not just numbers. "
-                f"TOP SECTION: Show exactly {n1} colorful balls arranged neatly. Label it 'Start with {n1} balls'. "
-                f"MIDDLE SECTION: Show {n2} balls being crossed out or removed with a red X. Label it 'Take away {n2} balls'. "
-                f"BOTTOM SECTION: Show the remaining {result} balls. Label it '{result} balls left'. "
-                f"Make it very clear that starting with {n1} objects and removing {n2} leaves {result} objects. "
-                f"Use large, clear, cute ball icons. Child-friendly style. "
-                f"Show arrows connecting the steps. "
-                f"No clutter, no decoration, no extra symbols. "
-                f"{DEFAULT_NEGATIVE_TEXT}"
+                f"Educational math illustration for children: {n1} - {n2} = {result}. "
+                f"Show {n1} small circles at the top. "
+                f"Show {n2} of them crossed out or faded. "
+                f"Show {result} circles remaining at the bottom. "
+                f"Label with numbers. Clean white background. Simple and minimal. "
             )
         elif is_multiplication:
             prompt = (
-                f"Create a simple autism-friendly VISUAL math image showing: {n1} × {n2} = {result}. "
-                f"White background, flat vector style, soft educational colors. "
-                f"IMPORTANT: Show this using REAL OBJECTS in GROUPS. "
-                f"Show {n1} groups, each containing exactly {n2} stars. "
-                f"Arrange the groups clearly so child can count: {n1} groups of {n2} = {result} total. "
-                f"Label each group. Show the total count at the bottom: '{n1} × {n2} = {result} stars'. "
-                f"Use large, clear, cute star icons. Child-friendly style. "
-                f"No clutter, no decoration, no extra symbols. "
-                f"{DEFAULT_NEGATIVE_TEXT}"
+                f"Educational math illustration for children: {n1} × {n2} = {result}. "
+                f"Show {n1} rows with {n2} small dots in each row. "
+                f"Total of {result} dots arranged in a grid. "
+                f"Label: '{n1} × {n2} = {result}'. Clean white background. Simple and minimal. "
             )
         else:
             prompt = (
-                f"Create a simple autism-friendly VISUAL math image for: {q}. "
-                f"White background, flat vector style, soft educational colors. "
-                f"IMPORTANT: Show the math using REAL OBJECTS like apples, balls, or stars - NOT just numbers. "
-                f"Show the objects being combined or separated to demonstrate the math operation. "
-                f"Make it visual so a child can COUNT the objects to understand the answer. "
-                f"Use large, clear, cute icons. Child-friendly style. "
-                f"Label each group of objects with numbers. "
-                f"No clutter, no decoration, no extra symbols. "
-                f"{DEFAULT_NEGATIVE_TEXT}"
+                f"Simple educational math illustration for: {q}. "
+                f"Use small icons or shapes to visualize the math concept. "
+                f"Clean white background. Labels with numbers. Simple and minimal. "
             )
         
         return {
@@ -1239,16 +1216,12 @@ def generate_image(
             else:
                 print(f"❌ Math image verification FAILED: {verification.get('feedback', 'Unknown error')}")
                 
-                # Create a more explicit prompt for retry
+                # Simplified retry prompt
                 image_prompt = (
-                    f"Create a math equation image: {n1} {operation} {n2} = {expected_result}. "
-                    f"ONE HORIZONTAL ROW, LEFT TO RIGHT: "
-                    f"[{n1} apples] [{operation}] [{n2} apples] [=] [{expected_result} apples]. "
-                    f"The RESULT ({expected_result} apples) MUST be on the FAR RIGHT after the equals sign. "
-                    f"NOT in the middle! "
-                    f"Count: exactly {n1}, then {n2}, then {expected_result} objects. "
-                    f"Include + and = signs between groups. "
-                    f"White background, simple cartoon apples, labels below each group. "
+                    f"Simple math diagram: {n1} {operation} {n2} = {expected_result}. "
+                    f"Use tiny dots or circles. "
+                    f"Show exactly {n1} dots, {operation} sign, {n2} dots, = sign, {expected_result} dots. "
+                    f"Small icons. White background. Number labels. Very simple and clean. "
                 )
                 print(f"Retrying with more explicit prompt...")
                 continue
