@@ -645,23 +645,23 @@ def _heuristic_visual_plan(question: str, grade: int, subject: str) -> Dict[str,
         title = f"{n1} {operation} {n2} = {result}"
         icons = ["objects group 1", "operation sign", "objects group 2", "equals", "result group"]
         labels = [str(n1), operation, str(n2), "=", str(result)]
-        layout = "Left: first group of objects. Center: operation sign. Right: second group. Far right: equals and result group."
-        aspect_ratio = "16:9"
+        layout = "Top row: first group + second group. Bottom row: result group."
+        aspect_ratio = "1:1"  # Square format to prevent cropping
         
-        # Build visual prompt with actual objects
+        # Build visual prompt with actual objects - using SQUARE layout to prevent cropping
         if is_addition:
             prompt = (
-                f"Create a simple autism-friendly VISUAL math image showing: {n1} + {n2} = {result}. "
+                f"Create a SQUARE autism-friendly VISUAL math image showing: {n1} + {n2} = {result}. "
                 f"White background, flat vector style, soft educational colors. "
-                f"IMPORTANT: Show this using REAL OBJECTS, not just numbers. "
-                f"LEFT SIDE: Show exactly {n1} red apples arranged neatly in a row. Label it '{n1} apples'. "
-                f"CENTER: Show a big colorful PLUS sign (+). "
-                f"RIGHT SIDE: Show exactly {n2} green apples arranged neatly in a row. Label it '{n2} apples'. "
-                f"BELOW: Show an arrow pointing down to the RESULT section. "
-                f"RESULT SECTION: Show all {result} apples together (mixed red and green). Label it '{n1} + {n2} = {result} apples'. "
-                f"Make it very clear that combining {n1} objects with {n2} objects gives {result} objects total. "
+                f"IMPORTANT: Show this using REAL OBJECTS, not just numbers. Use a SQUARE layout. "
+                f"TOP ROW: Show exactly {n1} red apples on the left, a PLUS sign in the middle, and exactly {n2} green apples on the right. "
+                f"Label the left group '{n1}' and the right group '{n2}'. "
+                f"MIDDLE: Show an EQUALS sign (=). "
+                f"BOTTOM ROW: Show all {result} apples together in a single row. Label it '{result} apples'. "
+                f"Make sure ALL objects fit within the square frame with good margins. "
                 f"Use large, clear, cute apple icons. Child-friendly style. "
-                f"No clutter, no decoration, no extra symbols. Just the apples, plus sign, and result. "
+                f"Arrange objects in neat rows that fit completely in the image. "
+                f"No clutter, no decoration, no cropping. Everything must be fully visible. "
                 f"{DEFAULT_NEGATIVE_TEXT}"
             )
         elif is_subtraction:
@@ -1230,18 +1230,19 @@ def generate_image(
             else:
                 print(f"❌ Math image verification FAILED: {verification.get('feedback', 'Unknown error')}")
                 
-                # Create a more explicit prompt for retry
+                # Create a more explicit prompt for retry - using SQUARE layout
                 image_prompt = (
-                    f"CRITICAL: Create an educational image showing EXACTLY {n1} {operation} {n2} = {expected_result}. "
+                    f"CRITICAL: Create a SQUARE educational image showing EXACTLY {n1} {operation} {n2} = {expected_result}. "
                     f"You MUST show EXACTLY {n1} objects in the first group. "
                     f"You MUST show EXACTLY {n2} objects in the second group. "
                     f"You MUST show EXACTLY {expected_result} objects in the result. "
-                    f"COUNT CAREFULLY: {n1} + {n2} = {expected_result}. "
-                    f"Use simple, identical objects like red circles or apples. "
-                    f"Arrange objects in a single row so they are easy to count. "
-                    f"Label each group with the correct number. "
+                    f"COUNT CAREFULLY: {n1} {operation} {n2} = {expected_result}. "
+                    f"Use simple red apples or circles. "
+                    f"TOP ROW: {n1} objects + {n2} objects with labels. "
+                    f"BOTTOM ROW: {expected_result} objects total. "
+                    f"Make sure everything fits within the SQUARE frame with margins. "
                     f"White background, flat vector style, child-friendly. "
-                    f"NO extra decorations, NO extra objects, just exactly the right count. "
+                    f"NO cropping - all objects must be fully visible. "
                     f"VERIFY: First group has {n1}, second group has {n2}, result has {expected_result}."
                 )
                 print(f"Retrying with more explicit prompt...")
