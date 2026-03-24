@@ -305,43 +305,11 @@ def get_context_from_history(chat_history: List[Dict], user_message: str) -> str
 def should_auto_generate_image(user_message: str, subject: str, chat_history: List[Dict]) -> bool:
     """
     Determine if we should automatically generate an image for this question.
-    Returns True for:
-    - Math questions asking "how" 
-    - Follow-up "how" questions about previous topics
-    - Questions with visual keywords
+    
+    DISABLED: Images are now only generated when user clicks ImageAid button.
+    This function always returns False.
     """
-    msg = user_message.strip().lower()
-    subj = subject.lower()
-    
-    # Always generate for explicit visual requests
-    visual_keywords = ["show me", "draw", "picture", "image", "visual", "diagram", "illustrate"]
-    if any(kw in msg for kw in visual_keywords):
-        return True
-    
-    # For Math subject
-    if subj in ["maths", "math"]:
-        # "How" questions in math benefit from visuals
-        if msg.startswith("how") or "how do" in msg or "how does" in msg:
-            return True
-        
-        # Follow-up "how" questions
-        if is_followup_how_question(msg) and chat_history:
-            return True
-        
-        # Direct math expressions benefit from step-by-step visuals
-        if re.search(r"\d+\s*[-+x×*/÷]\s*\d+", msg):
-            return True
-    
-    # For Computer subject - "how does X work" questions
-    if subj == "computer":
-        if "how" in msg and ("work" in msg or "does" in msg or "process" in msg):
-            return True
-    
-    # For Science - process/how questions
-    if subj in ["science", "general science"]:
-        if "how" in msg and ("work" in msg or "happen" in msg or "process" in msg):
-            return True
-    
+    # Auto-generation disabled - user must click ImageAid button
     return False
 
 
@@ -394,13 +362,18 @@ STRICT RULES:
 6. For comparison: use two clean columns.
 7. For workflow: use 3 to 5 steps with arrows.
 8. For math_steps:
-   - show the equation
-   - show 2 to 3 clean solution steps
-   - show the final answer clearly
+   - IMPORTANT: Use VISUAL OBJECTS (apples, balls, stars) to show the math, NOT just numbers
+   - For addition: show first group of objects + second group = combined group
+   - For subtraction: show starting objects, cross out some, show remaining
+   - For multiplication: show groups of objects
+   - The child should be able to COUNT the objects to understand the answer
+   - show the equation with objects, not just digits
 9. For math_concept:
    - show the concept name simply
-   - show one small solved example
-   - make the example easier than the student's topic if needed
+   - IMPORTANT: Use VISUAL OBJECTS to demonstrate the concept
+   - For addition: show objects being combined
+   - For subtraction: show objects being removed
+   - make the example visual so a child can count and understand
 10. Use 4 to 6 soft educational colors. Never make the image monochrome or black-and-white unless the topic truly requires it.
 11. Never ask for a busy infographic.
 12. Do not use too many icons. Only the icons that directly explain the question.
@@ -577,10 +550,18 @@ def _math_concept_example_instruction(concept_name: str) -> str:
         )
 
     if "addition" in concept:
-        return "Show one simple solved example such as 2 + 3 = 5 using a clear step."
+        return (
+            "Show 2 + 3 = 5 using VISUAL OBJECTS: "
+            "Draw 2 apples on the left, a plus sign, 3 apples on the right, equals sign, then 5 apples together. "
+            "The child should be able to COUNT the objects to understand addition means combining groups."
+        )
 
     if "subtraction" in concept:
-        return "Show one simple solved example such as 7 - 2 = 5 using a clear step."
+        return (
+            "Show 5 - 2 = 3 using VISUAL OBJECTS: "
+            "Start with 5 balls, cross out 2 balls with a red X, show 3 balls remaining. "
+            "The child should SEE objects being taken away to understand subtraction."
+        )
 
     if "fraction" in concept:
         return (
@@ -622,24 +603,108 @@ def _heuristic_visual_plan(question: str, grade: int, subject: str) -> Dict[str,
     q_lower = q.lower()
 
     if _looks_like_math_expression(q):
-        title = "Solve Step by Step"
-        icons = ["equation", "step line", "answer box"]
-        labels = ["equation", "steps", "answer"]
-        layout = "Top: equation. Middle: 2 to 3 simple steps. Bottom: final answer in a clear answer box."
-        aspect_ratio = "3:4"
-        prompt = (
-            f"Create a simple autism-friendly math learning image for: {q}. "
-            "White background, flat vector style, 4 to 6 soft educational colors, lots of empty space. "
-            "Do not make it black-and-white. "
-            "Top section: show the full equation clearly. "
-            "Middle section: show 2 to 3 simple solution steps in large readable math text. "
-            "Bottom section: show the final answer clearly in a highlighted answer box. "
-            "Use clean written calculation steps. Supporting blocks are optional, but the written solution is more important. "
-            "No decoration, no extra icons, no clutter, no long paragraphs. "
-            f"{DEFAULT_NEGATIVE_TEXT}"
-        )
+        # Extract numbers from expression for visual representation
+        numbers = re.findall(r'\d+', q)
+        num1 = numbers[0] if len(numbers) > 0 else "2"
+        num2 = numbers[1] if len(numbers) > 1 else "3"
+        
+        # Detect operation
+        is_addition = "+" in q or "add" in q_lower or "plus" in q_lower
+        is_subtraction = "-" in q or "subtract" in q_lower or "minus" in q_lower or "take away" in q_lower
+        is_multiplication = "*" in q or "×" in q or "x" in q_lower or "multiply" in q_lower or "times" in q_lower
+        is_division = "/" in q or "÷" in q or "divide" in q_lower
+        
+        # Calculate result for prompt
+        try:
+            n1, n2 = int(num1), int(num2)
+            if is_addition:
+                result = n1 + n2
+                operation = "+"
+                op_word = "plus"
+            elif is_subtraction:
+                result = n1 - n2
+                operation = "-"
+                op_word = "minus"
+            elif is_multiplication:
+                result = n1 * n2
+                operation = "×"
+                op_word = "times"
+            elif is_division and n2 != 0:
+                result = n1 // n2
+                operation = "÷"
+                op_word = "divided by"
+            else:
+                result = n1 + n2
+                operation = "+"
+                op_word = "plus"
+        except:
+            n1, n2, result = 2, 3, 5
+            operation = "+"
+            op_word = "plus"
+        
+        title = f"{n1} {operation} {n2} = {result}"
+        icons = ["objects group 1", "operation sign", "objects group 2", "equals", "result group"]
+        labels = [str(n1), operation, str(n2), "=", str(result)]
+        layout = "Left: first group of objects. Center: operation sign. Right: second group. Far right: equals and result group."
+        aspect_ratio = "16:9"
+        
+        # Build visual prompt with actual objects
+        if is_addition:
+            prompt = (
+                f"Create a simple autism-friendly VISUAL math image showing: {n1} + {n2} = {result}. "
+                f"White background, flat vector style, soft educational colors. "
+                f"IMPORTANT: Show this using REAL OBJECTS, not just numbers. "
+                f"LEFT SIDE: Show exactly {n1} red apples arranged neatly in a row. Label it '{n1} apples'. "
+                f"CENTER: Show a big colorful PLUS sign (+). "
+                f"RIGHT SIDE: Show exactly {n2} green apples arranged neatly in a row. Label it '{n2} apples'. "
+                f"BELOW: Show an arrow pointing down to the RESULT section. "
+                f"RESULT SECTION: Show all {result} apples together (mixed red and green). Label it '{n1} + {n2} = {result} apples'. "
+                f"Make it very clear that combining {n1} objects with {n2} objects gives {result} objects total. "
+                f"Use large, clear, cute apple icons. Child-friendly style. "
+                f"No clutter, no decoration, no extra symbols. Just the apples, plus sign, and result. "
+                f"{DEFAULT_NEGATIVE_TEXT}"
+            )
+        elif is_subtraction:
+            prompt = (
+                f"Create a simple autism-friendly VISUAL math image showing: {n1} - {n2} = {result}. "
+                f"White background, flat vector style, soft educational colors. "
+                f"IMPORTANT: Show this using REAL OBJECTS, not just numbers. "
+                f"TOP SECTION: Show exactly {n1} colorful balls arranged neatly. Label it 'Start with {n1} balls'. "
+                f"MIDDLE SECTION: Show {n2} balls being crossed out or removed with a red X. Label it 'Take away {n2} balls'. "
+                f"BOTTOM SECTION: Show the remaining {result} balls. Label it '{result} balls left'. "
+                f"Make it very clear that starting with {n1} objects and removing {n2} leaves {result} objects. "
+                f"Use large, clear, cute ball icons. Child-friendly style. "
+                f"Show arrows connecting the steps. "
+                f"No clutter, no decoration, no extra symbols. "
+                f"{DEFAULT_NEGATIVE_TEXT}"
+            )
+        elif is_multiplication:
+            prompt = (
+                f"Create a simple autism-friendly VISUAL math image showing: {n1} × {n2} = {result}. "
+                f"White background, flat vector style, soft educational colors. "
+                f"IMPORTANT: Show this using REAL OBJECTS in GROUPS. "
+                f"Show {n1} groups, each containing exactly {n2} stars. "
+                f"Arrange the groups clearly so child can count: {n1} groups of {n2} = {result} total. "
+                f"Label each group. Show the total count at the bottom: '{n1} × {n2} = {result} stars'. "
+                f"Use large, clear, cute star icons. Child-friendly style. "
+                f"No clutter, no decoration, no extra symbols. "
+                f"{DEFAULT_NEGATIVE_TEXT}"
+            )
+        else:
+            prompt = (
+                f"Create a simple autism-friendly VISUAL math image for: {q}. "
+                f"White background, flat vector style, soft educational colors. "
+                f"IMPORTANT: Show the math using REAL OBJECTS like apples, balls, or stars - NOT just numbers. "
+                f"Show the objects being combined or separated to demonstrate the math operation. "
+                f"Make it visual so a child can COUNT the objects to understand the answer. "
+                f"Use large, clear, cute icons. Child-friendly style. "
+                f"Label each group of objects with numbers. "
+                f"No clutter, no decoration, no extra symbols. "
+                f"{DEFAULT_NEGATIVE_TEXT}"
+            )
+        
         return {
-            "template": "math_steps",
+            "template": "math_visual",
             "title": title,
             "icons": icons,
             "labels": labels,
