@@ -712,6 +712,12 @@ def _heuristic_visual_plan(question: str, grade: int, subject: str) -> Dict[str,
             "arrows": True,
             "aspect_ratio": aspect_ratio,
             "prompt": prompt,
+            "math_info": {
+                "n1": n1,
+                "n2": n2,
+                "result": result,
+                "operation": operation
+            }
         }
 
     if _is_math_concept_question(q, subject):
@@ -1004,13 +1010,159 @@ def _save_b64_image_to_temp(b64_string: str) -> Optional[str]:
         return None
 
 
+def _verify_math_image(client, image_url: str, expected_n1: int, expected_n2: int, expected_result: int, operation: str) -> Dict[str, Any]:
+    """
+    Verify a math image using GPT-4 Vision to check if object counts are correct.
+    
+    Returns:
+        Dict with 'is_correct', 'actual_counts', 'feedback'
+    """
+    try:
+        op_name = "addition" if operation == "+" else "subtraction" if operation == "-" else "multiplication" if operation in ["×", "*"] else "division"
+        
+        verify_prompt = f"""You are verifying a math educational image for children.
+
+The image should show: {expected_n1} {operation} {expected_n2} = {expected_result}
+
+Please carefully COUNT the objects in each section of the image:
+1. How many objects are in the FIRST group (left side)?
+2. How many objects are in the SECOND group (right side)?  
+3. How many objects are in the RESULT section (bottom)?
+
+Respond in this exact JSON format:
+{{
+    "first_group_count": <number>,
+    "second_group_count": <number>,
+    "result_count": <number>,
+    "is_correct": true/false,
+    "feedback": "explanation if incorrect"
+}}
+
+IMPORTANT: Count EVERY object carefully. The result should show exactly {expected_result} objects total."""
+
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": verify_prompt},
+                        {"type": "image_url", "image_url": {"url": image_url}}
+                    ]
+                }
+            ],
+            max_tokens=500
+        )
+        
+        result_text = response.choices[0].message.content
+        
+        # Extract JSON from response
+        try:
+            # Try to parse JSON
+            import json
+            json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
+            if json_match:
+                verification = json.loads(json_match.group(0))
+                
+                # Double check the math
+                first = verification.get("first_group_count", 0)
+                second = verification.get("second_group_count", 0)
+                result = verification.get("result_count", 0)
+                
+                # Verify counts match expected
+                is_correct = (
+                    first == expected_n1 and 
+                    second == expected_n2 and 
+                    result == expected_result
+                )
+                
+                verification["is_correct"] = is_correct
+                if not is_correct:
+                    verification["feedback"] = f"Expected: {expected_n1} + {expected_n2} = {expected_result}. Found: {first} + {second} = {result} objects."
+                
+                return verification
+        except Exception as e:
+            print(f"Error parsing verification JSON: {e}")
+        
+        return {"is_correct": False, "feedback": "Could not verify image"}
+        
+    except Exception as e:
+        print(f"Image verification error: {e}")
+        return {"is_correct": True, "feedback": "Verification skipped"}  # Don't block on errors
+
+
+def _generate_single_image(client, image_prompt: str, size: str) -> Optional[str]:
+    """Generate a single image and return URL or path."""
+    # Try GPT Image 1.5
+    try:
+        response = client.images.generate(
+            model="gpt-image-1.5",
+            prompt=image_prompt,
+            size=size,
+            quality="high",
+            n=1,
+        )
+        if response.data and len(response.data) > 0:
+            first_item = response.data[0]
+            if getattr(first_item, "b64_json", None):
+                saved_path = _save_b64_image_to_temp(first_item.b64_json)
+                if saved_path:
+                    return saved_path
+            if getattr(first_item, "url", None):
+                return first_item.url
+    except Exception as e:
+        print(f"GPT Image 1.5 error: {e}")
+
+    # Try GPT Image 1
+    try:
+        response = client.images.generate(
+            model="gpt-image-1",
+            prompt=image_prompt,
+            size=size,
+            quality="high",
+            n=1,
+        )
+        if response.data and len(response.data) > 0:
+            first_item = response.data[0]
+            if getattr(first_item, "b64_json", None):
+                saved_path = _save_b64_image_to_temp(first_item.b64_json)
+                if saved_path:
+                    return saved_path
+            if getattr(first_item, "url", None):
+                return first_item.url
+    except Exception as e:
+        print(f"GPT Image 1 error: {e}")
+
+    # Try DALL-E 3
+    try:
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=image_prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1,
+        )
+        if response.data and len(response.data) > 0:
+            first_item = response.data[0]
+            if getattr(first_item, "url", None):
+                return first_item.url
+            if getattr(first_item, "b64_json", None):
+                saved_path = _save_b64_image_to_temp(first_item.b64_json)
+                if saved_path:
+                    return saved_path
+    except Exception as e:
+        print(f"DALL-E 3 error: {e}")
+
+    return None
+
+
 def generate_image(
     question: str, 
     grade: int, 
     subject: str,
     chat_history: List[Dict] = None
 ) -> Optional[str]:
-    """Generate an educational image using OpenAI image generation."""
+    """Generate an educational image using OpenAI image generation with verification for math."""
     client = get_openai_client()
     if not client:
         print("OpenAI client not found")
@@ -1026,94 +1178,79 @@ def generate_image(
     aspect_ratio = prompt_data.get("aspect_ratio", "4:3")
     template = prompt_data.get("template", "definition")
     size = _aspect_ratio_to_size(aspect_ratio)
+    
+    # Extract math info for verification
+    math_info = prompt_data.get("math_info", None)
 
     print(f"Image template: {template}")
     print(f"Aspect ratio: {aspect_ratio}")
     print(f"OpenAI image size: {size}")
     print(f"Generated image prompt: {image_prompt[:300]}...")
 
-    # Main attempt: GPT Image 1.5
-    try:
-        response = client.images.generate(
-            model="gpt-image-1.5",
-            prompt=image_prompt,
-            size=size,
-            quality="high",
-            n=1,
-        )
-
-        if response.data and len(response.data) > 0:
-            first_item = response.data[0]
-
-            if getattr(first_item, "b64_json", None):
-                print("GPT Image 1.5 generated successfully.")
-                saved_path = _save_b64_image_to_temp(first_item.b64_json)
-                if saved_path:
-                    return saved_path
-
-            if getattr(first_item, "url", None):
-                print("GPT Image 1.5 generated successfully with URL output.")
-                return first_item.url
-
-        print("GPT Image 1.5 returned no usable image data.")
-
-    except Exception as e:
-        print(f"GPT Image 1.5 generation error: {e}")
-
-    # Fallback 1: GPT Image 1
-    try:
-        print("Falling back to gpt-image-1...")
-        response = client.images.generate(
-            model="gpt-image-1",
-            prompt=image_prompt,
-            size=size,
-            quality="high",
-            n=1,
-        )
-
-        if response.data and len(response.data) > 0:
-            first_item = response.data[0]
-
-            if getattr(first_item, "b64_json", None):
-                print("GPT Image 1 generated successfully.")
-                saved_path = _save_b64_image_to_temp(first_item.b64_json)
-                if saved_path:
-                    return saved_path
-
-            if getattr(first_item, "url", None):
-                print("GPT Image 1 generated successfully with URL output.")
-                return first_item.url
-
-    except Exception as e:
-        print(f"GPT Image 1 fallback error: {e}")
-
-    # Fallback 2: DALL-E 3
-    try:
-        print("Falling back to DALL-E 3...")
-        response = client.images.generate(
-            model="dall-e-3",
-            prompt=image_prompt,
-            size="1024x1024",
-            quality="standard",
-            n=1,
-        )
-
-        if response.data and len(response.data) > 0:
-            first_item = response.data[0]
-
-            if getattr(first_item, "url", None):
-                print("DALL-E 3 generated successfully.")
-                return first_item.url
-
-            if getattr(first_item, "b64_json", None):
-                saved_path = _save_b64_image_to_temp(first_item.b64_json)
-                if saved_path:
-                    return saved_path
-
-    except Exception as e:
-        print(f"DALL-E 3 fallback error: {e}")
-
-    print("All image generation methods failed.")
+    # For math images, use verification and retry if incorrect
+    is_math_image = template == "math_visual" and math_info is not None
+    max_attempts = 3 if is_math_image else 1
+    
+    for attempt in range(max_attempts):
+        print(f"Image generation attempt {attempt + 1}/{max_attempts}")
+        
+        # Generate the image
+        image_result = _generate_single_image(client, image_prompt, size)
+        
+        if not image_result:
+            print("Image generation failed")
+            continue
+        
+        # For math images, verify the object counts
+        if is_math_image and attempt < max_attempts - 1:
+            n1 = math_info["n1"]
+            n2 = math_info["n2"]
+            expected_result = math_info["result"]
+            operation = math_info["operation"]
+            
+            print(f"Verifying math image: {n1} {operation} {n2} = {expected_result}")
+            
+            # Convert local path to data URI for verification if needed
+            verify_url = image_result
+            if image_result.startswith("/") or (len(image_result) > 2 and image_result[1] == ":"):
+                # It's a local file path, convert to data URI
+                try:
+                    with open(image_result, "rb") as f:
+                        img_data = base64.b64encode(f.read()).decode("utf-8")
+                        verify_url = f"data:image/png;base64,{img_data}"
+                except Exception as e:
+                    print(f"Error reading image for verification: {e}")
+                    return image_result  # Return without verification
+            
+            verification = _verify_math_image(client, verify_url, n1, n2, expected_result, operation)
+            
+            if verification.get("is_correct", False):
+                print("✅ Math image verification PASSED!")
+                return image_result
+            else:
+                print(f"❌ Math image verification FAILED: {verification.get('feedback', 'Unknown error')}")
+                
+                # Create a more explicit prompt for retry
+                image_prompt = (
+                    f"CRITICAL: Create an educational image showing EXACTLY {n1} {operation} {n2} = {expected_result}. "
+                    f"You MUST show EXACTLY {n1} objects in the first group. "
+                    f"You MUST show EXACTLY {n2} objects in the second group. "
+                    f"You MUST show EXACTLY {expected_result} objects in the result. "
+                    f"COUNT CAREFULLY: {n1} + {n2} = {expected_result}. "
+                    f"Use simple, identical objects like red circles or apples. "
+                    f"Arrange objects in a single row so they are easy to count. "
+                    f"Label each group with the correct number. "
+                    f"White background, flat vector style, child-friendly. "
+                    f"NO extra decorations, NO extra objects, just exactly the right count. "
+                    f"VERIFY: First group has {n1}, second group has {n2}, result has {expected_result}."
+                )
+                print(f"Retrying with more explicit prompt...")
+                continue
+        
+        # Not a math image or final attempt - return the result
+        return image_result
+    
+    print("All image generation attempts failed.")
     return None
 
 
