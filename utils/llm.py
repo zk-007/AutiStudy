@@ -648,21 +648,21 @@ def _heuristic_visual_plan(question: str, grade: int, subject: str) -> Dict[str,
         layout = "Top row: first group + second group. Bottom row: result group."
         aspect_ratio = "1:1"  # Square format to prevent cropping
         
-        # Build visual prompt with actual objects - using SQUARE layout to prevent cropping
+        # Build visual prompt with actual objects - HORIZONTAL layout: A + B = C
         if is_addition:
             prompt = (
-                f"Create a SQUARE autism-friendly VISUAL math image showing: {n1} + {n2} = {result}. "
-                f"White background, flat vector style, soft educational colors. "
-                f"IMPORTANT: Show this using REAL OBJECTS, not just numbers. Use a SQUARE layout. "
-                f"TOP ROW: Show exactly {n1} red apples on the left, a PLUS sign in the middle, and exactly {n2} green apples on the right. "
-                f"Label the left group '{n1}' and the right group '{n2}'. "
-                f"MIDDLE: Show an EQUALS sign (=). "
-                f"BOTTOM ROW: Show all {result} apples together in a single row. Label it '{result} apples'. "
-                f"Make sure ALL objects fit within the square frame with good margins. "
-                f"Use large, clear, cute apple icons. Child-friendly style. "
-                f"Arrange objects in neat rows that fit completely in the image. "
-                f"No clutter, no decoration, no cropping. Everything must be fully visible. "
-                f"{DEFAULT_NEGATIVE_TEXT}"
+                f"Create a simple math equation image showing: {n1} + {n2} = {result}. "
+                f"White background, flat cartoon style. "
+                f"LAYOUT FROM LEFT TO RIGHT IN ONE ROW: "
+                f"1. FIRST: Exactly {n1} red apples grouped together, with '{n1}' written below. "
+                f"2. THEN: A large black PLUS sign (+). "
+                f"3. THEN: Exactly {n2} green apples grouped together, with '{n2}' written below. "
+                f"4. THEN: A large black EQUALS sign (=). "
+                f"5. LAST: Exactly {result} apples (mixed colors), with '{result}' written below. "
+                f"ORDER IS CRITICAL: {n1} apples, then +, then {n2} apples, then =, then {result} apples. "
+                f"The {result} apples MUST be on the far RIGHT, not in the middle. "
+                f"All in one horizontal row, reading left to right like a math equation. "
+                f"Simple, clear, child-friendly. No extra decorations. "
             )
         elif is_subtraction:
             prompt = (
@@ -1022,23 +1022,26 @@ def _verify_math_image(client, image_url: str, expected_n1: int, expected_n2: in
         
         verify_prompt = f"""You are verifying a math educational image for children.
 
-The image should show: {expected_n1} {operation} {expected_n2} = {expected_result}
+The image should show the equation: {expected_n1} {operation} {expected_n2} = {expected_result}
+Layout should be LEFT TO RIGHT: first group, operator, second group, equals, result.
 
-Please carefully COUNT the objects in each section of the image:
-1. How many objects are in the FIRST group (left side)?
-2. How many objects are in the SECOND group (right side)?  
-3. How many objects are in the RESULT section (bottom)?
+Please check:
+1. How many objects are in the LEFTMOST group?
+2. How many objects are in the MIDDLE group (before equals sign)?
+3. How many objects are in the RIGHTMOST group (after equals sign - this should be the RESULT)?
+4. Is the layout correct? (first number, then operator, then second number, then equals, then result)
 
 Respond in this exact JSON format:
 {{
-    "first_group_count": <number>,
-    "second_group_count": <number>,
-    "result_count": <number>,
+    "first_group_count": <number on far left>,
+    "second_group_count": <number in middle>,
+    "result_count": <number on far right after equals>,
+    "layout_correct": true/false,
     "is_correct": true/false,
     "feedback": "explanation if incorrect"
 }}
 
-IMPORTANT: Count EVERY object carefully. The result should show exactly {expected_result} objects total."""
+CRITICAL: The RESULT ({expected_result} objects) must be on the FAR RIGHT, not in the middle!"""
 
         response = client.chat.completions.create(
             model="gpt-4o",
@@ -1064,21 +1067,27 @@ IMPORTANT: Count EVERY object carefully. The result should show exactly {expecte
             if json_match:
                 verification = json.loads(json_match.group(0))
                 
-                # Double check the math
+                # Double check the math and layout
                 first = verification.get("first_group_count", 0)
                 second = verification.get("second_group_count", 0)
                 result = verification.get("result_count", 0)
+                layout_ok = verification.get("layout_correct", True)
                 
-                # Verify counts match expected
-                is_correct = (
+                # Verify counts match expected AND layout is correct
+                counts_correct = (
                     first == expected_n1 and 
                     second == expected_n2 and 
                     result == expected_result
                 )
                 
+                is_correct = counts_correct and layout_ok
+                
                 verification["is_correct"] = is_correct
                 if not is_correct:
-                    verification["feedback"] = f"Expected: {expected_n1} + {expected_n2} = {expected_result}. Found: {first} + {second} = {result} objects."
+                    if not layout_ok:
+                        verification["feedback"] = f"Layout wrong! Result should be on far right. Found: {first}, {second}, {result} from left to right."
+                    else:
+                        verification["feedback"] = f"Counts wrong! Expected: {expected_n1} {operation} {expected_n2} = {expected_result}. Found: {first} + {second} = {result}."
                 
                 return verification
         except Exception as e:
@@ -1230,20 +1239,16 @@ def generate_image(
             else:
                 print(f"❌ Math image verification FAILED: {verification.get('feedback', 'Unknown error')}")
                 
-                # Create a more explicit prompt for retry - using SQUARE layout
+                # Create a more explicit prompt for retry
                 image_prompt = (
-                    f"CRITICAL: Create a SQUARE educational image showing EXACTLY {n1} {operation} {n2} = {expected_result}. "
-                    f"You MUST show EXACTLY {n1} objects in the first group. "
-                    f"You MUST show EXACTLY {n2} objects in the second group. "
-                    f"You MUST show EXACTLY {expected_result} objects in the result. "
-                    f"COUNT CAREFULLY: {n1} {operation} {n2} = {expected_result}. "
-                    f"Use simple red apples or circles. "
-                    f"TOP ROW: {n1} objects + {n2} objects with labels. "
-                    f"BOTTOM ROW: {expected_result} objects total. "
-                    f"Make sure everything fits within the SQUARE frame with margins. "
-                    f"White background, flat vector style, child-friendly. "
-                    f"NO cropping - all objects must be fully visible. "
-                    f"VERIFY: First group has {n1}, second group has {n2}, result has {expected_result}."
+                    f"Create a math equation image: {n1} {operation} {n2} = {expected_result}. "
+                    f"ONE HORIZONTAL ROW, LEFT TO RIGHT: "
+                    f"[{n1} apples] [{operation}] [{n2} apples] [=] [{expected_result} apples]. "
+                    f"The RESULT ({expected_result} apples) MUST be on the FAR RIGHT after the equals sign. "
+                    f"NOT in the middle! "
+                    f"Count: exactly {n1}, then {n2}, then {expected_result} objects. "
+                    f"Include + and = signs between groups. "
+                    f"White background, simple cartoon apples, labels below each group. "
                 )
                 print(f"Retrying with more explicit prompt...")
                 continue
