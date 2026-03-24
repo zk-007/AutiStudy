@@ -128,3 +128,26 @@ def delete_chat_session(user_email: str, chat_id: str):
     
     chats[user_email] = [s for s in chats[user_email] if s["id"] != chat_id]
     save_chats(chats)
+
+
+def cleanup_empty_sessions():
+    """Delete all chat sessions that have no messages"""
+    chats = load_chats()
+    total_deleted = 0
+    
+    for user_email in chats:
+        original_count = len(chats[user_email])
+        # Keep only sessions that have at least one message
+        chats[user_email] = [s for s in chats[user_email] if len(s.get("messages", [])) > 0]
+        deleted = original_count - len(chats[user_email])
+        total_deleted += deleted
+        if deleted > 0:
+            print(f"Deleted {deleted} empty sessions for {user_email}")
+    
+    if total_deleted > 0:
+        save_chats(chats)
+        print(f"Total empty sessions deleted: {total_deleted}")
+    else:
+        print("No empty sessions found")
+    
+    return total_deleted
