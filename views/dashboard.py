@@ -158,7 +158,7 @@ def render_dashboard():
         if st.button(f"📊 {t('learning_analytics')}", key="nav_analytics", use_container_width=True):
             st.session_state.navigate("analytics")
         if st.button(f"🏆 {t('earn_rewards')}",       key="nav_rewards",   use_container_width=True):
-            st.session_state.navigate("analytics")  # Link to analytics for now
+            st.info(t("coming_soon"))
         if st.button("⚙️ Settings",                   key="nav_settings",  use_container_width=True):
             st.info(t("coming_soon"))
 
@@ -223,7 +223,7 @@ def render_dashboard():
         </div>
         """, unsafe_allow_html=True)
         if st.button(t("view_rewards"), key="quick_rewards", use_container_width=True):
-            st.session_state.navigate("analytics")
+            st.info(t("coming_soon"))
 
     st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
 
