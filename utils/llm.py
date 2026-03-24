@@ -648,36 +648,38 @@ def _heuristic_visual_plan(question: str, grade: int, subject: str) -> Dict[str,
         layout = "Top row: first group + second group. Bottom row: result group."
         aspect_ratio = "1:1"  # Square format to prevent cropping
         
-        # Build simple, general prompt - let the model decide layout
+        # Each group in a SEPARATE ROW for easy counting
         if is_addition:
             prompt = (
-                f"Educational math illustration for children: {n1} + {n2} = {result}. "
-                f"Show the equation using small, simple icons (dots, circles, or shapes). "
-                f"Group 1: {n1} icons. Plus sign. Group 2: {n2} icons. Equals sign. Result: {result} icons. "
-                f"Use small icons so everything fits. Clean white background. "
-                f"Write the numbers {n1}, {n2}, and {result} as labels. "
-                f"Simple, minimal, easy to understand at a glance. "
+                f"Simple math diagram for kids showing {n1} + {n2} = {result}. "
+                f"Use small dots, circles, stars, or balls - any simple shape. "
+                f"ROW 1: Show {n1} icons in a single horizontal row. Label '{n1}'. "
+                f"ROW 2: Show {n2} icons in a single horizontal row. Label '{n2}'. "
+                f"ROW 3: Show {result} icons in a single horizontal row. Label '{result}'. "
+                f"Add a '+' between row 1 and 2, and '=' before row 3. "
+                f"White background. Each row clearly separated. Easy to count each row. "
             )
         elif is_subtraction:
             prompt = (
-                f"Educational math illustration for children: {n1} - {n2} = {result}. "
-                f"Show {n1} small circles at the top. "
-                f"Show {n2} of them crossed out or faded. "
-                f"Show {result} circles remaining at the bottom. "
-                f"Label with numbers. Clean white background. Simple and minimal. "
+                f"Simple math diagram for kids showing {n1} - {n2} = {result}. "
+                f"Use small dots, circles, or balls. "
+                f"ROW 1: Show {n1} icons in a row. Label 'Start: {n1}'. "
+                f"ROW 2: Show {n2} icons crossed out. Label 'Take away: {n2}'. "
+                f"ROW 3: Show {result} icons remaining. Label 'Left: {result}'. "
+                f"White background. Each row clearly separated. "
             )
         elif is_multiplication:
             prompt = (
-                f"Educational math illustration for children: {n1} × {n2} = {result}. "
-                f"Show {n1} rows with {n2} small dots in each row. "
-                f"Total of {result} dots arranged in a grid. "
-                f"Label: '{n1} × {n2} = {result}'. Clean white background. Simple and minimal. "
+                f"Simple math diagram for kids showing {n1} × {n2} = {result}. "
+                f"Show {n1} rows, each row has {n2} small dots or circles. "
+                f"Total: {result} icons in a grid arrangement. "
+                f"Label '{n1} × {n2} = {result}'. White background. "
             )
         else:
             prompt = (
-                f"Simple educational math illustration for: {q}. "
-                f"Use small icons or shapes to visualize the math concept. "
-                f"Clean white background. Labels with numbers. Simple and minimal. "
+                f"Simple math diagram for kids: {q}. "
+                f"Use small dots or circles arranged in rows for easy counting. "
+                f"Each group in its own row. Labels with numbers. White background. "
             )
         
         return {
@@ -1216,12 +1218,14 @@ def generate_image(
             else:
                 print(f"❌ Math image verification FAILED: {verification.get('feedback', 'Unknown error')}")
                 
-                # Simplified retry prompt
+                # Retry with row-based layout
                 image_prompt = (
-                    f"Simple math diagram: {n1} {operation} {n2} = {expected_result}. "
-                    f"Use tiny dots or circles. "
-                    f"Show exactly {n1} dots, {operation} sign, {n2} dots, = sign, {expected_result} dots. "
-                    f"Small icons. White background. Number labels. Very simple and clean. "
+                    f"Math diagram: {n1} {operation} {n2} = {expected_result}. "
+                    f"THREE SEPARATE ROWS: "
+                    f"Row 1: {n1} small dots in a line. "
+                    f"Row 2: {n2} small dots in a line. "
+                    f"Row 3: {expected_result} small dots in a line. "
+                    f"Each row clearly separated. Numbers labeled. White background. "
                 )
                 print(f"Retrying with more explicit prompt...")
                 continue
