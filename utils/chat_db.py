@@ -24,6 +24,9 @@ def get_user_chats(user_email: str, language: str = None) -> List[Dict]:
     chats = load_chats()
     user_chats = chats.get(user_email, [])
     
+    # Filter out empty sessions (no messages) - don't show them in Previous Chats
+    user_chats = [c for c in user_chats if len(c.get("messages", [])) > 0]
+    
     # Filter by language if specified
     if language:
         user_chats = [c for c in user_chats if c.get("language", "en") == language]

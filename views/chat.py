@@ -8,6 +8,7 @@ from utils.chat_db import (
     save_message,
     get_chat_session,
     save_media_to_message,
+    cleanup_empty_sessions,
 )
 from utils.language import t, is_urdu, get_language
 
@@ -33,6 +34,11 @@ def render_chat():
 # State + Styles
 # =========================
 def initialize_chat_state(user_email, grade, subject, current_language):
+    # Auto-cleanup empty sessions once per session
+    if "empty_sessions_cleaned" not in st.session_state:
+        cleanup_empty_sessions()
+        st.session_state.empty_sessions_cleaned = True
+    
     # Don't create a new chat session automatically - only when user sends first message
     # Just initialize the session state variables
     if "current_chat_id" not in st.session_state:
