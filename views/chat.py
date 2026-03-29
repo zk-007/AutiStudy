@@ -1,5 +1,6 @@
 import html
 import streamlit as st
+import streamlit.components.v1 as components
 from utils.llm import generate_response, generate_image, text_to_speech_base64, generate_response_with_auto_image
 from utils.auth import logout
 from utils.chat_db import (
@@ -11,6 +12,21 @@ from utils.chat_db import (
     cleanup_empty_sessions,
 )
 from utils.language import t, is_urdu, get_language
+
+
+def scroll_to_bottom():
+    """Inject JavaScript to scroll to the bottom of the page"""
+    js = """
+    <script>
+        setTimeout(function() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 100);
+    </script>
+    """
+    components.html(js, height=0)
 
 
 PRIMARY_GRADIENT = "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)"
@@ -418,6 +434,8 @@ def render_previous_chats(user_email, current_language, grade, subject):
                             st.session_state.generated_audio[pair_idx] = msg["audio_base64"]
                         pair_idx += 1
 
+                # Scroll to bottom when loading previous chat
+                st.session_state.scroll_to_bottom = True
                 st.rerun()
 
 
@@ -612,6 +630,8 @@ def process_user_input(user_input, grade, subject, user_email):
             image_url=auto_image_url,
         )
     
+    # Trigger scroll to bottom after response
+    st.session_state.scroll_to_bottom = True
     st.rerun()
 
 
@@ -657,6 +677,7 @@ def display_conversation_with_inputs(grade, subject, user_email):
                                         assistant_msg_idx,
                                         image_url=image_url,
                                     )
+                                    st.session_state.scroll_to_bottom = True
                                     st.rerun()
                                 else:
                                     st.error(f"❌ {t('image_failed')}")
@@ -680,6 +701,7 @@ def display_conversation_with_inputs(grade, subject, user_email):
                                         assistant_msg_idx,
                                         audio_base64=audio_base64,
                                     )
+                                    st.session_state.scroll_to_bottom = True
                                     st.rerun()
                                 else:
                                     st.error(f"❌ {t('voice_failed')}")
@@ -724,3 +746,8 @@ def display_conversation_with_inputs(grade, subject, user_email):
 
     render_input_area(grade, subject, user_email, f"bottom_{len(messages)}")
     render_quick_questions(grade, subject, user_email)
+    
+    # Auto-scroll to bottom if triggered
+    if st.session_state.get("scroll_to_bottom", False):
+        scroll_to_bottom()
+        st.session_state.scroll_to_bottom = False
